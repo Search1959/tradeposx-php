@@ -91,6 +91,18 @@ class Product extends BaseModel {
         return $this->execute('UPDATE products SET current_stock = current_stock + ? WHERE org_id = ? AND id = ?', [$qty, $orgId, $id]);
     }
 
+    /** Used by AI bill scanning: an item on a scanned bill may or may not
+     * already exist as a product — this matches by exact (case-insensitive)
+     * name, or creates a new one. Category always defaults to 'Other', never
+     * a guessed/hardcoded category — the prior app this scanning feature is
+     * ported from had a real bug where every scanned import landed under one
+     * wrong hardcoded category regardless of what was actually on the bill. */
+    public function findOrCreateByName(int $orgId, string $name, array $defaults): int {
+        $existing = $this->queryOne('SELECT * FROM products WHERE org_id = ? AND LOWER(name) = LOWER(?)', [$orgId, $name]);
+        if ($existing) return (int) $existing['id'];
+        return $this->create($orgId, array_merge(['name' => $name, 'category' => 'Other'], $defaults));
+    }
+
     /** Bulk import match: barcode first (if given), then SKU — either can be
      * blank in a row. Returns null if neither matches an existing product. */
     public function findForImportMatch(int $orgId, ?string $barcode, ?string $sku): ?array {

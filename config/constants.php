@@ -14,7 +14,9 @@ define('MAX_FILE_SIZE', 10 * 1024 * 1024); // 10 MB
 
 // ── AI purchase-bill scanning (Gemini) — fill in when ready for that feature ──
 define('GEMINI_API_KEY', '');
-define('GEMINI_MODEL', 'gemini-flash-latest');
+// Tried in order — free-tier quotas are per exact model name, each its own
+// bucket, so one model being exhausted doesn't mean the key itself is out.
+define('GEMINI_SCAN_MODELS', ['gemini-flash-latest', 'gemini-2.5-flash', 'gemini-2.0-flash']);
 
 // ── WhatsApp (Udhaar reminders, receipts) — fill in when ready for that feature ──
 define('WHATSAPP_PROVIDER', ''); // 'green-api' or 'meta-cloud'
