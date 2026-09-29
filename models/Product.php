@@ -75,6 +75,16 @@ class Product extends BaseModel {
         return $this->execute('DELETE FROM products WHERE org_id = ? AND id = ?', [$orgId, $id]);
     }
 
+    /** Called after a purchase — a new purchase becomes the product's current
+     * cost/batch/expiry. A targeted UPDATE (not the general update()) so it can't
+     * accidentally clobber the sparse `attributes` JSON or any other field. */
+    public function updatePurchaseSnapshot(int $orgId, int $id, float $purchasePrice, ?string $batchNumber, ?string $expiryDate): bool {
+        return $this->execute(
+            'UPDATE products SET purchase_price = ?, batch_number = ?, expiry_date = ? WHERE org_id = ? AND id = ?',
+            [$purchasePrice, $batchNumber, $expiryDate ?: null, $orgId, $id]
+        );
+    }
+
     /** Positive $qty increases stock, negative decreases — always call alongside an
      * InventoryTransaction row so stock changes stay auditable (see InventoryTransaction model). */
     public function adjustStock(int $orgId, int $id, float $qty): bool {
