@@ -16,6 +16,7 @@
           <button class="bg-white border border-slate-300 text-slate-700 text-sm font-medium px-4 py-2 rounded hover:bg-slate-50">🎬 Seed Demo Data</button>
         </form>
         <a href="/superadmin/newOrg" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">+ New Organization</a>
+        <a href="/superadmin/backup" class="bg-white border border-slate-300 text-slate-700 text-sm font-medium px-4 py-2 rounded hover:bg-slate-50">⬇ Full Backup</a>
         <a href="/logout" class="text-sm text-slate-500">Logout</a>
       </div>
     </div>
@@ -32,6 +33,7 @@
           </a>
           <div class="flex items-center gap-3">
             <span class="text-xs px-2 py-1 rounded-full <?= $org['status'] === 'active' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600' ?>"><?= h($org['status']) ?></span>
+            <a href="/superadmin/backupOrg/<?= (int)$org['id'] ?>" class="text-xs text-slate-500 hover:underline">Backup</a>
             <form method="POST" action="/superadmin/<?= $org['status'] === 'active' ? 'suspend' : 'activate' ?>/<?= (int)$org['id'] ?>">
               <?= CsrfHelper::getField() ?>
               <button class="text-xs text-slate-500 hover:underline"><?= $org['status'] === 'active' ? 'Suspend' : 'Activate' ?></button>

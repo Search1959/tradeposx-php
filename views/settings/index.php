@@ -53,6 +53,16 @@
       <button type="submit" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">Save</button>
     </form>
   </div>
+
+  <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+    <h2 class="font-semibold text-slate-900 mb-1">Backup Your Data</h2>
+    <p class="text-sm text-slate-500 mb-4">
+      Download every record belonging to your business — products, customers, sales, purchases, appointments,
+      job cards, invoices, everything — as a single SQL file you can keep safe or restore from later.
+      It never includes any other business's data.
+    </p>
+    <a href="<?= $base ?>/settings/exportData" class="inline-block bg-slate-700 text-white text-sm font-medium px-4 py-2 rounded hover:bg-slate-800">⬇ Download Full Backup</a>
+  </div>
   <?php endif; ?>
 </div>
 

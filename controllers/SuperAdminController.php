@@ -84,4 +84,33 @@ class SuperAdminController {
             . ' Login: demo@tradeposx.com / Demo@2026';
         redirect('superadmin');
     }
+
+    /** Full-platform disaster-recovery backup — every organization's data in
+     * one file. SuperAdmin only; never exposed at the tenant level. */
+    public function backupAction(): void {
+        Auth::requireSuperAdmin();
+        $db = Database::getInstance()->getConnection();
+        $sql = BackupHelper::exportFullDatabase($db);
+
+        header('Content-Type: application/sql');
+        header('Content-Disposition: attachment; filename="tradeposx-full-backup-' . date('Y-m-d-His') . '.sql"');
+        header('Content-Length: ' . strlen($sql));
+        echo $sql;
+    }
+
+    /** Backing up a single org on a tenant's behalf (e.g. support request) —
+     * still SuperAdmin-only, and still scoped to that one org's data only. */
+    public function backupOrgAction(?string $id = null): void {
+        Auth::requireSuperAdmin();
+        $org = $this->orgModel->find((int) $id);
+        if (!$org) { http_response_code(404); include __DIR__ . '/../views/404.php'; return; }
+
+        $db = Database::getInstance()->getConnection();
+        $sql = BackupHelper::exportOrg($db, (int) $id);
+
+        header('Content-Type: application/sql');
+        header('Content-Disposition: attachment; filename="' . $org['slug'] . '-backup-' . date('Y-m-d') . '.sql"');
+        header('Content-Length: ' . strlen($sql));
+        echo $sql;
+    }
 }

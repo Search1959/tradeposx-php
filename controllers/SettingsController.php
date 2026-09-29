@@ -48,4 +48,20 @@ class SettingsController {
         $pageTitle = 'Settings';
         require __DIR__ . '/../views/settings/index.php';
     }
+
+    /** Owner/admin-only: a full SQL export of just this business's own data —
+     * every table scoped to this org_id, nothing from any other tenant. */
+    public function exportDataAction(): void {
+        $org = Tenant::current();
+        Auth::requireRole(['owner', 'admin']);
+        Auth::requireOrgAccess($org['id']);
+
+        $db = Database::getInstance()->getConnection();
+        $sql = BackupHelper::exportOrg($db, $org['id']);
+
+        header('Content-Type: application/sql');
+        header('Content-Disposition: attachment; filename="' . $org['slug'] . '-backup-' . date('Y-m-d') . '.sql"');
+        header('Content-Length: ' . strlen($sql));
+        echo $sql;
+    }
 }
