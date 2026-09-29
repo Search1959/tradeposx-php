@@ -26,6 +26,23 @@ $serviceSectors = [
     'Religious Trust / Temple Services','Entertainment & Sports','General Service','Interior Design','Architecture Services',
     'Tailoring & Boutique','Driving School','Veterinary Clinic','Home Cleaning Services','Catering Services',
 ];
+
+// Only real, shipped capabilities below — every line here maps to an actual
+// screen/feature in the app, never a placeholder or aspirational claim.
+$tradeFeatures = [
+    'Products, stock &amp; barcode-ready POS',
+    'GST Tax Invoices (Exclusive / Inclusive / Exempt)',
+    'Purchases, suppliers &amp; bulk CSV import',
+    'Udhaar (credit) ledger with WhatsApp reminders',
+    'Mobile card-tap POS, installable as an app',
+];
+$serviceFeatures = [
+    'Appointments &amp; job card tracking',
+    'GST service invoices &amp; quotations',
+    'Staff assignments &amp; commission payouts',
+    'Balance-due reminders sent over WhatsApp',
+    'Mobile-first billing, installable as an app',
+];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -38,54 +55,94 @@ $serviceSectors = [
 <meta name="theme-color" content="#4f46e5">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-  .pill { transition: all 0.15s ease; }
-  .pill:hover { transform: translateY(-1px); }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  .card-trade:hover { border-color: rgba(99,102,241,0.5); }
+  .card-service:hover { border-color: rgba(16,185,129,0.5); }
 </style>
 </head>
 <body class="bg-slate-950 text-white">
 
+  <!-- Nav -->
+  <header class="border-b border-white/5">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="font-bold text-lg tracking-tight"><?= h(APP_NAME) ?></div>
+      <a href="/login" class="text-sm font-medium bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg px-4 py-2">Platform Login</a>
+    </div>
+  </header>
+
   <!-- Hero -->
-  <div class="max-w-5xl mx-auto px-4 pt-16 pb-12 text-center">
+  <div class="max-w-6xl mx-auto px-4 pt-14 pb-4 text-center">
     <div class="inline-block text-xs font-medium tracking-wide uppercase text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-full mb-5">
-      TradeERP + ServiceERP, in one platform
+      One Platform, Two Engines
     </div>
-    <h1 class="text-4xl md:text-5xl font-bold mb-4 leading-tight"><?= h(APP_NAME) ?></h1>
-    <p class="text-lg text-slate-400 max-w-2xl mx-auto mb-8">
-      Desktop &amp; mobile point-of-sale, inventory, Udhaar/credit tracking, appointments, job cards, and billing —
-      built to run any kind of trading or service business, from a kirana store to a repair shop.
+    <h1 class="text-4xl md:text-5xl font-bold mb-4 leading-tight">Run Any Trading or Service Business</h1>
+    <p class="text-lg text-slate-400 max-w-2xl mx-auto mb-12">
+      Desktop &amp; mobile point-of-sale, inventory, GST billing, Udhaar/credit tracking, appointments, and job cards —
+      pick the engine that matches your business below.
     </p>
-    <a href="/login" class="inline-block bg-indigo-600 hover:bg-indigo-500 rounded-lg px-6 py-3 text-sm font-semibold">Platform Login</a>
   </div>
 
-  <!-- TradeERP sectors -->
-  <div class="max-w-5xl mx-auto px-4 py-10 border-t border-white/5">
-    <div class="flex items-baseline justify-between mb-1">
-      <h2 class="text-xl font-semibold">TradeERP</h2>
-      <span class="text-xs text-slate-500"><?= count($tradeSectors) ?> trades supported</span>
+  <!-- TradeERP / ServiceERP split -->
+  <div class="max-w-6xl mx-auto px-4 pb-16">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- TradeERP -->
+      <div class="card-trade bg-white/[0.03] border border-white/10 rounded-2xl p-6 md:p-8 flex flex-col transition">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-11 h-11 rounded-xl bg-indigo-500/15 flex items-center justify-center text-2xl">🛒</div>
+          <div>
+            <h2 class="text-xl font-semibold">TradeERP</h2>
+            <div class="text-xs text-slate-500"><?= count($tradeSectors) ?> trades supported</div>
+          </div>
+        </div>
+        <p class="text-sm text-slate-400 mb-5">For any kind of trading or retail business — kirana stores, hardware shops, wholesalers, and more.</p>
+        <ul class="space-y-2.5 mb-6 flex-1">
+          <?php foreach ($tradeFeatures as $f): ?>
+          <li class="flex items-start gap-2.5 text-sm text-slate-300">
+            <span class="mt-0.5 text-indigo-400">✓</span><span><?= $f ?></span>
+          </li>
+          <?php endforeach; ?>
+        </ul>
+        <label class="block text-xs font-medium text-slate-500 mb-1.5">Find your trade</label>
+        <select class="w-full bg-white/5 border border-white/10 text-slate-300 text-sm rounded-lg px-3 py-2.5 mb-4">
+          <?php foreach ($tradeSectors as $s): ?>
+            <option class="bg-slate-900"><?= h($s) ?></option>
+          <?php endforeach; ?>
+        </select>
+        <a href="/login" class="text-center bg-indigo-600 hover:bg-indigo-500 rounded-lg px-4 py-2.5 text-sm font-semibold">Start with TradeERP</a>
+      </div>
+
+      <!-- ServiceERP -->
+      <div class="card-service bg-white/[0.03] border border-white/10 rounded-2xl p-6 md:p-8 flex flex-col transition">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-11 h-11 rounded-xl bg-emerald-500/15 flex items-center justify-center text-2xl">🛠️</div>
+          <div>
+            <h2 class="text-xl font-semibold">ServiceERP</h2>
+            <div class="text-xs text-slate-500"><?= count($serviceSectors) ?> services supported</div>
+          </div>
+        </div>
+        <p class="text-sm text-slate-400 mb-5">For any kind of service business — clinics, salons, repair shops, agencies, and more.</p>
+        <ul class="space-y-2.5 mb-6 flex-1">
+          <?php foreach ($serviceFeatures as $f): ?>
+          <li class="flex items-start gap-2.5 text-sm text-slate-300">
+            <span class="mt-0.5 text-emerald-400">✓</span><span><?= $f ?></span>
+          </li>
+          <?php endforeach; ?>
+        </ul>
+        <label class="block text-xs font-medium text-slate-500 mb-1.5">Find your service</label>
+        <select class="w-full bg-white/5 border border-white/10 text-slate-300 text-sm rounded-lg px-3 py-2.5 mb-4">
+          <?php foreach ($serviceSectors as $s): ?>
+            <option class="bg-slate-900"><?= h($s) ?></option>
+          <?php endforeach; ?>
+        </select>
+        <a href="/login" class="text-center bg-emerald-600 hover:bg-emerald-500 rounded-lg px-4 py-2.5 text-sm font-semibold">Start with ServiceERP</a>
+      </div>
+
     </div>
-    <p class="text-sm text-slate-500 mb-5">Products, stock, purchases, GST billing, and Udhaar — for any kind of trading business.</p>
-    <select class="w-full md:w-96 bg-white/5 border border-white/10 text-slate-300 text-sm rounded-lg px-3 py-2.5">
-      <?php foreach ($tradeSectors as $s): ?>
-        <option class="bg-slate-900"><?= h($s) ?></option>
-      <?php endforeach; ?>
-    </select>
   </div>
 
-  <!-- ServiceERP sectors -->
-  <div class="max-w-5xl mx-auto px-4 py-10 border-t border-white/5">
-    <div class="flex items-baseline justify-between mb-1">
-      <h2 class="text-xl font-semibold">ServiceERP</h2>
-      <span class="text-xs text-slate-500"><?= count($serviceSectors) ?> services supported</span>
-    </div>
-    <p class="text-sm text-slate-500 mb-5">Appointments, job cards, staff commissions, quotations, and invoicing — for any kind of service business.</p>
-    <select class="w-full md:w-96 bg-white/5 border border-white/10 text-slate-300 text-sm rounded-lg px-3 py-2.5">
-      <?php foreach ($serviceSectors as $s): ?>
-        <option class="bg-slate-900"><?= h($s) ?></option>
-      <?php endforeach; ?>
-    </select>
-  </div>
-
-  <div class="max-w-5xl mx-auto px-4 py-12 border-t border-white/5 text-center">
+  <!-- Footer -->
+  <div class="max-w-6xl mx-auto px-4 py-10 border-t border-white/5 text-center">
     <a href="/login" class="inline-block bg-indigo-600 hover:bg-indigo-500 rounded-lg px-6 py-3 text-sm font-semibold">Platform Login</a>
     <p class="text-xs text-slate-600 mt-6">&copy; <?= date('Y') ?> <?= h(APP_NAME) ?></p>
   </div>
