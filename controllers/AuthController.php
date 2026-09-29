@@ -64,14 +64,20 @@ class AuthController {
             $ownerName = trim($_POST['owner_name'] ?? '');
             $ownerEmail = trim($_POST['owner_email'] ?? '');
             $ownerPassword = $_POST['owner_password'] ?? '';
-            $businessType = in_array($_POST['business_type'] ?? '', ['trade', 'service', 'both'], true) ? $_POST['business_type'] : 'both';
+            $mobile = trim($_POST['mobile'] ?? '') !== '' ? trim($_POST['mobile']) : null;
+            $businessType = $_POST['business_type'] ?? '';
             $tradingSector = trim($_POST['trading_sector'] ?? '') !== '' ? $_POST['trading_sector'] : null;
+            $validSectors = $businessType === 'trade' ? SectorHelper::tradeSectors() : SectorHelper::serviceSectors();
             $orgModel = new Organization();
 
-            if ($name === '' || $ownerName === '' || $ownerEmail === '' || strlen($ownerPassword) < 6) {
+            if (!in_array($businessType, ['trade', 'service'], true)) {
+                $error = 'Choose TradeERP or ServiceERP to continue.';
+            } elseif ($name === '' || $ownerName === '' || $ownerEmail === '' || strlen($ownerPassword) < 6) {
                 $error = 'Business name, your name/email, and a password of at least 6 characters are required.';
             } elseif (!filter_var($ownerEmail, FILTER_VALIDATE_EMAIL)) {
                 $error = 'Please enter a valid email address.';
+            } elseif ($tradingSector === null || !isset($validSectors[$tradingSector])) {
+                $error = 'Please choose your sector.';
             } elseif ($this->userModel->findByEmailAcrossOrgs($ownerEmail)) {
                 $error = 'An account with this email already exists — try logging in instead.';
             } else {
@@ -86,7 +92,7 @@ class AuthController {
                     'trading_sector' => $tradingSector, 'status' => 'active',
                 ]);
                 $userId = $this->userModel->create([
-                    'org_id' => $orgId, 'name' => $ownerName, 'email' => $ownerEmail,
+                    'org_id' => $orgId, 'name' => $ownerName, 'email' => $ownerEmail, 'mobile' => $mobile,
                     'password' => $ownerPassword, 'role' => 'owner', 'status' => 'active',
                 ]);
                 Auth::login($this->userModel->find($userId));
