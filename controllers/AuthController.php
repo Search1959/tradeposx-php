@@ -41,7 +41,14 @@ class AuthController {
             redirect('superadmin');
             return;
         }
+        // On a platform-level route (bare /login, no org slug in the URL),
+        // Tenant::current() is never resolved even though the session already
+        // has an org — falling back to Auth::orgId() avoids redirecting a
+        // logged-in tenant user to a slug-less /dashboard that 404s.
         $org = Tenant::current();
+        if (!$org && Auth::orgId()) {
+            $org = (new Organization())->find(Auth::orgId());
+        }
         redirect(($org ? $org['slug'] . '/' : '') . 'dashboard');
     }
 

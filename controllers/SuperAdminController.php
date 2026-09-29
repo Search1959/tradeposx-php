@@ -1,9 +1,71 @@
 <?php
 class SuperAdminController {
+    private Organization $orgModel;
+    private User $userModel;
+
+    public function __construct() {
+        $this->orgModel = new Organization();
+        $this->userModel = new User();
+    }
+
     public function indexAction(): void {
         Auth::requireSuperAdmin();
-        $orgModel = new Organization();
-        $organizations = $orgModel->all();
+        $organizations = $this->orgModel->all();
         require __DIR__ . '/../views/superadmin/index.php';
+    }
+
+    private function slugify(string $name): string {
+        $slug = strtolower(trim($name));
+        $slug = preg_replace('/[^a-z0-9]+/', '-', $slug);
+        return trim($slug, '-') ?: 'store';
+    }
+
+    public function newOrgAction(): void {
+        Auth::requireSuperAdmin();
+        $error = null;
+        $form = [];
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            CsrfHelper::validate();
+            $form = $_POST;
+            $name = trim($_POST['name'] ?? '');
+            $ownerName = trim($_POST['owner_name'] ?? '');
+            $ownerEmail = trim($_POST['owner_email'] ?? '');
+            $ownerPassword = $_POST['owner_password'] ?? '';
+            $slug = trim($_POST['slug'] ?? '') !== '' ? $this->slugify($_POST['slug']) : $this->slugify($name);
+
+            if ($name === '' || $ownerName === '' || $ownerEmail === '' || strlen($ownerPassword) < 6) {
+                $error = 'Business name, owner name/email, and a password of at least 6 characters are required.';
+            } elseif ($this->orgModel->slugExists($slug)) {
+                $error = "The URL slug \"{$slug}\" is already taken — try a different business name or set a custom slug.";
+            } else {
+                $orgId = $this->orgModel->create([
+                    'slug' => $slug, 'name' => $name, 'business_type' => $_POST['business_type'] ?? 'both',
+                    'trading_sector' => $_POST['trading_sector'] ?? null, 'status' => 'active',
+                ]);
+                $this->userModel->create([
+                    'org_id' => $orgId, 'name' => $ownerName, 'email' => $ownerEmail,
+                    'password' => $ownerPassword, 'role' => 'owner', 'status' => 'active',
+                ]);
+                redirect('superadmin');
+                return;
+            }
+        }
+
+        require __DIR__ . '/../views/superadmin/new-org.php';
+    }
+
+    public function suspendAction(?string $id = null): void {
+        Auth::requireSuperAdmin();
+        CsrfHelper::validate();
+        $this->orgModel->updateStatus((int) $id, 'suspended');
+        redirect('superadmin');
+    }
+
+    public function activateAction(?string $id = null): void {
+        Auth::requireSuperAdmin();
+        CsrfHelper::validate();
+        $this->orgModel->updateStatus((int) $id, 'active');
+        redirect('superadmin');
     }
 }
