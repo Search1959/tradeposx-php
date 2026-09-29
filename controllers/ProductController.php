@@ -74,6 +74,16 @@ class ProductController {
         require __DIR__ . '/../views/trade/products/form.php';
     }
 
+    public function ledgerAction(?string $id = null): void {
+        $org = Tenant::current();
+        Auth::requireOrgAccess($org['id']);
+        $product = $this->model->find($org['id'], (int) $id);
+        if (!$product) { http_response_code(404); include __DIR__ . '/../views/404.php'; return; }
+        $transactions = $this->invModel->forProduct($org['id'], (int) $id);
+        $pageTitle = 'Stock Ledger';
+        require __DIR__ . '/../views/trade/products/ledger.php';
+    }
+
     public function adjustStockAction(?string $id = null): void {
         $org = Tenant::current();
         Auth::requireOrgAccess($org['id']);

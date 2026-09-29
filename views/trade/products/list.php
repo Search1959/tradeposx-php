@@ -37,7 +37,8 @@
         <td class="px-4 py-2 text-right text-slate-500"><?= formatCurrency((float)$p['mrp']) ?></td>
         <td class="px-4 py-2 text-center text-slate-500"><?= h((string)$p['gst_percent']) ?>%</td>
         <td class="px-4 py-2 text-right whitespace-nowrap">
-          <a href="<?= $base ?>/products/edit/<?= (int)$p['id'] ?>" class="text-indigo-600 hover:underline text-xs">Edit</a>
+          <a href="<?= $base ?>/products/ledger/<?= (int)$p['id'] ?>" class="text-slate-500 hover:underline text-xs">Ledger</a>
+          <a href="<?= $base ?>/products/edit/<?= (int)$p['id'] ?>" class="text-indigo-600 hover:underline text-xs ml-2">Edit</a>
           <form method="POST" action="<?= $base ?>/products/delete/<?= (int)$p['id'] ?>" class="inline" onsubmit="return confirm('Delete this product?');">
             <?= CsrfHelper::getField() ?>
             <button class="text-red-600 hover:underline text-xs ml-2">Delete</button>
