@@ -38,6 +38,7 @@ $user = Auth::user();
       <a href="<?= $base ?>/appointments" class="block px-3 py-2 rounded hover:bg-slate-800">Appointments</a>
       <a href="<?= $base ?>/job-cards" class="block px-3 py-2 rounded hover:bg-slate-800">Job Cards</a>
       <a href="<?= $base ?>/service-invoices" class="block px-3 py-2 rounded hover:bg-slate-800">Service Invoices</a>
+      <a href="<?= $base ?>/service-quotations" class="block px-3 py-2 rounded hover:bg-slate-800">Quotations</a>
       <a href="<?= $base ?>/service-customers" class="block px-3 py-2 rounded hover:bg-slate-800">Service Customers</a>
       <a href="<?= $base ?>/service-staff" class="block px-3 py-2 rounded hover:bg-slate-800">Staff</a>
     </nav>
