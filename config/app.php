@@ -166,66 +166,124 @@ function serviceBalanceReminderMessage(string $businessName, string $customerNam
 }
 
 /** Full itemized bill as a WhatsApp message — for the "📤 Send Bill" button, distinct
- * from udhaarReminderMessage() which only nags about an outstanding balance. $items
- * is $sale['items'] (product_name, quantity, unit_price, total_price). */
-function saleBillWhatsAppMessage(string $businessName, string $saleNumber, string $customerName, array $items, float $grandTotal, float $paid, float $balance, ?string $businessPhone = null): string {
+ * from udhaarReminderMessage() which only nags about an outstanding balance. Mirrors
+ * views/trade/sales/receipt.php's own GST computation line-for-line (same isGst check,
+ * same taxable/CGST/SGST fallback for pre-GST-tracking rows) so the two never disagree —
+ * the earlier version only listed pre-tax line totals and then jumped straight to a
+ * GST-inclusive grand total with no breakdown, which is what made the WhatsApp total
+ * look "wrong" next to the item lines. $sale is the full row from Sale::find()
+ * (needs 'items'), $org is Tenant::current(). */
+function saleBillWhatsAppMessage(array $org, array $sale): string {
+    $isGst = $sale['tax_type'] !== 'EXEMPT' && (float) $sale['total_tax_amount'] > 0;
+    $docTitle = $isGst ? 'Tax Invoice' : 'Bill of Supply';
+    $taxable = $sale['taxable_amount'] !== null ? (float) $sale['taxable_amount'] : (float) $sale['subtotal'];
+    $cgst = $sale['cgst_amount'] !== null ? (float) $sale['cgst_amount'] : round((float) $sale['total_tax_amount'] / 2, 2);
+    $sgst = $sale['sgst_amount'] !== null ? (float) $sale['sgst_amount'] : round((float) $sale['total_tax_amount'] - $cgst, 2);
+    $grandTotal = (float) $sale['grand_total'];
+    $paid = (float) $sale['received_amount'];
+    $balance = max(0, round($grandTotal - $paid, 2));
+
     $lines = [];
-    $lines[] = "🧾 *{$businessName}*";
-    $lines[] = "_Bill No: {$saleNumber}_";
+    $lines[] = "🧾 *{$org['name']}*";
+    if (!empty($org['address'])) $lines[] = $org['address'];
+    if (!empty($org['gstin'])) $lines[] = "GSTIN: {$org['gstin']}";
     $lines[] = "";
-    $lines[] = "Dear {$customerName},";
+    $lines[] = "_{$docTitle}_ · Bill No: {$sale['sale_number']}";
+    $lines[] = formatDateTime($sale['created_at']);
+    $lines[] = "";
+    $lines[] = "Dear " . ($sale['customer_name'] ?: 'Customer') . ",";
     $lines[] = "Thank you for your purchase! Here's your bill:";
     $lines[] = "";
     $lines[] = "```";
-    foreach ($items as $item) {
+    foreach ($sale['items'] as $item) {
         $qty = rtrim(rtrim(number_format((float) $item['quantity'], 2), '0'), '.');
-        $lines[] = $item['product_name'];
+        $gstNote = $isGst && (float) ($item['gst_rate'] ?? 0) > 0 ? ' (' . rtrim(rtrim(number_format((float) $item['gst_rate'], 2), '0'), '.') . '% GST)' : '';
+        $lines[] = $item['product_name'] . $gstNote;
         $lines[] = '  ' . $qty . ' x ' . number_format((float) $item['unit_price'], 2) . ' = ' . number_format((float) $item['total_price'], 2);
     }
     $lines[] = "```";
     $lines[] = "";
+    if ($isGst) {
+        $lines[] = "Taxable Amount: " . formatCurrency($taxable);
+        $lines[] = "CGST: " . formatCurrency($cgst);
+        $lines[] = "SGST: " . formatCurrency($sgst);
+    }
+    if ((float) $sale['discount'] > 0) {
+        $lines[] = "Discount: -" . formatCurrency((float) $sale['discount']);
+    }
     $lines[] = "*Grand Total: " . formatCurrency($grandTotal) . "*";
-    $lines[] = "Paid: " . formatCurrency($paid);
+    $lines[] = "_" . amountInWordsINR($grandTotal) . "_";
+    $lines[] = "";
+    $lines[] = "Paid (" . $sale['payment_method'] . "): " . formatCurrency($paid);
     if ($balance > 0) {
         $lines[] = "*Balance (Udhaar): " . formatCurrency($balance) . "*";
     }
     $lines[] = "";
-    if ($businessPhone) {
-        $lines[] = "📞 {$businessPhone}";
+    if (!empty($org['phone'])) {
+        $lines[] = "📞 {$org['phone']}";
     }
-    $lines[] = "🙏 Thank you for your business — {$businessName}";
+    $lines[] = "🙏 Thank you for your business — {$org['name']}";
 
     return implode("\n", $lines);
 }
 
-/** Same bill-style formatting as saleBillWhatsAppMessage(), for a ServiceERP invoice.
- * $items is $invoice['items'] (name, quantity, price, total). */
-function serviceInvoiceWhatsAppMessage(string $businessName, string $invoiceNo, string $customerName, array $items, float $grandTotal, float $paid, float $balance, ?string $businessPhone = null): string {
+/** Same bill-style formatting as saleBillWhatsAppMessage(), mirroring
+ * views/service/invoices/view.php's GST computation. $invoice is the full row from
+ * ServiceInvoice::find() (needs 'items'), $org is Tenant::current(). */
+function serviceInvoiceWhatsAppMessage(array $org, array $invoice): string {
+    $isGst = $invoice['tax_type'] !== 'EXEMPT' && (float) $invoice['gst_amount'] > 0;
+    $docTitle = $isGst ? 'Tax Invoice' : 'Bill of Supply';
+    $itemsTotal = array_sum(array_map(fn($i) => (float) $i['total'], $invoice['items']));
+    $taxable = $isGst && $invoice['taxable_amount'] !== null ? (float) $invoice['taxable_amount'] : $itemsTotal;
+    $cgst = (float) ($invoice['cgst_amount'] ?? $invoice['gst_amount'] / 2);
+    $sgst = (float) ($invoice['sgst_amount'] ?? $invoice['gst_amount'] / 2);
+    $grandTotal = (float) $invoice['grand_total'];
+    $paid = (float) $invoice['paid_amount'];
+    $balance = (float) $invoice['balance_amount'];
+
     $lines = [];
-    $lines[] = "🧾 *{$businessName}*";
-    $lines[] = "_Invoice No: {$invoiceNo}_";
+    $lines[] = "🧾 *{$org['name']}*";
+    if (!empty($org['address'])) $lines[] = $org['address'];
+    if (!empty($org['gstin'])) $lines[] = "GSTIN: {$org['gstin']}";
     $lines[] = "";
-    $lines[] = "Dear {$customerName},";
+    $lines[] = "_{$docTitle}_ · Invoice No: {$invoice['invoice_no']}";
+    $lines[] = formatDate($invoice['invoice_date']);
+    $lines[] = "";
+    $lines[] = "Dear " . ($invoice['customer_name'] ?: 'Customer') . ",";
     $lines[] = "Thank you for your business! Here's your invoice:";
     $lines[] = "";
     $lines[] = "```";
-    foreach ($items as $item) {
+    foreach ($invoice['items'] as $item) {
         $qty = rtrim(rtrim(number_format((float) $item['quantity'], 2), '0'), '.');
-        $lines[] = $item['name'];
+        $gstNote = $isGst && (float) ($item['gst_rate'] ?? 0) > 0 ? ' (' . rtrim(rtrim(number_format((float) $item['gst_rate'], 2), '0'), '.') . '% GST)' : '';
+        $lines[] = $item['name'] . $gstNote;
         $lines[] = '  ' . $qty . ' x ' . number_format((float) $item['price'], 2) . ' = ' . number_format((float) $item['total'], 2);
     }
     $lines[] = "```";
     $lines[] = "";
+    if ($isGst) {
+        $lines[] = "Taxable Amount: " . formatCurrency($taxable);
+        $lines[] = "CGST: " . formatCurrency($cgst);
+        $lines[] = "SGST: " . formatCurrency($sgst);
+    }
+    if ((float) $invoice['labour_charges'] > 0) {
+        $lines[] = "Labour: " . formatCurrency((float) $invoice['labour_charges']);
+    }
+    if ((float) $invoice['discount'] > 0) {
+        $lines[] = "Discount: -" . formatCurrency((float) $invoice['discount']);
+    }
     $lines[] = "*Grand Total: " . formatCurrency($grandTotal) . "*";
-    $lines[] = "Paid: " . formatCurrency($paid);
+    $lines[] = "_" . amountInWordsINR($grandTotal) . "_";
+    $lines[] = "";
+    $lines[] = "Paid" . ($invoice['payment_method'] ? ' (' . $invoice['payment_method'] . ')' : '') . ": " . formatCurrency($paid);
     if ($balance > 0) {
         $lines[] = "*Balance Due: " . formatCurrency($balance) . "*";
     }
     $lines[] = "";
-    if ($businessPhone) {
-        $lines[] = "📞 {$businessPhone}";
+    if (!empty($org['phone'])) {
+        $lines[] = "📞 {$org['phone']}";
     }
-    $lines[] = "🙏 Thank you for your business — {$businessName}";
+    $lines[] = "🙏 Thank you for your business — {$org['name']}";
 
     return implode("\n", $lines);
 }

@@ -10,7 +10,7 @@ $docTitle = $isGst ? 'Tax Invoice' : 'Bill of Supply';
     <div class="flex gap-2">
       <button onclick="window.print()" class="bg-slate-700 text-white text-sm px-3 py-1.5 rounded">Print</button>
       <?php if (!empty($invoice['mobile'])): ?>
-        <?php $billMsg = serviceInvoiceWhatsAppMessage($org['name'], $invoice['invoice_no'], $invoice['customer_name'] ?: 'Customer', $invoice['items'], (float)$invoice['grand_total'], (float)$invoice['paid_amount'], (float)$invoice['balance_amount'], $org['phone'] ?? null); ?>
+        <?php $billMsg = serviceInvoiceWhatsAppMessage($org, $invoice); ?>
         <a href="<?= h(whatsappLink($invoice['mobile'], $billMsg)) ?>" target="_blank" rel="noopener"
            class="bg-green-600 text-white text-sm px-3 py-1.5 rounded hover:bg-green-700">💬 Send Bill</a>
       <?php endif; ?>
