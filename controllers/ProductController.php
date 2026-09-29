@@ -135,25 +135,39 @@ class ProductController {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_FILES['csv_file']['tmp_name'])) {
             CsrfHelper::validate();
-            $handle = fopen($_FILES['csv_file']['tmp_name'], 'r');
-            if (!$handle) {
+            // Excel's "CSV UTF-8" export prepends a BOM to the file and some
+            // regional Windows setups write ';' instead of ',' - either one
+            // silently breaks every row's column mapping (the header's first
+            // cell stops matching 'name' at all) unless handled here.
+            $content = file_get_contents($_FILES['csv_file']['tmp_name']);
+            $content = preg_replace('/^\xEF\xBB\xBF/', '', (string) $content);
+            $firstLine = strtok($content, "\r\n");
+            $delimiter = substr_count($firstLine, ';') > substr_count($firstLine, ',') ? ';' : ',';
+            $handle = fopen('php://memory', 'r+');
+            if ($content === '' || $handle === false) {
                 $error = 'Could not read the uploaded file.';
             } else {
-                $header = fgetcsv($handle);
+                fwrite($handle, $content);
+                rewind($handle);
+                $header = fgetcsv($handle, 0, $delimiter);
                 if (!$header) {
                     $error = 'File appears to be empty.';
                 } else {
                     $header = array_map(fn($h) => strtolower(trim($h)), $header);
                     $created = 0; $updated = 0; $skipped = [];
                     $rowNum = 1;
-                    while (($rawRow = fgetcsv($handle)) !== false) {
+                    while (($rawRow = fgetcsv($handle, 0, $delimiter)) !== false) {
                         $rowNum++;
                         if (count(array_filter($rawRow, fn($v) => trim((string)$v) !== '')) === 0) continue; // blank line
                         $row = [];
                         foreach ($header as $i => $col) { $row[$col] = trim($rawRow[$i] ?? ''); }
 
                         $name = $row['name'] ?? '';
-                        if ($name === '') { $skipped[] = "Row {$rowNum}: missing name"; continue; }
+                        if ($name === '') {
+                            $preview = implode(' | ', array_slice(array_map('trim', $rawRow), 0, 3));
+                            $skipped[] = "Row {$rowNum}: missing name" . ($preview !== '' ? " (found: {$preview})" : '');
+                            continue;
+                        }
 
                         $data = [
                             'name' => $name, 'sku' => $row['sku'] ?? null, 'barcode' => $row['barcode'] ?? null,
