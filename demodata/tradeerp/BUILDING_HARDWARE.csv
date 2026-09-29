@@ -1,0 +1,15 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+UltraTech Cement 50kg,BH-001,8904000000011,Cement & Sand,UltraTech,bag,380,420,440,200,40,28,2523
+ACC Cement 50kg,BH-002,8904000000028,Cement & Sand,ACC,bag,375,415,435,150,30,28,2523
+Red Clay Brick (per pc),BH-003,8904000000035,Bricks & Blocks,Local,pcs,6,9,10,5000,1000,5,6904
+Asian Paints Tractor Emulsion 10L,BH-004,8904000000042,Paints & Chemicals,Asian Paints,tin,1450,1650,1750,25,5,18,3209
+Berger Weathercoat 20L,BH-005,8904000000059,Paints & Chemicals,Berger,tin,3200,3600,3800,15,3,18,3209
+Ceramic Floor Tile 2x2 ft (per box),BH-006,8904000000066,Tiles & Sanitaryware,Kajaria,box,380,450,480,80,15,18,6907
+CP Bathroom Tap,BH-007,8904000000073,Tiles & Sanitaryware,Jaquar,pcs,320,420,450,45,10,18,7418
+PVC Pipe 1 inch (per 3m),BH-008,8904000000080,Plumbing Fittings,Supreme,pcs,95,125,135,150,30,18,3917
+PVC Elbow Joint 1 inch,BH-009,8904000000097,Plumbing Fittings,Supreme,pcs,12,20,22,300,60,18,3917
+MCB 32A Single Pole,BH-010,8904000000103,Electrical Fittings,Havells,pcs,95,135,145,90,20,18,8536
+Modular Switch 6A,BH-011,8904000000110,Electrical Fittings,Anchor,pcs,25,40,45,200,40,18,8536
+Godrej Door Lock,BH-012,8904000000127,Locks & Hardware,Godrej,pcs,380,480,510,50,10,18,8301
+Cylindrical Door Handle,BH-013,8904000000134,Locks & Hardware,Dorset,pcs,145,190,205,60,12,18,8302
+Claw Hammer 500g,BH-014,8904000000141,Tools & Equipment,Taparia,pcs,165,215,230,40,8,18,8205

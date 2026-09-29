@@ -1,0 +1,51 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+TMT Bar 8mm Fe500 (Bundle),IS-001,,Rods & Bars (TMT),Tata Tiscon,kg,58,64,68,500,100,18,7214
+TMT Bar 10mm Fe500 (Bundle),IS-002,,Rods & Bars (TMT),Tata Tiscon,kg,58,64,68,500,100,18,7214
+TMT Bar 12mm Fe500 (Bundle),IS-003,,Rods & Bars (TMT),SAIL,kg,57,63,67,800,150,18,7214
+TMT Bar 16mm Fe500 (Bundle),IS-004,,Rods & Bars (TMT),SAIL,kg,57,63,67,800,150,18,7214
+TMT Bar 20mm Fe500 (Bundle),IS-005,,Rods & Bars (TMT),Jindal Panther,kg,57,63,67,600,100,18,7214
+TMT Bar 25mm Fe500 (Bundle),IS-006,,Rods & Bars (TMT),Jindal Panther,kg,58,64,68,400,80,18,7214
+TMT Bar 32mm Fe500 (Bundle),IS-007,,Rods & Bars (TMT),Jindal Panther,kg,59,65,69,200,50,18,7214
+MS Round Bar 12mm,IS-008,,Rods & Bars (TMT),Local,kg,55,61,65,300,60,18,7213
+MS Sheet 2mm (4x8 ft),IS-009,,Sheets & Plates,SAIL,pcs,2400,2650,2800,40,10,18,7208
+MS Sheet 3mm (4x8 ft),IS-010,,Sheets & Plates,SAIL,pcs,3500,3850,4050,30,8,18,7208
+MS Plate 6mm (4x8 ft),IS-011,,Sheets & Plates,JSW Steel,pcs,6800,7450,7800,20,5,18,7208
+MS Plate 10mm (4x8 ft),IS-012,,Sheets & Plates,JSW Steel,pcs,11200,12200,12800,15,4,18,7208
+GI Sheet 0.5mm (4x8 ft),IS-013,8901234500013,Sheets & Plates,JSW Coated,pcs,1850,2050,2150,35,8,18,7210
+Chequered Plate 5mm (4x8 ft),IS-014,,Sheets & Plates,Local,pcs,5600,6150,6450,18,5,18,7211
+MS Round Pipe 1 inch (6m),IS-015,,Pipes & Tubes,Tata Pipes,pcs,420,470,495,60,15,18,7306
+MS Round Pipe 2 inch (6m),IS-016,,Pipes & Tubes,Tata Pipes,pcs,850,940,990,45,12,18,7306
+GI Pipe 1/2 inch (6m),IS-017,,Pipes & Tubes,Jindal Pipes,pcs,380,425,450,70,15,18,7306
+GI Pipe 1 inch (6m),IS-018,,Pipes & Tubes,Jindal Pipes,pcs,620,690,725,55,12,18,7306
+Square Tube 25x25mm (6m),IS-019,,Pipes & Tubes,Surya Pipes,pcs,480,535,565,40,10,18,7306
+Rectangular Tube 40x20mm (6m),IS-020,,Pipes & Tubes,Surya Pipes,pcs,560,620,655,35,10,18,7306
+MS Angle 25x25x3mm (6m),IS-021,,Angles & Channels,SAIL,pcs,480,535,565,50,12,18,7216
+MS Angle 40x40x5mm (6m),IS-022,,Angles & Channels,SAIL,pcs,980,1080,1140,35,8,18,7216
+MS Angle 50x50x6mm (6m),IS-023,,Angles & Channels,RINL,pcs,1450,1590,1670,25,6,18,7216
+MS Channel 75x40mm (6m),IS-024,,Angles & Channels,RINL,pcs,1850,2030,2140,20,5,18,7216
+MS Channel 100x50mm (6m),IS-025,,Angles & Channels,SAIL,pcs,2650,2900,3050,15,4,18,7216
+MS I-Beam 100mm (6m),IS-026,,Angles & Channels,SAIL,pcs,3200,3500,3680,12,3,18,7216
+Binding Wire 20 Gauge (5kg coil),IS-027,8901234500027,Wire & Mesh,Tata Wiron,pcs,380,425,450,40,10,18,7217
+GI Wire 12 Gauge (5kg coil),IS-028,8901234500028,Wire & Mesh,Tata Wiron,pcs,520,580,610,30,8,18,7217
+Barbed Wire (per kg),IS-029,,Wire & Mesh,Local,kg,62,70,74,200,40,18,7313
+Chain Link Fencing 6ft (per roll),IS-030,,Wire & Mesh,Local,pcs,2200,2450,2580,15,4,18,7314
+Weld Mesh 4mm (per sheet),IS-031,,Wire & Mesh,Local,pcs,650,720,760,25,6,18,7314
+MS Nut Bolt 8mm (box of 100),IS-032,8901234500032,Fasteners & Fittings,GKW,box,320,360,380,30,8,18,7318
+MS Nut Bolt 12mm (box of 100),IS-033,8901234500033,Fasteners & Fittings,GKW,box,480,535,565,25,6,18,7318
+Hex Bolt 10mm (box of 100),IS-034,8901234500034,Fasteners & Fittings,Unbrako,box,550,610,645,20,5,18,7318
+Washer 10mm (box of 500),IS-035,8901234500035,Fasteners & Fittings,GKW,box,180,200,210,35,8,18,7318
+MS Clamp 2 inch (each),IS-036,,Fasteners & Fittings,Local,pcs,45,55,60,100,20,18,7326
+Anchor Fastener 12mm (box of 50),IS-037,8901234500037,Fasteners & Fittings,Hilti,box,850,950,1000,15,4,18,7318
+H-Beam 150mm (6m),IS-038,,Structural Steel,SAIL,pcs,4800,5250,5520,10,3,18,7216
+MS Flat 25x5mm (6m),IS-039,,Structural Steel,RINL,pcs,280,315,330,60,15,18,7211
+MS Flat 50x6mm (6m),IS-040,,Structural Steel,RINL,pcs,620,690,725,40,10,18,7211
+Steel Column Base Plate 300x300x12mm,IS-041,,Structural Steel,Local,pcs,1450,1620,1700,12,3,18,7326
+MS Scrap (per kg),IS-042,,Scrap & Recycled Metal,,kg,28,34,36,1000,200,18,7204
+Cast Iron Scrap (per kg),IS-043,,Scrap & Recycled Metal,,kg,22,27,29,500,100,18,7204
+Steel Turning Scrap (per kg),IS-044,,Scrap & Recycled Metal,,kg,20,25,27,400,80,18,7204
+Welding Electrode 2.5mm (5kg pack),IS-045,8901234500045,Welding Consumables,D&H Secheron,pkt,480,540,570,25,6,18,8311
+Welding Electrode 3.15mm (5kg pack),IS-046,8901234500046,Welding Consumables,D&H Secheron,pkt,500,560,590,25,6,18,8311
+MIG Welding Wire 0.8mm (12kg spool),IS-047,8901234500047,Welding Consumables,Esab,pcs,3800,4200,4400,10,3,18,8311
+Welding Gloves (pair),IS-048,8901234500048,Welding Consumables,Udyogi,pcs,120,150,160,40,10,18,4203
+Welding Goggles,IS-049,8901234500049,Welding Consumables,Udyogi,pcs,90,120,130,30,8,18,9004
+Measuring Tape 5m,IS-050,8901234500050,Other,Freemans,pcs,85,110,120,50,10,18,9017

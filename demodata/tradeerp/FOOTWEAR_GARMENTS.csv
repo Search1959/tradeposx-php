@@ -1,0 +1,13 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+Men's Leather Formal Shoes,FG-001,8910000000011,Men's Footwear,Bata,pair,850,1200,1300,40,8,18,6403
+Men's Sports Shoes,FG-002,8910000000028,Men's Footwear,Sparx,pair,650,950,1050,50,10,18,6404
+Women's Sandals,FG-003,8910000000035,Women's Footwear,Bata,pair,450,650,700,45,10,18,6402
+Women's Heels,FG-004,8910000000042,Women's Footwear,Catwalk,pair,550,800,880,35,8,18,6403
+Kids' School Shoes,FG-005,8910000000059,Kids' Footwear,Liberty,pair,320,480,520,60,12,18,6403
+Men's Cotton T-Shirt,FG-006,8910000000066,Men's Garments,Levi's,pcs,280,420,450,80,15,12,6109
+Men's Formal Shirt,FG-007,8910000000073,Men's Garments,Peter England,pcs,450,650,700,60,12,12,6205
+Women's Kurti,FG-008,8910000000080,Women's Garments,Biba,pcs,380,550,600,70,15,12,6204
+Women's Jeans,FG-009,8910000000097,Women's Garments,Levi's,pcs,650,950,1050,50,10,12,6204
+Kids' T-Shirt,FG-010,8910000000103,Kids' Garments,Gini & Jony,pcs,180,280,300,90,20,12,6109
+Leather Belt,FG-011,8910000000110,Accessories,Woodland,pcs,250,380,410,60,12,18,4203
+Cotton Socks (pack of 3),FG-012,8910000000127,Accessories,Levi's,pack,90,150,165,150,30,12,6115

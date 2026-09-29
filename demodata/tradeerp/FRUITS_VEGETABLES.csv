@@ -1,0 +1,14 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+Potato (per kg),FV-001,8913000000011,Fresh Vegetables,Local,kg,18,25,28,200,40,0,0701
+Onion (per kg),FV-002,8913000000028,Fresh Vegetables,Local,kg,22,30,33,180,35,0,0703
+Tomato (per kg),FV-003,8913000000035,Fresh Vegetables,Local,kg,25,35,38,150,30,0,0702
+Banana (per dozen),FV-004,8913000000042,Fresh Fruits,Local,dozen,35,50,55,100,20,0,0803
+Apple (per kg),FV-005,8913000000059,Fresh Fruits,Kashmir,kg,110,150,165,80,15,0,0808
+Mango (per kg),FV-006,8913000000066,Fresh Fruits,Local,kg,60,90,100,90,18,0,0804
+Spinach Bunch,FV-007,8913000000073,Leafy Greens,Local,bunch,12,18,20,120,25,0,0709
+Coriander Bunch,FV-008,8913000000080,Leafy Greens,Local,bunch,8,12,15,150,30,0,0709
+Broccoli (per kg),FV-009,8913000000097,Exotic Vegetables,Local,kg,90,130,140,40,8,0,0704
+Red Bell Pepper (per kg),FV-010,8913000000103,Exotic Vegetables,Local,kg,85,120,130,45,10,0,0709
+Cashew Nuts 500g,FV-011,8913000000110,Dry Fruits,Local,pack,380,480,510,50,10,5,0801
+Almonds 500g,FV-012,8913000000127,Dry Fruits,Local,pack,350,450,480,55,10,5,0802
+Raisins 250g,FV-013,8913000000134,Dry Fruits,Local,pack,90,130,140,60,12,5,0806

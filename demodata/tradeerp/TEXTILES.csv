@@ -1,0 +1,11 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+Cotton Fabric (per meter),TX-001,8909000000011,Cotton Fabric,Local,meter,90,140,150,200,40,5,5208
+Poplin Cotton Shirting (per meter),TX-002,8909000000028,Cotton Fabric,Raymond,meter,130,190,205,150,30,5,5208
+Banarasi Silk Fabric (per meter),TX-003,8909000000035,Silk Fabric,Local,meter,850,1200,1300,40,8,5,5007
+Polyester Fabric (per meter),TX-004,8909000000042,Synthetic Fabric,Local,meter,60,95,105,180,35,5,5407
+Kanjeevaram Saree,TX-005,8909000000059,Sarees,Local,pcs,2200,3200,3500,25,5,5,6204
+Cotton Handloom Saree,TX-006,8909000000066,Sarees,Local,pcs,650,950,1050,50,10,5,6204
+Unstitched Salwar Suit Set,TX-007,8909000000073,Suits & Dress Material,Local,set,450,650,700,60,12,5,5208
+Cotton Sewing Thread (spool),TX-008,8909000000080,Threads & Yarns,Anchor,pcs,10,18,20,300,60,5,5204
+Embroidery Thread Set (pack of 20),TX-009,8909000000097,Embroidery Supplies,Anchor,pack,85,130,140,90,18,5,5508
+Sequins Pack (assorted),TX-010,8909000000103,Embroidery Supplies,Local,pack,35,55,60,120,25,5,5808

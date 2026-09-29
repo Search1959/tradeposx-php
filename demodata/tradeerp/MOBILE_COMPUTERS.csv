@@ -1,0 +1,13 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+Redmi 13C 4GB/128GB,MC-001,8906000000011,Mobile Phones,Xiaomi,pcs,8200,9499,9999,20,4,18,8517
+Samsung Galaxy M15 6GB/128GB,MC-002,8906000000028,Mobile Phones,Samsung,pcs,12500,14499,14999,15,3,18,8517
+HP 15s Laptop i3/8GB/512GB,MC-003,8906000000035,Laptops & Computers,HP,pcs,34500,38999,39999,10,2,18,8471
+Dell Inspiron 15 i5/16GB/512GB,MC-004,8906000000042,Laptops & Computers,Dell,pcs,52000,58999,59999,8,2,18,8471
+Tempered Glass Screen Guard,MC-005,8906000000059,Accessories & Cases,Generic,pcs,25,60,70,300,60,18,3919
+Mobile Back Cover,MC-006,8906000000066,Accessories & Cases,Generic,pcs,45,99,110,250,50,18,3926
+Type-C Fast Charger 33W,MC-007,8906000000073,Chargers & Cables,Mi,pcs,320,450,480,80,15,18,8504
+USB Type-C Cable 1m,MC-008,8906000000080,Chargers & Cables,Boat,pcs,85,150,165,150,30,18,8544
+SanDisk Pendrive 64GB,MC-009,8906000000097,Storage Devices,SanDisk,pcs,320,450,480,60,12,18,8523
+WD External HDD 1TB,MC-010,8906000000103,Storage Devices,Western Digital,pcs,3200,3899,4099,25,5,18,8471
+TP-Link WiFi Router AC1200,MC-011,8906000000110,Networking Equipment,TP-Link,pcs,1450,1799,1899,20,4,18,8517
+Laptop Battery (Dell compatible),MC-012,8906000000127,Repair Parts,Generic,pcs,1450,1999,2199,15,3,18,8507

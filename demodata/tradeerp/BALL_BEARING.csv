@@ -1,0 +1,14 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+Deep Groove Ball Bearing 6204,BB-001,8902000000011,Ball Bearings,SKF,pcs,85,120,135,150,30,18,8482
+Deep Groove Ball Bearing 6205,BB-002,8902000000028,Ball Bearings,SKF,pcs,95,135,150,140,30,18,8482
+Deep Groove Ball Bearing 6206,BB-003,8902000000035,Ball Bearings,FAG,pcs,110,155,170,120,25,18,8482
+Tapered Roller Bearing 30205,BB-004,8902000000042,Roller Bearings,NBC,pcs,150,210,230,90,20,18,8482
+Cylindrical Roller Bearing NU205,BB-005,8902000000059,Roller Bearings,NBC,pcs,175,245,265,80,15,18,8482
+Thrust Ball Bearing 51205,BB-006,8902000000066,Thrust Bearings,SKF,pcs,130,180,195,60,12,18,8482
+Bronze Bush 20x25x30,BB-007,8902000000073,Bushes & Bushings,Timken,pcs,40,60,70,200,40,18,8483
+Oil Seal 25x40x7,BB-008,8902000000080,Oil Seals,NOK,pcs,25,40,48,250,50,18,4016
+Oil Seal 30x47x7,BB-009,8902000000097,Oil Seals,NOK,pcs,30,45,52,220,45,18,4016
+Lithium Grease 500g,BB-010,8902000000103,Lubricants & Grease,Servo,tin,110,150,165,80,15,18,2710
+Rigid Coupling 25mm,BB-011,8902000000110,Couplings,Fenner,pcs,210,290,315,40,8,18,8483
+V-Belt A-52,BB-012,8902000000127,Belts & Pulleys,Fenner,pcs,85,120,130,100,20,18,4010
+Pillow Block Bearing UCP205,BB-013,8902000000134,Ball Bearings,NBC,pcs,260,360,390,50,10,18,8483

@@ -1,0 +1,11 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+Plastic Storage Box (Large),GT-001,8914000000011,Household Items,Cello,pcs,180,260,280,60,12,18,3924
+Steel Lunch Box,GT-002,8914000000028,Household Items,Milton,pcs,150,220,240,80,15,18,7323
+Umbrella (Folding),GT-003,8914000000035,General Merchandise,John's,pcs,180,280,300,70,15,18,6601
+LED Torch,GT-004,8914000000042,General Merchandise,Eveready,pcs,90,140,150,100,20,18,8513
+Imported Chocolate Box,GT-005,8914000000059,Imported Items,Ferrero Rocher,box,380,520,560,40,8,18,1806
+Wall Clock,GT-006,8914000000066,General Merchandise,Ajanta,pcs,210,300,330,50,10,18,9105
+Plastic Chair,GT-007,8914000000073,Wholesale Goods,Nilkamal,pcs,450,620,660,60,12,18,9401
+Broom & Mop Set,GT-008,8914000000080,Household Items,Gala,pcs,90,140,150,90,18,18,9603
+Thermos Flask 1L,GT-009,8914000000097,Household Items,Milton,pcs,320,450,480,45,10,18,9617
+Kitchen Weighing Scale,GT-010,8914000000103,General Merchandise,Equinox,pcs,250,360,390,40,8,18,8423

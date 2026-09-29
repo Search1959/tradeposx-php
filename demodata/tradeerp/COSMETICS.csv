@@ -1,0 +1,13 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+Lakme Face Wash 100ml,CO-001,8911000000011,Skincare,Lakme,tube,110,150,160,90,18,18,3304
+Nivea Moisturizing Cream 200ml,CO-002,8911000000028,Skincare,Nivea,jar,210,280,300,70,15,18,3304
+Ponds Sunscreen SPF 30,CO-003,8911000000035,Skincare,Ponds,tube,150,210,225,60,12,18,3304
+Sunsilk Shampoo 340ml,CO-004,8911000000042,Haircare,Sunsilk,bottle,165,220,235,80,15,18,3305
+Parachute Coconut Hair Oil 300ml,CO-005,8911000000059,Haircare,Parachute,bottle,120,160,170,100,20,18,3305
+Lakme Kajal,CO-006,8911000000066,Makeup,Lakme,pcs,65,110,120,120,25,18,3304
+Maybelline Lipstick,CO-007,8911000000073,Makeup,Maybelline,pcs,250,380,410,60,12,18,3304
+Fogg Deodorant 150ml,CO-008,8911000000080,Fragrances,Fogg,bottle,165,230,245,100,20,18,3307
+Wild Stone Perfume 100ml,CO-009,8911000000097,Fragrances,Wild Stone,bottle,280,380,410,70,15,18,3303
+Gillette Shaving Razor,CO-010,8911000000103,Personal Grooming,Gillette,pcs,85,130,140,120,25,18,8212
+Dove Body Wash 250ml,CO-011,8911000000110,Bath & Body,Dove,bottle,210,280,300,80,15,18,3401
+Vaseline Body Lotion 400ml,CO-012,8911000000127,Bath & Body,Vaseline,bottle,180,240,255,90,18,18,3304

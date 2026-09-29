@@ -1,0 +1,14 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+Classmate Notebook 172pg,ST-001,8908000000011,Notebooks & Paper,Classmate,pcs,30,45,50,300,60,12,4820
+A4 Copier Paper (500 sheets),ST-002,8908000000028,Notebooks & Paper,JK Paper,ream,220,280,300,100,20,12,4802
+Reynolds Ball Pen (pack of 10),ST-003,8908000000035,Pens & Writing,Reynolds,pack,45,70,80,200,40,12,9608
+Natraj Pencil (pack of 10),ST-004,8908000000042,Pens & Writing,Natraj,pack,20,35,40,250,50,12,9609
+Stapler No. 10,ST-005,8908000000059,Office Supplies,Kangaro,pcs,45,75,85,120,25,18,8305
+Gel Pen Refill (pack of 5),ST-006,8908000000066,Pens & Writing,Cello,pack,25,45,50,180,35,12,9608
+School Geometry Box,ST-007,8908000000073,School Supplies,Camlin,pcs,55,90,100,150,30,12,9017
+School Bag,ST-008,8908000000080,School Supplies,Genie,pcs,450,650,700,30,6,18,4202
+Watercolor Set (12 shades),ST-009,8908000000097,Art & Craft Supplies,Camlin,box,65,110,120,100,20,12,3213
+Crayons (24 shades),ST-010,8908000000103,Art & Craft Supplies,Camlin,box,55,95,105,120,25,12,3213
+Spiral Binding Sheet (pack of 50),ST-011,8908000000110,Printing & Binding,Generic,pack,180,240,260,50,10,18,4820
+L-Shape File Folder (pack of 10),ST-012,8908000000127,Files & Folders,Solo,pack,110,160,175,80,15,18,3926
+Box File,ST-013,8908000000134,Files & Folders,Solo,pcs,65,100,110,100,20,18,3926

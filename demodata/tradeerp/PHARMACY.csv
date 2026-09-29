@@ -1,0 +1,15 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+Paracetamol 500mg (strip of 10),PH-001,8903000000011,OTC Medicines,Cipla,strip,8,15,18,300,60,12,3004
+Azithromycin 500mg (strip of 3),PH-002,8903000000028,Prescription Medicines,Sun Pharma,strip,35,55,60,120,25,12,3004
+Cetirizine 10mg (strip of 10),PH-003,8903000000035,OTC Medicines,Dr. Reddy's,strip,12,20,24,200,40,12,3004
+Digene Antacid Gel 200ml,PH-004,8903000000042,OTC Medicines,Abbott,bottle,65,85,95,90,20,12,3004
+Chyawanprash 500g,PH-005,8903000000059,Ayurvedic & Herbal,Dabur,jar,150,190,210,60,15,12,3003
+Himalaya Liv.52 (60 tabs),PH-006,8903000000066,Ayurvedic & Herbal,Himalaya,bottle,95,125,135,70,15,12,3003
+Surgical Cotton Roll 100g,PH-007,8903000000073,Surgical & Medical Supplies,Johnson & Johnson,roll,35,50,55,100,20,12,3005
+Disposable Syringe 5ml (pack of 10),PH-008,8903000000080,Surgical & Medical Supplies,Dispovan,pack,45,65,70,150,30,12,9018
+Digital Thermometer,PH-009,8903000000097,Surgical & Medical Supplies,Dr. Trust,pcs,90,140,155,40,10,12,9025
+Johnson's Baby Powder 200g,PH-010,8903000000103,Baby Care,Johnson's,bottle,110,140,150,60,12,18,3304
+Pampers Diapers (pack of 20),PH-011,8903000000110,Baby Care,Pampers,pack,320,380,410,50,10,12,9619
+Dove Shampoo 340ml,PH-012,8903000000127,Personal Care,Dove,bottle,210,260,280,55,12,18,3305
+Protinex Powder 400g,PH-013,8903000000134,Health Supplements,Protinex,jar,380,450,480,35,8,12,2106
+Revital H Capsules (30 caps),PH-014,8903000000141,Health Supplements,Ranbaxy,bottle,165,210,225,45,10,12,3004

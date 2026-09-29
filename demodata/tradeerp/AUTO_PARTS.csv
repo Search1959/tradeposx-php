@@ -1,0 +1,13 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+Piston Ring Set (Maruti 800),AP-001,8907000000011,Engine Parts,Rico,set,280,380,410,40,8,28,8409
+Clutch Plate (Alto),AP-002,8907000000028,Engine Parts,Luk,pcs,650,850,900,25,5,28,8708
+Spark Plug (NGK),AP-003,8907000000035,Electrical Parts,NGK,pcs,85,130,140,150,30,28,8511
+Headlight Assembly (Swift),AP-004,8907000000042,Body Parts & Panels,Lumax,pcs,1450,1850,1999,15,3,28,8512
+Side Mirror (Universal),AP-005,8907000000059,Body Parts & Panels,Generic,pcs,320,450,480,30,6,28,8708
+MRF Tyre 155/65 R13,AP-006,8907000000066,Tyres & Tubes,MRF,pcs,2400,2850,2999,40,8,28,4011
+CEAT Tube 145/70 R12,AP-007,8907000000073,Tyres & Tubes,CEAT,pcs,220,320,350,60,12,28,4013
+Exide Car Battery 45Ah,AP-008,8907000000080,Batteries,Exide,pcs,3600,4200,4450,20,4,28,8507
+Castrol Engine Oil 4L (5W-30),AP-009,8907000000097,Lubricants & Oils,Castrol,can,1450,1750,1850,50,10,18,2710
+Servo Gear Oil 1L,AP-010,8907000000103,Lubricants & Oils,Servo,bottle,220,290,310,60,12,18,2710
+Oil Filter (Maruti),AP-011,8907000000110,Filters,Bosch,pcs,85,130,145,100,20,28,8421
+Air Filter (Hyundai),AP-012,8907000000127,Filters,Bosch,pcs,145,210,225,90,18,28,8421

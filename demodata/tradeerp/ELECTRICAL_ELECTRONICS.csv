@@ -1,0 +1,14 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+Finolex 1.5 sq mm Wire (90m coil),EL-001,8905000000011,Wires & Cables,Finolex,coil,1450,1650,1750,30,6,18,8544
+Havells 2.5 sq mm Wire (90m coil),EL-002,8905000000028,Wires & Cables,Havells,coil,1850,2100,2250,25,5,18,8544
+5-Pin Socket 6A,EL-003,8905000000035,Switches & Sockets,Anchor,pcs,35,55,60,150,30,18,8536
+Modular Switch Plate (3 module),EL-004,8905000000042,Switches & Sockets,Legrand,pcs,85,120,130,100,20,18,8536
+Philips LED Bulb 9W,EL-005,8905000000059,LED Lights & Fixtures,Philips,pcs,65,95,105,200,40,18,8539
+Havells LED Tube Light 20W,EL-006,8905000000066,LED Lights & Fixtures,Havells,pcs,210,280,300,80,15,18,8539
+Crompton Ceiling Fan 1200mm,EL-007,8905000000073,Fans & Appliances,Crompton,pcs,1350,1650,1750,25,5,18,8414
+Bajaj Table Fan 400mm,EL-008,8905000000080,Fans & Appliances,Bajaj,pcs,950,1150,1250,30,6,18,8414
+Legrand Distribution Board 8-way,EL-009,8905000000097,MCB & Distribution Boards,Legrand,pcs,850,1150,1250,20,4,18,8537
+MCB 16A Double Pole,EL-010,8905000000103,MCB & Distribution Boards,Havells,pcs,145,195,210,60,12,18,8536
+Capacitor 2.5uF,EL-011,8905000000110,Electronic Components,Khaitan,pcs,55,80,88,100,20,18,8532
+Eveready Alkaline Battery AA (pack of 4),EL-012,8905000000127,Batteries,Eveready,pack,65,90,98,150,30,18,8506
+Exide Car Battery 35Ah,EL-013,8905000000134,Batteries,Exide,pcs,3200,3800,4000,15,3,28,8507

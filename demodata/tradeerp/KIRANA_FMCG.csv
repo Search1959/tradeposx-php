@@ -1,0 +1,16 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+India Gate Basmati Rice 5kg,KIR-001,8901000000011,Rice & Grains,India Gate,bag,480,540,560,40,10,5,1006
+Aashirvaad Atta 10kg,KIR-002,8901000000028,Atta & Flours,Aashirvaad,bag,380,420,440,35,8,5,1101
+Toor Dal 1kg,KIR-003,8901000000035,Dals & Pulses,Tata Sampann,packet,130,150,160,60,15,5,0713
+Fortune Sunflower Oil 1L,KIR-004,8901000000042,Edible Oils & Ghee,Fortune,bottle,145,165,175,50,10,5,1512
+Amul Ghee 1L,KIR-005,8901000000059,Edible Oils & Ghee,Amul,jar,560,610,630,20,5,12,0405
+MDH Garam Masala 100g,KIR-006,8901000000066,Spices & Masalas,MDH,packet,55,70,75,80,20,5,0910
+Parle-G Biscuits 800g,KIR-007,8901000000073,Biscuits & Cookies,Parle,packet,70,85,90,100,25,18,1905
+Haldiram's Bhujia 400g,KIR-008,8901000000080,Snacks & Namkeen,Haldiram's,packet,95,115,120,70,15,12,2106
+Tata Tea Gold 1kg,KIR-009,8901000000097,Beverages & Tea/Coffee,Tata Tea,packet,420,470,490,30,8,5,0902
+Nescafe Classic Coffee 200g,KIR-010,8901000000103,Beverages & Tea/Coffee,Nescafe,jar,330,370,390,25,6,18,2101
+Amul Butter 500g,KIR-011,8901000000110,Dairy & Bakery,Amul,pack,235,255,265,40,10,12,0405
+Lifebuoy Soap (pack of 4),KIR-012,8901000000127,Personal Care & Soap,Lifebuoy,pack,110,130,140,60,15,18,3401
+Surf Excel Detergent 1kg,KIR-013,8901000000134,Cleaning & Household,Surf Excel,pack,130,150,160,45,10,18,3402
+Cadbury Dairy Milk 165g,KIR-014,8901000000141,Chocolates & Sweets,Cadbury,bar,90,110,115,90,20,18,1806
+Agarbatti Sambrani 20 sticks,KIR-015,8901000000158,Pooja Essentials,Cycle,pack,25,35,40,100,25,5,3307

@@ -1,0 +1,14 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+Amul Full Cream Milk 1L,DB-001,8912000000011,Milk & Milk Products,Amul,pouch,55,64,66,150,30,5,0401
+Mother Dairy Toned Milk 1L,DB-002,8912000000028,Milk & Milk Products,Mother Dairy,pouch,50,58,60,140,30,5,0401
+Amul Curd 400g,DB-003,8912000000035,Curd & Paneer,Amul,cup,32,42,45,100,20,5,0403
+Paneer 200g,DB-004,8912000000042,Curd & Paneer,Amul,pack,70,90,95,80,15,5,0406
+Amul Ghee 500ml,DB-005,8912000000059,Ghee & Butter,Amul,jar,290,320,335,50,10,12,0405
+Amul Butter 100g,DB-006,8912000000066,Ghee & Butter,Amul,pack,48,55,58,100,20,12,0405
+Coca-Cola 750ml,DB-007,8912000000073,Soft Drinks,Coca-Cola,bottle,32,40,45,200,40,28,2202
+Sprite 750ml,DB-008,8912000000080,Soft Drinks,Sprite,bottle,32,40,45,180,35,28,2202
+Real Fruit Juice 1L,DB-009,8912000000097,Juices,Real,tetra pack,90,115,125,90,18,12,2009
+Tropicana Orange Juice 1L,DB-010,8912000000103,Juices,Tropicana,tetra pack,110,135,145,70,15,12,2009
+Bisleri Water 1L,DB-011,8912000000110,Water & Mineral Water,Bisleri,bottle,15,20,22,300,60,18,2201
+Bisleri Water 20L Can,DB-012,8912000000127,Water & Mineral Water,Bisleri,can,45,60,70,60,15,18,2201
+Amul Ice Cream 1L Tub,DB-013,8912000000134,Ice Cream,Amul,tub,145,180,195,50,10,18,2105
