@@ -90,13 +90,11 @@
       <select name="customer_id" x-model="customerId" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
         <option value="">Walk-in customer (no Udhaar)</option>
         <?php foreach ($customers as $c): ?>
-          <option value="<?= (int)$c['id'] ?>" data-name="<?= h($c['name']) ?>" data-mobile="<?= h($c['mobile']) ?>">
+          <option value="<?= (int)$c['id'] ?>">
             <?= h($c['name']) ?> · <?= h($c['mobile']) ?><?= (float)$c['current_balance'] > 0 ? ' (Udhaar ₹' . number_format((float)$c['current_balance'],0) . ')' : '' ?>
           </option>
         <?php endforeach; ?>
       </select>
-      <input type="hidden" name="customer_name" :value="customerName()">
-      <input type="hidden" name="customer_mobile" :value="customerMobile()">
 
       <div class="grid grid-cols-2 gap-2">
         <select name="payment_method" x-model="paymentMethod" class="rounded border border-slate-300 px-3 py-2 text-sm">
@@ -186,14 +184,6 @@ function posScreen() {
       if (this.paymentStatus === 'CREDIT') return this.grandTotal();
       if (this.paymentStatus === 'PARTIAL') return Math.max(0, this.grandTotal() - (this.receivedAmount||0));
       return 0;
-    },
-    customerName() {
-      const opt = this.$el.querySelector(`select[name=customer_id] option[value="${this.customerId}"]`);
-      return opt ? opt.dataset.name || '' : '';
-    },
-    customerMobile() {
-      const opt = this.$el.querySelector(`select[name=customer_id] option[value="${this.customerId}"]`);
-      return opt ? opt.dataset.mobile || '' : '';
     },
     onSubmit(e) {
       if (this.cart.length === 0) { e.preventDefault(); return; }

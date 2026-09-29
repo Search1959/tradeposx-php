@@ -40,10 +40,16 @@ class SaleController {
                     default => $grandTotal,
                 };
 
+                // Looked up server-side from customer_id, not trusted from a client-echoed
+                // name/mobile field — the picker has no free-text name entry at all, so
+                // there's nothing legitimate for the client to be sending here anyway.
+                $customerId = $_POST['customer_id'] ?: null;
+                $selectedCustomer = $customerId ? $this->customerModel->find($org['id'], (int) $customerId) : null;
+
                 $result = $this->model->createSale($org['id'], [
-                    'customer_id'      => $_POST['customer_id'] ?: null,
-                    'customer_name'    => $_POST['customer_name'] ?? null,
-                    'customer_mobile'  => $_POST['customer_mobile'] ?? null,
+                    'customer_id'      => $customerId,
+                    'customer_name'    => $selectedCustomer['name'] ?? null,
+                    'customer_mobile'  => $selectedCustomer['mobile'] ?? null,
                     'subtotal'         => $lineTotal,
                     'discount'         => $discount,
                     'tax_type'         => $taxType,
