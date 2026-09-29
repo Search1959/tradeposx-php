@@ -308,6 +308,10 @@ CREATE TABLE service_items (
   category         VARCHAR(80) NULL,
   price            DECIMAL(12,2) NOT NULL DEFAULT 0,
   duration_minutes INT NULL,
+  -- Days of service warranty a completed job of this type carries — set on
+  -- job_cards.warranty_expiry_date automatically when the job is marked
+  -- Completed/Delivered (0/null = no service warranty for this item).
+  warranty_days    INT NULL DEFAULT 0,
   gst_percent      DECIMAL(5,2) NOT NULL DEFAULT 0,
   sector           VARCHAR(60) NOT NULL,
   description      TEXT NULL,
@@ -395,6 +399,11 @@ CREATE TABLE job_cards (
   priority                  ENUM('Low','Medium','High','Urgent') NOT NULL DEFAULT 'Medium',
   issue_description         TEXT NULL,
   device_or_vehicle_info    VARCHAR(150) NULL,
+  -- Captured at intake (is this device already under manufacturer/purchase
+  -- warranty?) or set automatically on completion from the service item's
+  -- warranty_days ('Service Warranty' — this repair itself is guaranteed).
+  warranty_status           ENUM('None','Manufacturer','Extended','Service Warranty') NOT NULL DEFAULT 'None',
+  warranty_expiry_date      DATE NULL,
   labour_charges            DECIMAL(12,2) NOT NULL DEFAULT 0,
   material_charges          DECIMAL(12,2) NOT NULL DEFAULT 0,
   total_amount              DECIMAL(12,2) NOT NULL DEFAULT 0,

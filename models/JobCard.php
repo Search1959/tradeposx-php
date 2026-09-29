@@ -26,12 +26,14 @@ class JobCard extends BaseModel {
         $jobId = $this->insert(
             'INSERT INTO job_cards (org_id, job_no, customer_id, customer_name, mobile, service_sector,
              assigned_staff_id, assigned_staff_name, priority, issue_description, device_or_vehicle_info,
-             labour_charges, material_charges, total_amount, balance_amount, estimated_completion_date)
-             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+             warranty_status, warranty_expiry_date, labour_charges, material_charges, total_amount, balance_amount,
+             estimated_completion_date)
+             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
             [
                 $orgId, $jobNo, $d['customer_id'] ?: null, $d['customer_name'] ?? null, $d['mobile'] ?? null,
                 $d['service_sector'] ?? null, $d['assigned_staff_id'] ?: null, $d['assigned_staff_name'] ?? null,
                 $d['priority'] ?? 'Medium', $d['issue_description'] ?? null, $d['device_or_vehicle_info'] ?? null,
+                $d['warranty_status'] ?? 'None', $d['warranty_expiry_date'] ?: null,
                 $labourCharges, $materialCharges, $totalAmount, $totalAmount, $d['estimated_completion_date'] ?: null,
             ]
         );
@@ -56,6 +58,17 @@ class JobCard extends BaseModel {
         $params[] = $orgId;
         $params[] = $id;
         return $this->execute($sql, $params);
+    }
+
+    /** Grants (or replaces) a service warranty on this specific repair —
+     * separate from whatever manufacturer/extended warranty was recorded at
+     * intake, since after a repair the most relevant coverage for THIS issue
+     * is the shop's own guarantee on the work just done. */
+    public function grantServiceWarranty(int $orgId, int $id, int $days): bool {
+        return $this->execute(
+            "UPDATE job_cards SET warranty_status = 'Service Warranty', warranty_expiry_date = DATE_ADD(CURDATE(), INTERVAL ? DAY) WHERE org_id = ? AND id = ?",
+            [$days, $orgId, $id]
+        );
     }
 
     /** Records a payment against this job card's balance — mirrors ServiceInvoice's

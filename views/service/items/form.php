@@ -41,6 +41,11 @@
     </div>
   </div>
   <div>
+    <label class="block text-sm font-medium text-slate-700 mb-1">Service Warranty (days)</label>
+    <input type="number" name="warranty_days" value="<?= h((string)($i['warranty_days'] ?? '0')) ?>" placeholder="0 = no warranty" class="w-full rounded border border-slate-300 px-3 py-2 text-sm max-w-[10rem]">
+    <p class="text-xs text-slate-400 mt-1">A completed job of this type is automatically marked "under warranty" for this many days — a repeat visit for the same issue within that window is easy to spot on the job card.</p>
+  </div>
+  <div>
     <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
     <textarea name="description" rows="2" class="w-full rounded border border-slate-300 px-3 py-2 text-sm"><?= h($i['description'] ?? '') ?></textarea>
   </div>

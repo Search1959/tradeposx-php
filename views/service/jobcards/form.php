@@ -47,6 +47,20 @@
       <label class="block text-sm font-medium text-slate-700 mb-1">Issue Description *</label>
       <textarea name="issue_description" required rows="2" class="w-full rounded border border-slate-300 px-3 py-2 text-sm"></textarea>
     </div>
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Existing Warranty (as told by customer)</label>
+        <select name="warranty_status" x-model="warrantyStatus" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+          <option value="None">None</option>
+          <option value="Manufacturer">Manufacturer Warranty</option>
+          <option value="Extended">Extended Warranty</option>
+        </select>
+      </div>
+      <div x-show="warrantyStatus !== 'None'">
+        <label class="block text-sm font-medium text-slate-700 mb-1">Warranty Expiry (if known)</label>
+        <input type="date" name="warranty_expiry_date" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+      </div>
+    </div>
 
     <div class="border border-slate-200 rounded-lg overflow-x-auto">
       <table class="w-full text-sm">
@@ -90,6 +104,7 @@ function jobCardForm() {
   return {
     parts: [],
     labour: 0,
+    warrantyStatus: 'None',
     partsTotal() { return this.parts.reduce((s,p) => s + (p.quantity||0)*(p.unit_price||0), 0); },
     total() { return this.partsTotal() + (this.labour||0); },
   };

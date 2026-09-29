@@ -52,6 +52,8 @@ class JobCardController {
                     'priority' => $_POST['priority'] ?? 'Medium',
                     'issue_description' => $_POST['issue_description'],
                     'device_or_vehicle_info' => $_POST['device_or_vehicle_info'] ?? null,
+                    'warranty_status' => $_POST['warranty_status'] ?? 'None',
+                    'warranty_expiry_date' => $_POST['warranty_expiry_date'] ?? null,
                     'labour_charges' => $_POST['labour_charges'] ?? 0,
                     'estimated_completion_date' => $_POST['estimated_completion_date'] ?? null,
                 ], $parts);
@@ -80,6 +82,15 @@ class JobCardController {
         Auth::requireOrgAccess($org['id']);
         CsrfHelper::validate();
         $this->model->updateStatus($org['id'], (int) $id, $_POST['status'] ?? 'Pending');
+        redirect($org['slug'] . '/job-cards/view/' . (int) $id);
+    }
+
+    public function grantWarrantyAction(?string $id = null): void {
+        $org = Tenant::current();
+        Auth::requireOrgAccess($org['id']);
+        CsrfHelper::validate();
+        $days = (int) ($_POST['warranty_days'] ?? 0);
+        if ($days > 0) $this->model->grantServiceWarranty($org['id'], (int) $id, $days);
         redirect($org['slug'] . '/job-cards/view/' . (int) $id);
     }
 

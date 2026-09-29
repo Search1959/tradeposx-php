@@ -27,6 +27,26 @@ $statusColors = ['Pending'=>'bg-slate-100 text-slate-600','In-Progress'=>'bg-blu
   <div class="text-sm"><div class="text-xs text-slate-500 mb-1">Issue</div><?= nl2br(h($job['issue_description'])) ?></div>
 </div>
 
+<?php
+$warrantyActive = $job['warranty_status'] !== 'None' && $job['warranty_expiry_date'] && strtotime($job['warranty_expiry_date']) >= strtotime('today');
+?>
+<div class="bg-white rounded-lg shadow-sm border border-slate-200 p-4 mb-4 flex items-center justify-between flex-wrap gap-3">
+  <div class="flex items-center gap-3">
+    <span class="text-xs px-2 py-1 rounded-full <?= $warrantyActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500' ?>">
+      <?= $job['warranty_status'] === 'None' ? 'No warranty on record' : h($job['warranty_status']) . ($warrantyActive ? ' — Active' : ' — Expired') ?>
+    </span>
+    <?php if ($job['warranty_expiry_date']): ?>
+      <span class="text-xs text-slate-500">until <?= formatDate($job['warranty_expiry_date']) ?></span>
+    <?php endif; ?>
+  </div>
+  <form method="POST" action="<?= $base ?>/job-cards/grantWarranty/<?= (int)$job['id'] ?>" class="flex items-center gap-2">
+    <?= CsrfHelper::getField() ?>
+    <label class="text-xs text-slate-500">Grant service warranty:</label>
+    <input type="number" name="warranty_days" min="1" placeholder="days" class="w-20 rounded border border-slate-300 px-2 py-1 text-sm">
+    <button type="submit" class="text-xs bg-slate-700 text-white px-3 py-1.5 rounded hover:bg-slate-800">Grant</button>
+  </form>
+</div>
+
 <?php if (!empty($job['parts'])): ?>
 <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto mb-4">
   <table class="w-full text-sm">
