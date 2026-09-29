@@ -13,6 +13,14 @@ class CustomerController {
         Auth::requireOrgAccess($org['id']);
         $search = trim($_GET['q'] ?? '');
         $customers = $this->model->allForOrg($org['id'], $search ?: null);
+        // Keyed by customer id, only loaded for those actually owing something -
+        // feeds the itemized breakdown in the WhatsApp reminder link on this page.
+        $recentCredits = [];
+        foreach ($customers as $c) {
+            if ((float) $c['current_balance'] > 0) {
+                $recentCredits[$c['id']] = $this->txnModel->recentCredits($org['id'], (int) $c['id'], 3);
+            }
+        }
         $pageTitle = 'Customers';
         require __DIR__ . '/../views/trade/customers/list.php';
     }
@@ -74,6 +82,9 @@ class CustomerController {
         $customer = $this->model->find($org['id'], (int) $id);
         if (!$customer) { http_response_code(404); include __DIR__ . '/../views/404.php'; return; }
         $transactions = $this->txnModel->forCustomer($org['id'], (int) $id);
+        $recentCredits = array_slice(array_values(array_filter(
+            $transactions, fn($t) => in_array($t['type'], ['CREDIT_SALE', 'OPENING_BALANCE'], true)
+        )), 0, 5);
         $pageTitle = 'Udhaar Statement';
         require __DIR__ . '/../views/trade/customers/statement.php';
     }

@@ -15,4 +15,14 @@ class CustomerTransaction extends BaseModel {
             [$orgId, $customerId]
         );
     }
+
+    /** Most recent credit-side entries (sales/opening balance) for a WhatsApp reminder's
+     * itemized breakdown — payments aren't listed there, only what's owed and why. */
+    public function recentCredits(int $orgId, int $customerId, int $limit = 5): array {
+        return $this->query(
+            "SELECT * FROM customer_transactions WHERE org_id = ? AND customer_id = ? AND type IN ('CREDIT_SALE','OPENING_BALANCE')
+             ORDER BY created_at DESC LIMIT ?",
+            [$orgId, $customerId, $limit]
+        );
+    }
 }

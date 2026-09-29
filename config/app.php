@@ -105,10 +105,41 @@ function whatsappLink(string $mobile, string $message): string {
     return 'https://wa.me/' . $digits . '?text=' . rawurlencode($message);
 }
 
-/** The standard Udhaar reminder message text, reused wherever a reminder link is built. */
-function udhaarReminderMessage(string $businessName, string $customerName, float $balance): string {
-    return "Hi {$customerName}, this is a reminder from {$businessName} — you have an outstanding Udhaar (credit) balance of "
-        . formatCurrency($balance) . ". Please clear it at your earliest convenience. Thank you!";
+/** A bill-style Udhaar reminder using WhatsApp's own text formatting (*bold*, monospace
+ * ``` blocks for an aligned mini-table) instead of one plain sentence. $recentCredits is
+ * CustomerTransaction::recentCredits() output — each entry becomes one line item; pass
+ * [] to omit that section (e.g. if the caller didn't load it). */
+function udhaarReminderMessage(string $businessName, string $customerName, float $balance, array $recentCredits = [], ?string $businessPhone = null): string {
+    $lines = [];
+    $lines[] = "🧾 *{$businessName}*";
+    $lines[] = "_Udhaar Reminder Statement_";
+    $lines[] = "";
+    $lines[] = "Dear {$customerName},";
+    $lines[] = "";
+
+    if (!empty($recentCredits)) {
+        $lines[] = "Recent entries on your account:";
+        $lines[] = "```";
+        $lines[] = str_pad('Date', 12) . str_pad('Ref#', 12) . 'Amount';
+        foreach ($recentCredits as $t) {
+            $date = str_pad(date('d-M-y', strtotime($t['created_at'])), 12);
+            $ref = str_pad(substr($t['reference_id'] ?? '—', 0, 10), 12);
+            $amt = number_format((float) $t['amount'], 2);
+            $lines[] = $date . $ref . $amt;
+        }
+        $lines[] = "```";
+        $lines[] = "";
+    }
+
+    $lines[] = "*Total Outstanding: " . formatCurrency($balance) . "*";
+    $lines[] = "";
+    $lines[] = "Kindly clear your dues at your earliest convenience.";
+    if ($businessPhone) {
+        $lines[] = "📞 {$businessPhone}";
+    }
+    $lines[] = "🙏 Thank you for your business — {$businessName}";
+
+    return implode("\n", $lines);
 }
 
 /** Random client-generated reference for idempotent offline-sale sync — see
