@@ -92,6 +92,34 @@ function amountInWordsINR(float $amount): string {
     return $result . ' Only';
 }
 
+/** Groups line items by their own GST% so a sale/invoice mixing rates (e.g. 5% and
+ * 18% items on one bill) reports each slab's taxable amount and tax separately —
+ * a single blended CGST/SGST total hides which rate produced how much tax, which
+ * is both confusing to read and not how a GST-compliant rate-wise summary works.
+ * $items rows need $gstRateKey/$gstAmountKey and $totalKey (sale_items uses
+ * total_price, service_invoice_items uses total); zero/blank-rate items are
+ * skipped since there's no tax to report for them. */
+function gstBreakdownByRate(array $items, bool $inclusive, string $totalKey, string $gstRateKey = 'gst_rate', string $gstAmountKey = 'gst_amount'): array {
+    $groups = [];
+    foreach ($items as $item) {
+        $rate = (float) ($item[$gstRateKey] ?? 0);
+        if ($rate <= 0) continue;
+        $total = (float) ($item[$totalKey] ?? 0);
+        $tax = (float) ($item[$gstAmountKey] ?? 0);
+        $taxable = $inclusive ? $total - $tax : $total;
+        if (!isset($groups[$rate])) $groups[$rate] = ['rate' => $rate, 'taxable' => 0.0, 'tax' => 0.0];
+        $groups[$rate]['taxable'] += $taxable;
+        $groups[$rate]['tax'] += $tax;
+    }
+    ksort($groups);
+    return array_values($groups);
+}
+
+/** "9" for 18, "2.5" for 5 — the CGST/SGST half-rate label, trimmed of a trailing ".0". */
+function halfGstRate(float $rate): string {
+    return rtrim(rtrim(number_format($rate / 2, 2), '0'), '.');
+}
+
 /** A wa.me click-to-chat link — opens WhatsApp with the message pre-filled, no
  * API/credentials needed (unlike an automated send via Green API/Meta Cloud,
  * which config/constants.php has placeholders for once that's set up). Assumes
@@ -179,6 +207,7 @@ function saleBillWhatsAppMessage(array $org, array $sale): string {
     $taxable = $sale['taxable_amount'] !== null ? (float) $sale['taxable_amount'] : (float) $sale['subtotal'];
     $cgst = $sale['cgst_amount'] !== null ? (float) $sale['cgst_amount'] : round((float) $sale['total_tax_amount'] / 2, 2);
     $sgst = $sale['sgst_amount'] !== null ? (float) $sale['sgst_amount'] : round((float) $sale['total_tax_amount'] - $cgst, 2);
+    $gstBreakdown = $isGst ? gstBreakdownByRate($sale['items'], $sale['tax_type'] === 'INCLUSIVE', 'total_price') : [];
     $grandTotal = (float) $sale['grand_total'];
     $paid = (float) $sale['received_amount'];
     $balance = max(0, round($grandTotal - $paid, 2));
@@ -203,7 +232,13 @@ function saleBillWhatsAppMessage(array $org, array $sale): string {
     }
     $lines[] = "```";
     $lines[] = "";
-    if ($isGst) {
+    if ($isGst && !empty($gstBreakdown)) {
+        $lines[] = "Taxable Amount: " . formatCurrency($taxable);
+        foreach ($gstBreakdown as $g) {
+            $lines[] = "CGST @ " . halfGstRate($g['rate']) . "%: " . formatCurrency($g['tax'] / 2);
+            $lines[] = "SGST @ " . halfGstRate($g['rate']) . "%: " . formatCurrency($g['tax'] / 2);
+        }
+    } elseif ($isGst) {
         $lines[] = "Taxable Amount: " . formatCurrency($taxable);
         $lines[] = "CGST: " . formatCurrency($cgst);
         $lines[] = "SGST: " . formatCurrency($sgst);
@@ -237,6 +272,7 @@ function serviceInvoiceWhatsAppMessage(array $org, array $invoice): string {
     $taxable = $isGst && $invoice['taxable_amount'] !== null ? (float) $invoice['taxable_amount'] : $itemsTotal;
     $cgst = (float) ($invoice['cgst_amount'] ?? $invoice['gst_amount'] / 2);
     $sgst = (float) ($invoice['sgst_amount'] ?? $invoice['gst_amount'] / 2);
+    $gstBreakdown = $isGst ? gstBreakdownByRate($invoice['items'], $invoice['tax_type'] === 'INCLUSIVE', 'total') : [];
     $grandTotal = (float) $invoice['grand_total'];
     $paid = (float) $invoice['paid_amount'];
     $balance = (float) $invoice['balance_amount'];
@@ -261,7 +297,13 @@ function serviceInvoiceWhatsAppMessage(array $org, array $invoice): string {
     }
     $lines[] = "```";
     $lines[] = "";
-    if ($isGst) {
+    if ($isGst && !empty($gstBreakdown)) {
+        $lines[] = "Taxable Amount: " . formatCurrency($taxable);
+        foreach ($gstBreakdown as $g) {
+            $lines[] = "CGST @ " . halfGstRate($g['rate']) . "%: " . formatCurrency($g['tax'] / 2);
+            $lines[] = "SGST @ " . halfGstRate($g['rate']) . "%: " . formatCurrency($g['tax'] / 2);
+        }
+    } elseif ($isGst) {
         $lines[] = "Taxable Amount: " . formatCurrency($taxable);
         $lines[] = "CGST: " . formatCurrency($cgst);
         $lines[] = "SGST: " . formatCurrency($sgst);

@@ -63,10 +63,12 @@
     <div class="border-t border-slate-200 mt-2 pt-3 space-y-2 text-sm">
       <div class="flex justify-between"><span class="text-slate-500">Taxable Amount</span><span x-text="'₹' + taxableAmount().toFixed(2)"></span></div>
       <template x-if="taxType !== 'EXEMPT'">
-        <div>
-          <div class="flex justify-between"><span class="text-slate-500">CGST</span><span x-text="'₹' + (taxTotal()/2).toFixed(2)"></span></div>
-          <div class="flex justify-between"><span class="text-slate-500">SGST</span><span x-text="'₹' + (taxTotal()/2).toFixed(2)"></span></div>
-        </div>
+        <template x-for="g in taxBreakdown()" :key="g.rate">
+          <div>
+            <div class="flex justify-between"><span class="text-slate-500" x-text="'CGST @ ' + halfRate(g.rate) + '%'"></span><span x-text="'₹' + (g.tax/2).toFixed(2)"></span></div>
+            <div class="flex justify-between"><span class="text-slate-500" x-text="'SGST @ ' + halfRate(g.rate) + '%'"></span><span x-text="'₹' + (g.tax/2).toFixed(2)"></span></div>
+          </div>
+        </template>
       </template>
       <div class="flex justify-between items-center"><span class="text-slate-500">Labour Charges</span><input type="number" step="0.01" x-model.number="labour" class="w-24 rounded border border-slate-300 px-2 py-1 text-right"></div>
       <div class="flex justify-between items-center"><span class="text-slate-500">Discount</span><input type="number" step="0.01" x-model.number="discount" class="w-24 rounded border border-slate-300 px-2 py-1 text-right"></div>
@@ -140,6 +142,22 @@ function invoiceScreen() {
       if (this.taxType === 'INCLUSIVE') return this.lineTotal() - this.taxableAmount();
       return this.cart.reduce((s, l) => s + (l.qty * l.price) * ((l.gst || 0) / 100), 0);
     },
+    taxBreakdown() {
+      if (this.taxType === 'EXEMPT') return [];
+      const groups = {};
+      for (const l of this.cart) {
+        const rate = l.gst || 0;
+        if (rate <= 0) continue;
+        const lineAmt = l.qty * l.price;
+        const taxable = this.taxType === 'INCLUSIVE' ? lineAmt / (1 + rate / 100) : lineAmt;
+        const tax = this.taxType === 'INCLUSIVE' ? (lineAmt - taxable) : (lineAmt * rate / 100);
+        if (!groups[rate]) groups[rate] = { rate, taxable: 0, tax: 0 };
+        groups[rate].taxable += taxable;
+        groups[rate].tax += tax;
+      }
+      return Object.values(groups).sort((a, b) => a.rate - b.rate);
+    },
+    halfRate(rate) { return (Math.round(rate * 50) / 100).toString().replace(/\.0$/, ''); },
     grandTotal() { return Math.max(0, this.taxableAmount() + this.taxTotal() + (this.labour||0) - (this.discount||0)); },
     onSubmit(e) {
       if (this.cart.length === 0) { e.preventDefault(); return; }

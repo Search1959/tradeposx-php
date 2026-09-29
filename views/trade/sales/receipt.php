@@ -8,6 +8,10 @@ $owed = max(0, (float)$sale['grand_total'] - (float)$sale['received_amount']);
 $taxableDisplay = $sale['taxable_amount'] !== null ? (float)$sale['taxable_amount'] : (float)$sale['subtotal'];
 $cgstDisplay = $sale['cgst_amount'] !== null ? (float)$sale['cgst_amount'] : round((float)$sale['total_tax_amount'] / 2, 2);
 $sgstDisplay = $sale['sgst_amount'] !== null ? (float)$sale['sgst_amount'] : round((float)$sale['total_tax_amount'] - $cgstDisplay, 2);
+// Rate-wise breakdown (so a cart mixing e.g. 5% and 18% items shows each slab
+// separately) — falls back to one flat CGST/SGST line if items have no gst_rate
+// (sales made before per-item GST tracking existed).
+$gstBreakdown = $isGst ? gstBreakdownByRate($sale['items'], $sale['tax_type'] === 'INCLUSIVE', 'total_price') : [];
 ?>
 
 <div class="max-w-2xl mx-auto">
@@ -109,7 +113,12 @@ $sgstDisplay = $sale['sgst_amount'] !== null ? (float)$sale['sgst_amount'] : rou
           <span><?= $isGst ? 'Taxable Amount' : 'Subtotal' ?></span>
           <span><?= formatCurrency($isGst ? $taxableDisplay : (float)$sale['subtotal']) ?></span>
         </div>
-        <?php if ($isGst): ?>
+        <?php if ($isGst && !empty($gstBreakdown)): ?>
+          <?php foreach ($gstBreakdown as $g): ?>
+          <div class="flex justify-between text-slate-600"><span>CGST @ <?= halfGstRate($g['rate']) ?>%</span><span><?= formatCurrency($g['tax'] / 2) ?></span></div>
+          <div class="flex justify-between text-slate-600"><span>SGST @ <?= halfGstRate($g['rate']) ?>%</span><span><?= formatCurrency($g['tax'] / 2) ?></span></div>
+          <?php endforeach; ?>
+        <?php elseif ($isGst): ?>
         <div class="flex justify-between text-slate-600"><span>CGST</span><span><?= formatCurrency($cgstDisplay) ?></span></div>
         <div class="flex justify-between text-slate-600"><span>SGST</span><span><?= formatCurrency($sgstDisplay) ?></span></div>
         <?php endif; ?>

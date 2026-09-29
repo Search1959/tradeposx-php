@@ -2,6 +2,7 @@
 $org = Tenant::current(); $base = '/' . $org['slug']; require __DIR__ . '/../../layouts/header.php';
 $isGst = $invoice['tax_type'] !== 'EXEMPT' && (float)$invoice['gst_amount'] > 0;
 $docTitle = $isGst ? 'Tax Invoice' : 'Bill of Supply';
+$gstBreakdown = $isGst ? gstBreakdownByRate($invoice['items'], $invoice['tax_type'] === 'INCLUSIVE', 'total') : [];
 ?>
 
 <div class="max-w-2xl mx-auto">
@@ -99,7 +100,12 @@ $docTitle = $isGst ? 'Tax Invoice' : 'Bill of Supply';
           <span><?= $isGst ? 'Taxable Amount' : 'Service Total' ?></span>
           <span><?= formatCurrency($isGst && $invoice['taxable_amount'] !== null ? (float)$invoice['taxable_amount'] : array_sum(array_map(fn($i) => (float)$i['total'], $invoice['items']))) ?></span>
         </div>
-        <?php if ($isGst): ?>
+        <?php if ($isGst && !empty($gstBreakdown)): ?>
+          <?php foreach ($gstBreakdown as $g): ?>
+          <div class="flex justify-between text-slate-600"><span>CGST @ <?= halfGstRate($g['rate']) ?>%</span><span><?= formatCurrency($g['tax'] / 2) ?></span></div>
+          <div class="flex justify-between text-slate-600"><span>SGST @ <?= halfGstRate($g['rate']) ?>%</span><span><?= formatCurrency($g['tax'] / 2) ?></span></div>
+          <?php endforeach; ?>
+        <?php elseif ($isGst): ?>
         <div class="flex justify-between text-slate-600"><span>CGST</span><span><?= formatCurrency((float)($invoice['cgst_amount'] ?? $invoice['gst_amount'] / 2)) ?></span></div>
         <div class="flex justify-between text-slate-600"><span>SGST</span><span><?= formatCurrency((float)($invoice['sgst_amount'] ?? $invoice['gst_amount'] / 2)) ?></span></div>
         <?php endif; ?>
