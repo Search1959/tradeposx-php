@@ -4,7 +4,8 @@
 <body class="bg-slate-50 min-h-screen flex items-center justify-center">
   <div class="text-center">
     <div class="text-5xl font-bold text-slate-300 mb-2">404</div>
-    <p class="text-slate-500">Page not found.</p>
+    <p class="text-slate-500 mb-4">Page not found.</p>
+    <a href="/" class="text-sm text-indigo-600 hover:underline">&larr; Back to home</a>
   </div>
 </body>
 </html>

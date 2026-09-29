@@ -26,6 +26,7 @@
       </div>
       <button type="submit" class="w-full bg-indigo-600 text-white rounded py-2 text-sm font-medium hover:bg-indigo-700">Sign in</button>
     </form>
+    <p class="text-center text-xs text-slate-400 mt-4"><a href="/" class="underline hover:text-slate-600">&larr; Back to home</a></p>
   </div>
 </body>
 </html>

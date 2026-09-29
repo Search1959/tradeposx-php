@@ -42,9 +42,11 @@ $user = Auth::user();
       <a href="<?= $base ?>/service-customers" class="block px-3 py-2 rounded hover:bg-slate-800">Service Customers</a>
       <a href="<?= $base ?>/service-staff" class="block px-3 py-2 rounded hover:bg-slate-800">Staff</a>
     </nav>
-    <div class="px-3 py-3 border-t border-slate-800 text-xs">
-      <div class="text-slate-300"><?= h($user['name'] ?? '') ?></div>
+    <div class="px-3 py-3 border-t border-slate-800 text-xs space-x-2">
+      <div class="text-slate-300 mb-1"><?= h($user['name'] ?? '') ?></div>
       <a href="<?= $base ?>/settings" class="text-slate-500 hover:text-slate-300">Settings</a>
+      <span class="text-slate-700">·</span>
+      <a href="/" class="text-slate-500 hover:text-slate-300">Home</a>
       <span class="text-slate-700">·</span>
       <a href="<?= $base ?>/logout" class="text-slate-500 hover:text-slate-300">Logout</a>
     </div>
@@ -52,6 +54,9 @@ $user = Auth::user();
   <main class="flex-1 min-w-0">
     <header class="md:hidden flex items-center justify-between px-4 py-3 bg-slate-900 text-white">
       <span class="font-semibold"><?= h($org['name'] ?? APP_NAME) ?></span>
-      <a href="<?= isset($base) ? $base : '' ?>/logout" class="text-xs text-slate-300">Logout</a>
+      <div class="flex items-center gap-3 text-xs text-slate-300">
+        <a href="/">Home</a>
+        <a href="<?= isset($base) ? $base : '' ?>/logout">Logout</a>
+      </div>
     </header>
     <div class="p-4 md:p-6">

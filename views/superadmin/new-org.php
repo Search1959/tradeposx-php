@@ -10,7 +10,10 @@
   <div class="max-w-xl mx-auto py-8 px-4">
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-xl font-semibold">New Organization</h1>
-      <a href="/superadmin" class="text-sm text-slate-500">&larr; Back</a>
+      <div class="flex items-center gap-3">
+        <a href="/" class="text-sm text-slate-500 hover:underline">Home</a>
+        <a href="/superadmin" class="text-sm text-slate-500">&larr; Back</a>
+      </div>
     </div>
 
     <?php if (!empty($error)): ?>

@@ -33,7 +33,9 @@
       </a>
     </div>
 
-    <div class="text-center mt-8">
+    <div class="text-center mt-8 space-x-3">
+      <a href="/" class="text-sm text-slate-500 hover:text-slate-700">Home</a>
+      <span class="text-slate-300">·</span>
       <a href="<?= $base ?>/logout" class="text-sm text-slate-500 hover:text-slate-700">Logout</a>
     </div>
   </div>

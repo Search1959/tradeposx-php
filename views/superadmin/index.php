@@ -17,6 +17,7 @@
         </form>
         <a href="/superadmin/newOrg" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">+ New Organization</a>
         <a href="/superadmin/backup" class="bg-white border border-slate-300 text-slate-700 text-sm font-medium px-4 py-2 rounded hover:bg-slate-50">⬇ Full Backup</a>
+        <a href="/" class="text-sm text-slate-500 hover:underline">Home</a>
         <a href="/logout" class="text-sm text-slate-500">Logout</a>
       </div>
     </div>
