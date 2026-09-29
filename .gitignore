@@ -13,3 +13,6 @@ Thumbs.db
 # Real customer/business data pulled from the old app for the P5 migration —
 # never goes into this public repo, stays local only.
 /sql/migrate/data/
+# Generated production artifacts (data dump with real customer data, and a
+# deploy zip with production DB credentials baked in) — local only.
+/sql/migrate/production/
