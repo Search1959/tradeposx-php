@@ -61,6 +61,7 @@ $workspace = match ($org['business_type'] ?? 'both') {
         <a href="<?= $base ?>/suppliers" class="block px-3 py-2 rounded hover:bg-slate-800">Suppliers</a>
         <a href="<?= $base ?>/reports" class="block px-3 py-2 rounded hover:bg-slate-800">Reports</a>
       <?php else: ?>
+        <a href="<?= $base ?>/service-invoices/new" class="block px-3 py-2 rounded hover:bg-slate-800">🧾 New Bill (POS)</a>
         <a href="<?= $base ?>/appointments" class="block px-3 py-2 rounded hover:bg-slate-800">Appointments</a>
         <a href="<?= $base ?>/job-cards" class="block px-3 py-2 rounded hover:bg-slate-800">Job Cards</a>
         <a href="<?= $base ?>/service-invoices" class="block px-3 py-2 rounded hover:bg-slate-800">Service Invoices</a>

@@ -10,6 +10,16 @@
   <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border border-slate-200 p-4">
     <input type="text" x-model="search" placeholder="Search products by name, SKU, barcode…"
            class="w-full rounded border border-slate-300 px-3 py-2 text-sm mb-3" x-ref="searchBox" autofocus>
+    <div class="flex flex-wrap gap-1.5 mb-3">
+      <button type="button" @click="category = ''"
+              :class="category === '' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+              class="text-xs font-medium px-2.5 py-1 rounded-full transition">All</button>
+      <template x-for="c in categories()" :key="c">
+        <button type="button" @click="category = c"
+                :class="category === c ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                class="text-xs font-medium px-2.5 py-1 rounded-full transition" x-text="c"></button>
+      </template>
+    </div>
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[65vh] overflow-y-auto">
       <template x-for="p in filteredProducts()" :key="p.id">
         <button type="button" @click="addToCart(p)"
@@ -129,6 +139,7 @@ function posScreen() {
         'sku' => $p['sku'], 'barcode' => $p['barcode'],
     ], $products)) ?>,
     search: '',
+    category: '',
     cart: [],
     discount: 0,
     taxType: 'EXCLUSIVE',
@@ -137,12 +148,17 @@ function posScreen() {
     paymentStatus: 'FULL',
     receivedAmount: 0,
 
+    categories() {
+      return [...new Set(this.products.map(p => p.category).filter(c => c))].sort();
+    },
     filteredProducts() {
       const q = this.search.trim().toLowerCase();
-      if (!q) return this.products.slice(0, 60);
-      return this.products.filter(p =>
+      let list = this.products;
+      if (this.category) list = list.filter(p => p.category === this.category);
+      if (q) list = list.filter(p =>
         p.name.toLowerCase().includes(q) || (p.sku||'').toLowerCase().includes(q) || (p.barcode||'') === q
-      ).slice(0, 60);
+      );
+      return list.slice(0, 60);
     },
     addToCart(p) {
       const existing = this.cart.find(l => l.id === p.id);

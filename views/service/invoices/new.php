@@ -8,6 +8,16 @@
 
   <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border border-slate-200 p-4">
     <input type="text" x-model="search" placeholder="Search services…" class="w-full rounded border border-slate-300 px-3 py-2 text-sm mb-3">
+    <div class="flex flex-wrap gap-1.5 mb-3">
+      <button type="button" @click="category = ''"
+              :class="category === '' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+              class="text-xs font-medium px-2.5 py-1 rounded-full transition">All</button>
+      <template x-for="c in categories()" :key="c">
+        <button type="button" @click="category = c"
+                :class="category === c ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                class="text-xs font-medium px-2.5 py-1 rounded-full transition" x-text="c"></button>
+      </template>
+    </div>
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[65vh] overflow-y-auto">
       <template x-for="s in filteredServices()" :key="s.id">
         <button type="button" @click="addToCart(s)" class="text-left border border-slate-200 rounded-lg p-3 hover:border-indigo-400 hover:bg-indigo-50 transition">
@@ -85,11 +95,16 @@
 function invoiceScreen() {
   return {
     services: <?= json_encode(array_map(fn($s) => ['id'=>(int)$s['id'],'name'=>$s['name'],'category'=>$s['category'],'price'=>(float)$s['price']], $services)) ?>,
-    search: '', cart: [], labour: 0, discount: 0, customerId: '', paymentStatus: 'FULL', paidAmount: 0,
+    search: '', category: '', cart: [], labour: 0, discount: 0, customerId: '', paymentStatus: 'FULL', paidAmount: 0,
+    categories() {
+      return [...new Set(this.services.map(s => s.category).filter(c => c))].sort();
+    },
     filteredServices() {
       const q = this.search.trim().toLowerCase();
-      if (!q) return this.services.slice(0, 60);
-      return this.services.filter(s => s.name.toLowerCase().includes(q)).slice(0, 60);
+      let list = this.services;
+      if (this.category) list = list.filter(s => s.category === this.category);
+      if (q) list = list.filter(s => s.name.toLowerCase().includes(q));
+      return list.slice(0, 60);
     },
     addToCart(s) {
       const existing = this.cart.find(l => l.id === s.id);
