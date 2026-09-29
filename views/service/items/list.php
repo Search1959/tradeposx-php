@@ -2,7 +2,10 @@
 
 <div class="flex items-center justify-between mb-4">
   <h1 class="text-xl font-semibold text-slate-900">Service Items</h1>
-  <a href="<?= $base ?>/service-items/new" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">+ New Service Item</a>
+  <div class="flex gap-2">
+    <a href="<?= $base ?>/service-items/bulkImport" class="bg-white border border-slate-300 text-slate-700 text-sm font-medium px-4 py-2 rounded hover:bg-slate-50 whitespace-nowrap">Bulk Import</a>
+    <a href="<?= $base ?>/service-items/new" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">+ New Service Item</a>
+  </div>
 </div>
 
 <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">

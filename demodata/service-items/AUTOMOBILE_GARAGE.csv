@@ -1,0 +1,16 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+General Car Service,Servicing,AUTOMOBILE_GARAGE,2500,120,18,30,
+Oil & Filter Change,Servicing,AUTOMOBILE_GARAGE,1200,30,18,0,
+AC Service & Gas Refill,Servicing,AUTOMOBILE_GARAGE,1800,60,18,30,
+Wheel Alignment,Tyres,AUTOMOBILE_GARAGE,600,30,18,0,
+Wheel Balancing,Tyres,AUTOMOBILE_GARAGE,400,20,18,0,
+Tyre Puncture Repair,Tyres,AUTOMOBILE_GARAGE,100,15,18,0,
+Tyre Replacement (per tyre),Tyres,AUTOMOBILE_GARAGE,4500,20,18,0,"Fitting charge only, tyre cost extra"
+Brake Pad Replacement,Repair,AUTOMOBILE_GARAGE,1500,45,18,90,
+Clutch Replacement,Repair,AUTOMOBILE_GARAGE,6000,180,18,90,
+Battery Replacement,Electrical,AUTOMOBILE_GARAGE,4500,20,18,365,
+Car Wash & Detailing,Servicing,AUTOMOBILE_GARAGE,500,45,18,0,
+Denting & Painting (per panel),Repair,AUTOMOBILE_GARAGE,3500,240,18,90,
+Suspension Repair,Repair,AUTOMOBILE_GARAGE,3000,120,18,60,
+Headlight / Bulb Replacement,Electrical,AUTOMOBILE_GARAGE,300,15,18,30,
+Car Inspection / Diagnostics,Servicing,AUTOMOBILE_GARAGE,500,30,18,0,

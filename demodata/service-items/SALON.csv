@@ -1,0 +1,17 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Haircut (Men),Hair,SALON,200,30,18,0,Standard men's haircut
+Haircut (Women),Hair,SALON,500,45,18,0,Standard women's haircut
+Hair Wash & Blow Dry,Hair,SALON,300,30,18,0,
+Hair Color (Global),Hair,SALON,1500,90,18,0,Full head color
+Hair Spa Treatment,Hair,SALON,1200,60,18,0,Deep conditioning treatment
+Keratin Treatment,Hair,SALON,3500,120,18,0,Smoothening treatment
+Facial (Classic),Skin,SALON,800,45,18,0,
+Facial (Gold/Diamond),Skin,SALON,2000,60,18,0,Premium facial
+Threading (Eyebrows),Skin,SALON,50,10,18,0,
+Waxing (Full Arms),Skin,SALON,300,20,18,0,
+Waxing (Full Legs),Skin,SALON,500,30,18,0,
+Manicure,Nails,SALON,400,30,18,0,
+Pedicure,Nails,SALON,600,45,18,0,
+Nail Art (per hand),Nails,SALON,300,20,18,0,
+Bridal Makeup,Bridal,SALON,8000,180,18,0,Full bridal package
+Party Makeup,Bridal,SALON,2500,90,18,0,
