@@ -66,7 +66,7 @@ $units = ['pcs','kg','g','liter','ml','pkt','box','bottle','pouch','bag','tin','
     </div>
   </div>
   <div class="grid grid-cols-3 gap-4">
-    <?php if (empty($p)): // opening stock only settable at creation; edits go through Adjust Stock ?>
+    <?php if (empty($p)): // opening stock only settable at creation; edits go through Adjust Stock below ?>
     <div>
       <label class="block text-sm font-medium text-slate-700 mb-1">Opening Stock</label>
       <input type="number" step="0.001" name="current_stock" value="0" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
@@ -85,6 +85,24 @@ $units = ['pcs','kg','g','liter','ml','pkt','box','bottle','pouch','bag','tin','
       </select>
     </div>
   </div>
+  <?php if (!empty($p)): // editing an existing product — every stock change goes through this audited adjustment, never a raw field, so it always shows up in the Ledger ?>
+  <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 flex items-end gap-3 flex-wrap">
+    <div>
+      <div class="text-xs text-slate-500">Current Stock</div>
+      <div class="text-lg font-semibold text-slate-900"><?= rtrim(rtrim(number_format((float)($p['current_stock'] ?? 0), 3), '0'), '.') ?> <?= h($p['unit'] ?? '') ?></div>
+    </div>
+    <div>
+      <label class="block text-xs font-medium text-slate-700 mb-1">Add / Remove Stock (+/-)</label>
+      <input type="number" step="0.001" name="delta" form="adjust-stock-form" required class="w-32 rounded border border-slate-300 px-3 py-2 text-sm">
+    </div>
+    <div class="flex-1 min-w-[10rem]">
+      <label class="block text-xs font-medium text-slate-700 mb-1">Reason</label>
+      <input type="text" name="reason" form="adjust-stock-form" placeholder="e.g. New stock received" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+    </div>
+    <button type="submit" form="adjust-stock-form" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">Apply</button>
+    <a href="<?= $base ?>/products/ledger/<?= (int)$p['id'] ?>" class="text-xs text-slate-500 hover:underline">View full stock history &rarr;</a>
+  </div>
+  <?php endif; ?>
   <div class="grid grid-cols-3 gap-4">
     <div>
       <label class="block text-sm font-medium text-slate-700 mb-1">Supplier</label>
@@ -113,5 +131,12 @@ $units = ['pcs','kg','g','liter','ml','pkt','box','bottle','pouch','bag','tin','
     <a href="<?= $base ?>/products" class="text-sm text-slate-500 px-4 py-2">Cancel</a>
   </div>
 </form>
+
+<?php if (!empty($p)): ?>
+<form id="adjust-stock-form" method="POST" action="<?= $base ?>/products/adjustStock/<?= (int)$p['id'] ?>">
+  <?= CsrfHelper::getField() ?>
+  <input type="hidden" name="redirect_to" value="edit">
+</form>
+<?php endif; ?>
 
 <?php require __DIR__ . '/../../layouts/footer.php'; ?>

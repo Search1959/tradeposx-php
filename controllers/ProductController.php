@@ -96,8 +96,13 @@ class ProductController {
         if ($delta !== 0.0) {
             $this->model->adjustStock($org['id'], (int) $id, $delta);
             $this->invModel->record($org['id'], (int) $id, $delta > 0 ? 'MANUAL_ADD' : 'MANUAL_REDUCE', abs($delta), null, $reason);
+            logActivity($org['id'], 'product_stock_adjust', 'product', (int) $id, ($delta > 0 ? '+' : '') . $delta . ' — ' . $reason);
         }
-        redirect($org['slug'] . '/products');
+        // Lets the quick "Add / Remove Stock" box on the Edit Product page send the
+        // owner back to Edit (seeing the updated Current Stock) instead of the list —
+        // only ever "edit" or absent, never an arbitrary client-supplied URL.
+        $redirectTo = ($_POST['redirect_to'] ?? null) === 'edit' ? '/products/edit/' . (int) $id : '/products';
+        redirect($org['slug'] . $redirectTo);
     }
 
     public function deleteAction(?string $id = null): void {
