@@ -26,6 +26,7 @@ $user = Auth::user();
     <nav class="flex-1 px-2 py-3 space-y-1 text-sm">
       <?php $base = $org ? '/' . h($org['slug']) : ''; ?>
       <a href="<?= $base ?>/dashboard" class="block px-3 py-2 rounded hover:bg-slate-800">Dashboard</a>
+      <a href="<?= $base ?>/pos-mobile" class="block px-3 py-2 rounded hover:bg-slate-800">📱 Quick Sale (Mobile)</a>
       <div class="pt-3 pb-1 px-3 text-xs uppercase tracking-wide text-slate-500">TradeERP</div>
       <a href="<?= $base ?>/sales" class="block px-3 py-2 rounded hover:bg-slate-800">POS / Sales</a>
       <a href="<?= $base ?>/products" class="block px-3 py-2 rounded hover:bg-slate-800">Products</a>
