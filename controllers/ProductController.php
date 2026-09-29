@@ -161,6 +161,14 @@ class ProductController {
                         . 'Make sure you\'re uploading the CSV, not another file, and that its header row matches the "⬇ Download CSV template" above.';
                 } else {
                     $header = array_map(fn($h) => strtolower(trim($h)), $header);
+                    // Excel silently reformats a long digit-only column (like a barcode) into
+                    // scientific notation ("8.902E+11") when it guesses the column is a number -
+                    // every row then carries the SAME garbled value, and since import matches by
+                    // barcode first, each row "matches" and overwrites the one before it instead
+                    // of creating its own product. Treat anything shaped like that as no barcode
+                    // at all rather than a real (and falsely shared) one.
+                    $isScientificNotation = fn(string $v): bool => $v !== '' && preg_match('/^\d+(\.\d+)?E\+\d+$/i', $v) === 1;
+                    $sciNotationSeen = false;
                     $created = 0; $updated = 0; $skipped = [];
                     $rowNum = 1;
                     while (($rawRow = fgetcsv($handle, 0, $delimiter)) !== false) {
@@ -176,8 +184,13 @@ class ProductController {
                             continue;
                         }
 
+                        $barcode = $row['barcode'] ?? '';
+                        $sku = $row['sku'] ?? '';
+                        if ($isScientificNotation($barcode)) { $barcode = ''; $sciNotationSeen = true; }
+                        if ($isScientificNotation($sku)) { $sku = ''; $sciNotationSeen = true; }
+
                         $data = [
-                            'name' => $name, 'sku' => $row['sku'] ?? null, 'barcode' => $row['barcode'] ?? null,
+                            'name' => $name, 'sku' => $sku ?: null, 'barcode' => $barcode ?: null,
                             'category' => $row['category'] ?: 'Other', 'brand' => $row['brand'] ?? null,
                             'unit' => $row['unit'] ?: 'pcs', 'purchase_price' => (float) ($row['purchase_price'] ?? 0),
                             'selling_price' => (float) ($row['selling_price'] ?? 0), 'mrp' => (float) ($row['mrp'] ?? 0),
@@ -200,7 +213,13 @@ class ProductController {
                         }
                     }
                     fclose($handle);
-                    $result = ['created' => $created, 'updated' => $updated, 'skipped' => $skipped];
+                    $note = $sciNotationSeen
+                        ? 'Some rows had a barcode or SKU that looked like "8.902E+11" — Excel does this to long numeric columns it '
+                            . 'auto-formats as numbers. Those values were ignored (not stored) so rows weren\'t wrongly matched to '
+                            . 'each other; re-enter the real barcode/SKU by hand if you need it, or format that column as Text in '
+                            . 'Excel before re-exporting next time.'
+                        : null;
+                    $result = ['created' => $created, 'updated' => $updated, 'skipped' => $skipped, 'note' => $note];
                     logActivity($org['id'], 'product_bulk_import', 'product', 0, "created={$created} updated={$updated}");
                 }
             }

@@ -23,6 +23,9 @@
         </ul>
       </div>
     <?php endif; ?>
+    <?php if (!empty($result['note'])): ?>
+      <div class="text-xs text-amber-700 mt-2 bg-amber-50 border border-amber-200 rounded px-2 py-1.5"><?= h($result['note']) ?></div>
+    <?php endif; ?>
   </div>
 <?php endif; ?>
 
