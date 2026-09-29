@@ -33,12 +33,16 @@ class ServiceInvoice extends BaseModel {
         $staffModel = new ServiceStaff();
         $customerModel = new ServiceCustomer();
 
-        $itemsTotal = array_reduce($items, fn($sum, $i) => $sum + (float) $i['total'], 0.0);
+        $itemsTaxable = array_reduce($items, fn($sum, $i) => $sum + (float) $i['total'], 0.0);
         $labourCharges = (float) ($data['labour_charges'] ?? 0);
         $materialCharges = (float) ($data['material_charges'] ?? 0);
         $discount = (float) ($data['discount'] ?? 0);
+        $taxType = $data['tax_type'] ?? null;
         $gstAmount = (float) ($data['gst_amount'] ?? 0);
-        $grandTotal = round($itemsTotal + $labourCharges + $materialCharges + $gstAmount - $discount, 2);
+        $taxableAmount = $data['taxable_amount'] ?? null;
+        $cgstAmount = $data['cgst_amount'] ?? null;
+        $sgstAmount = $data['sgst_amount'] ?? null;
+        $grandTotal = round($itemsTaxable + $labourCharges + $materialCharges + $gstAmount - $discount, 2);
         $paidAmount = (float) ($data['paid_amount'] ?? $grandTotal);
         $balance = round(max(0, $grandTotal - $paidAmount), 2);
         $status = $balance <= 0 ? 'PAID' : ($paidAmount > 0 ? 'PARTIAL' : 'UNPAID');
@@ -48,24 +52,26 @@ class ServiceInvoice extends BaseModel {
         try {
             $invoiceId = $this->insert(
                 'INSERT INTO service_invoices (org_id, invoice_no, customer_id, customer_name, mobile, invoice_date,
-                 labour_charges, material_charges, discount, gst_amount, grand_total, paid_amount, balance_amount,
-                 payment_method, status, job_card_id, appointment_id, notes)
-                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                 labour_charges, material_charges, discount, tax_type, gst_amount, taxable_amount, cgst_amount, sgst_amount,
+                 grand_total, paid_amount, balance_amount, payment_method, status, job_card_id, appointment_id, notes)
+                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                 [
                     $orgId, $invoiceNo, $data['customer_id'] ?: null, $data['customer_name'] ?? null,
                     $data['mobile'] ?? null, $data['invoice_date'] ?: date('Y-m-d'), $labourCharges, $materialCharges,
-                    $discount, $gstAmount, $grandTotal, $paidAmount, $balance, $data['payment_method'] ?? 'CASH',
-                    $status, $data['job_card_id'] ?: null, $data['appointment_id'] ?: null, $data['notes'] ?? null,
+                    $discount, $taxType, $gstAmount, $taxableAmount, $cgstAmount, $sgstAmount, $grandTotal, $paidAmount,
+                    $balance, $data['payment_method'] ?? 'CASH', $status, $data['job_card_id'] ?: null,
+                    $data['appointment_id'] ?: null, $data['notes'] ?? null,
                 ]
             );
 
             foreach ($items as $item) {
                 $this->insert(
-                    'INSERT INTO service_invoice_items (org_id, invoice_id, service_id, name, item_type, price, quantity, total, staff_id)
-                     VALUES (?,?,?,?,?,?,?,?,?)',
+                    'INSERT INTO service_invoice_items (org_id, invoice_id, service_id, name, item_type, price, quantity, total, gst_rate, gst_amount, staff_id)
+                     VALUES (?,?,?,?,?,?,?,?,?,?,?)',
                     [
                         $orgId, $invoiceId, $item['service_id'] ?? null, $item['name'], $item['item_type'] ?? 'SERVICE',
-                        $item['price'], $item['quantity'], $item['total'], $item['staff_id'] ?: null,
+                        $item['price'], $item['quantity'], $item['total'], $item['gst_rate'] ?? null, $item['gst_amount'] ?? null,
+                        $item['staff_id'] ?: null,
                     ]
                 );
                 if (!empty($item['staff_id'])) {

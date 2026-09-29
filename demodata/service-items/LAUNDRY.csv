@@ -1,0 +1,11 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Wash & Fold (per kg),Regular Laundry,LAUNDRY,60,0,18,0,
+Wash & Iron (per kg),Regular Laundry,LAUNDRY,80,0,18,0,
+Dry Cleaning - Shirt,Dry Cleaning,LAUNDRY,60,0,18,0,
+Dry Cleaning - Trousers,Dry Cleaning,LAUNDRY,80,0,18,0,
+Dry Cleaning - Suit (2pc),Dry Cleaning,LAUNDRY,300,0,18,0,
+Dry Cleaning - Saree,Dry Cleaning,LAUNDRY,150,0,18,0,
+Blanket/Quilt Cleaning,Dry Cleaning,LAUNDRY,250,0,18,0,
+Curtain Cleaning (per panel),Dry Cleaning,LAUNDRY,200,0,18,0,
+Ironing Only (per piece),Ironing,LAUNDRY,15,0,18,0,
+Monthly Subscription (10kg),Packages,LAUNDRY,900,0,18,30,

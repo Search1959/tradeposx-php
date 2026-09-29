@@ -1,0 +1,11 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Income Tax Return Filing (Individual),Tax Filing,CA_ACCOUNTANT,1500,0,18,0,
+Income Tax Return Filing (Business),Tax Filing,CA_ACCOUNTANT,5000,0,18,0,
+GST Registration,Registration,CA_ACCOUNTANT,2000,0,18,0,
+Monthly GST Return Filing,Tax Filing,CA_ACCOUNTANT,1500,0,18,0,
+Company Incorporation,Registration,CA_ACCOUNTANT,10000,0,18,0,
+Bookkeeping (Monthly),Accounting,CA_ACCOUNTANT,3000,0,18,0,
+Statutory Audit,Audit,CA_ACCOUNTANT,25000,0,18,0,
+Tax Consultation,Consultation,CA_ACCOUNTANT,1000,30,18,0,
+TDS Return Filing,Tax Filing,CA_ACCOUNTANT,1200,0,18,0,
+Financial Statement Preparation,Accounting,CA_ACCOUNTANT,4000,0,18,0,

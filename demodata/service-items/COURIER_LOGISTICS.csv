@@ -1,0 +1,11 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Local Delivery (within city - per package),Local,COURIER_LOGISTICS,60,0,18,0,
+Domestic Courier (per 0.5kg),Domestic,COURIER_LOGISTICS,80,0,18,0,
+Domestic Courier (per additional kg),Domestic,COURIER_LOGISTICS,40,0,18,0,
+International Courier (per 0.5kg),International,COURIER_LOGISTICS,1500,0,18,0,
+Same Day Delivery,Express,COURIER_LOGISTICS,150,0,18,0,
+Document Courier,Documents,COURIER_LOGISTICS,50,0,18,0,
+Cash on Delivery Handling,Services,COURIER_LOGISTICS,20,0,18,0,
+Packing Service,Services,COURIER_LOGISTICS,50,0,18,0,
+Bulk Shipment (per kg - above 50kg),Bulk,COURIER_LOGISTICS,25,0,18,0,
+Warehousing (per day - per cubic ft),Warehousing,COURIER_LOGISTICS,5,0,18,0,

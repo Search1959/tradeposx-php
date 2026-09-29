@@ -1,0 +1,11 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Visiting Cards (per 100),Business Stationery,PRINTING_PRESS,300,0,18,0,
+Letterhead Printing (per 100),Business Stationery,PRINTING_PRESS,600,0,18,0,
+Flyers/Pamphlets (per 100),Marketing,PRINTING_PRESS,400,0,18,0,
+Banner Printing (per sq ft),Large Format,PRINTING_PRESS,25,0,18,0,
+Brochure Printing (per 100),Marketing,PRINTING_PRESS,1500,0,18,0,
+Wedding Card Printing (per 100),Invitations,PRINTING_PRESS,3500,0,18,0,
+ID Card Printing (per piece),ID & Badges,PRINTING_PRESS,50,0,18,0,
+Book/Booklet Printing (per copy),Books,PRINTING_PRESS,80,0,18,0,
+T-Shirt Printing (per piece),Apparel,PRINTING_PRESS,150,0,18,0,
+Photo Printing (per piece),Photos,PRINTING_PRESS,15,0,18,0,

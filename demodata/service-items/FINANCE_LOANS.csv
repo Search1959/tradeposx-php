@@ -1,0 +1,10 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Personal Loan Assistance,Loans,FINANCE_LOANS,1000,0,18,0,
+Home Loan Assistance,Loans,FINANCE_LOANS,3000,0,18,0,
+Business Loan Assistance,Loans,FINANCE_LOANS,5000,0,18,0,
+Credit Score Check & Report,Advisory,FINANCE_LOANS,300,15,18,0,
+Loan Against Property Assistance,Loans,FINANCE_LOANS,4000,0,18,0,
+Insurance Policy Consultation,Insurance,FINANCE_LOANS,500,30,18,0,
+Mutual Fund Advisory,Investment,FINANCE_LOANS,1000,30,18,0,
+Loan Documentation Support,Documentation,FINANCE_LOANS,1500,0,18,0,
+EMI Restructuring Assistance,Loans,FINANCE_LOANS,2000,0,18,0,

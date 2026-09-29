@@ -1,0 +1,10 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Tractor Ploughing (per acre),Land Preparation,AGRICULTURE_SERVICE,1200,0,0,0,
+Harvesting (per acre),Harvesting,AGRICULTURE_SERVICE,1800,0,0,0,
+Crop Spraying (per acre),Pest Control,AGRICULTURE_SERVICE,500,0,0,0,
+Soil Testing,Testing,AGRICULTURE_SERVICE,400,0,0,0,
+Irrigation Setup Consultation,Consultation,AGRICULTURE_SERVICE,1000,60,0,0,
+Seed Sowing (per acre),Sowing,AGRICULTURE_SERVICE,800,0,0,0,
+Farm Equipment Rental (per day),Equipment,AGRICULTURE_SERVICE,1500,0,0,0,
+Crop Advisory (per visit),Consultation,AGRICULTURE_SERVICE,500,45,0,0,
+Drone Spraying (per acre),Pest Control,AGRICULTURE_SERVICE,700,0,0,0,

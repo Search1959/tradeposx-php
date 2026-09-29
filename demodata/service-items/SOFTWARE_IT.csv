@@ -1,0 +1,11 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Website Development (Basic),Web Development,SOFTWARE_IT,15000,0,18,90,
+Website Development (E-commerce),Web Development,SOFTWARE_IT,45000,0,18,90,
+Mobile App Development,App Development,SOFTWARE_IT,80000,0,18,90,
+Software Bug Fixing (per hour),Support,SOFTWARE_IT,1000,60,18,15,
+API Integration,Development,SOFTWARE_IT,10000,0,18,30,
+Cloud Server Setup,Infrastructure,SOFTWARE_IT,5000,120,18,30,
+Monthly Website Maintenance,Maintenance,SOFTWARE_IT,3000,0,18,30,
+UI/UX Design,Design,SOFTWARE_IT,20000,0,18,30,
+Database Design & Setup,Development,SOFTWARE_IT,8000,0,18,30,
+Custom Software Consultation,Consultation,SOFTWARE_IT,1500,60,18,0,

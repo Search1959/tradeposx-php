@@ -1,0 +1,9 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Maths Tuition (per session),Subjects,TUITION,300,60,0,0,
+Science Tuition (per session),Subjects,TUITION,300,60,0,0,
+English Tuition (per session),Subjects,TUITION,250,60,0,0,
+Monthly Package (single subject),Packages,TUITION,2500,0,0,30,
+Monthly Package (all subjects),Packages,TUITION,6000,0,0,30,
+Home Tuition (per session),Home Visit,TUITION,500,60,0,0,
+Exam Crash Course,Special,TUITION,3000,0,0,0,
+Doubt Clearing Session,Subjects,TUITION,150,30,0,0,

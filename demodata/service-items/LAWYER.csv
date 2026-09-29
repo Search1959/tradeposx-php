@@ -1,0 +1,12 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Legal Consultation,Consultation,LAWYER,1000,30,0,0,
+Drafting Agreement,Documentation,LAWYER,3000,0,0,0,
+Notarization,Documentation,LAWYER,500,15,0,0,
+Property Title Verification,Property,LAWYER,5000,0,0,0,
+Will Drafting,Documentation,LAWYER,4000,0,0,0,
+Court Hearing Appearance,Litigation,LAWYER,3000,0,0,0,
+Legal Notice Drafting,Documentation,LAWYER,2000,0,0,0,
+Company Registration Assistance,Corporate,LAWYER,8000,0,0,0,
+Divorce Case Consultation,Family Law,LAWYER,2500,45,0,0,
+Bail Application,Litigation,LAWYER,10000,0,0,0,
+Trademark Registration,Intellectual Property,LAWYER,7000,0,0,0,

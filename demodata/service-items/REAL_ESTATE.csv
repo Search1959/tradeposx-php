@@ -1,0 +1,10 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Property Consultation,Consultation,REAL_ESTATE,500,30,18,0,
+Property Valuation,Valuation,REAL_ESTATE,3000,0,18,0,
+Rental Agreement Drafting,Documentation,REAL_ESTATE,1500,0,18,0,
+Site Visit Coordination,Services,REAL_ESTATE,500,0,18,0,
+Home Loan Assistance,Financial,REAL_ESTATE,5000,0,18,0,
+Property Listing (per property),Listing,REAL_ESTATE,1000,0,18,0,
+Legal Documentation Support,Documentation,REAL_ESTATE,4000,0,18,0,
+Brokerage (Sale - per transaction),Brokerage,REAL_ESTATE,0,0,18,0,
+Property Management (Monthly),Management,REAL_ESTATE,3000,0,18,0,

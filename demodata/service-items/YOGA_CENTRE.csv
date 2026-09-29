@@ -1,0 +1,10 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Single Drop-in Class,Classes,YOGA_CENTRE,250,60,18,0,
+Monthly Unlimited Pass,Membership,YOGA_CENTRE,2000,0,18,30,
+Quarterly Pass,Membership,YOGA_CENTRE,5500,0,18,90,
+Personal Yoga Session,Private Session,YOGA_CENTRE,800,60,18,0,
+Prenatal Yoga (per session),Classes,YOGA_CENTRE,400,60,18,0,
+Meditation Class,Classes,YOGA_CENTRE,300,45,18,0,
+Yoga Teacher Training (per module),Courses,YOGA_CENTRE,15000,0,18,0,
+Pranayama Workshop,Workshop,YOGA_CENTRE,600,90,18,0,
+Corporate Yoga Session,Special,YOGA_CENTRE,3000,60,18,0,

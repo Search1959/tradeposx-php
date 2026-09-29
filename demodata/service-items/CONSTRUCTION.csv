@@ -1,0 +1,11 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Site Survey & Consultation,Consultation,CONSTRUCTION,2000,0,18,0,
+Architectural Design (per sq ft),Design,CONSTRUCTION,25,0,18,0,
+Structural Design,Design,CONSTRUCTION,15000,0,18,0,
+Construction (per sq ft - basic),Construction,CONSTRUCTION,1600,0,18,0,
+Construction (per sq ft - premium),Construction,CONSTRUCTION,2200,0,18,0,
+Renovation Work (per sq ft),Renovation,CONSTRUCTION,600,0,18,0,
+Painting Work (per sq ft),Finishing,CONSTRUCTION,18,0,18,0,
+Plumbing Work (full house),Finishing,CONSTRUCTION,50000,0,18,0,
+Electrical Work (full house),Finishing,CONSTRUCTION,60000,0,18,0,
+Interior Design Consultation,Design,CONSTRUCTION,3000,60,18,0,

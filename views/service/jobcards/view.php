@@ -68,6 +68,11 @@ $warrantyActive = $job['warranty_status'] !== 'None' && $job['warranty_expiry_da
     <div class="flex justify-between text-slate-600"><span>Paid</span><span><?= formatCurrency((float)$job['paid_amount']) ?></span></div>
     <?php if ((float)$job['balance_amount'] > 0): ?>
     <div class="flex justify-between font-semibold text-amber-600"><span>Balance Due</span><span><?= formatCurrency((float)$job['balance_amount']) ?></span></div>
+    <?php if (!empty($job['mobile'])): ?>
+      <?php $msg = serviceBalanceReminderMessage($org['name'], $job['customer_name'] ?: 'Customer', $job['job_no'], (float)$job['balance_amount'], $org['phone'] ?? null); ?>
+      <a href="<?= h(whatsappLink($job['mobile'], $msg)) ?>" target="_blank" rel="noopener"
+         class="inline-block mt-1 bg-green-600 text-white text-xs font-medium px-3 py-1.5 rounded hover:bg-green-700">💬 Send WhatsApp Reminder</a>
+    <?php endif; ?>
     <?php endif; ?>
   </div>
 

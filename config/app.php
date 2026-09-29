@@ -142,6 +142,29 @@ function udhaarReminderMessage(string $businessName, string $customerName, float
     return implode("\n", $lines);
 }
 
+/** Same bill-style formatting as udhaarReminderMessage(), for a single ServiceERP
+ * job card or invoice balance — there's no aggregate customer ledger on that side
+ * (see CustomerTransaction vs. job_cards/service_invoices' own balance_amount), so
+ * this reminds against one specific reference rather than a running total. */
+function serviceBalanceReminderMessage(string $businessName, string $customerName, string $refNo, float $balance, ?string $businessPhone = null): string {
+    $lines = [];
+    $lines[] = "🧾 *{$businessName}*";
+    $lines[] = "_Payment Reminder_";
+    $lines[] = "";
+    $lines[] = "Dear {$customerName},";
+    $lines[] = "";
+    $lines[] = "This is a reminder for *{$refNo}*:";
+    $lines[] = "*Balance Due: " . formatCurrency($balance) . "*";
+    $lines[] = "";
+    $lines[] = "Kindly clear your dues at your earliest convenience.";
+    if ($businessPhone) {
+        $lines[] = "📞 {$businessPhone}";
+    }
+    $lines[] = "🙏 Thank you for your business — {$businessName}";
+
+    return implode("\n", $lines);
+}
+
 /** Random client-generated reference for idempotent offline-sale sync — see
  * sales.client_ref / service_invoices.client_ref in sql/schema.sql. */
 function generateClientRef(): string {

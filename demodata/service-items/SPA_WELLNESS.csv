@@ -1,0 +1,11 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Swedish Body Massage,Massage,SPA_WELLNESS,1800,60,18,0,
+Deep Tissue Massage,Massage,SPA_WELLNESS,2200,60,18,0,
+Aromatherapy Massage,Massage,SPA_WELLNESS,2500,75,18,0,
+Foot Reflexology,Massage,SPA_WELLNESS,900,30,18,0,
+Hot Stone Therapy,Massage,SPA_WELLNESS,2800,75,18,0,
+Body Scrub & Polish,Body Treatment,SPA_WELLNESS,2000,60,18,0,
+Steam & Sauna Session,Wellness,SPA_WELLNESS,500,30,18,0,
+Head Massage,Massage,SPA_WELLNESS,700,30,18,0,
+Couple Spa Package,Packages,SPA_WELLNESS,5000,90,18,0,
+Detox Body Wrap,Body Treatment,SPA_WELLNESS,2500,60,18,0,

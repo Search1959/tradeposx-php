@@ -1,0 +1,11 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Birthday Party Package (Basic),Birthday,EVENT_MANAGEMENT,15000,0,18,0,
+Wedding Planning (Full),Wedding,EVENT_MANAGEMENT,150000,0,18,0,
+Corporate Event Management,Corporate,EVENT_MANAGEMENT,50000,0,18,0,
+Venue Decoration,Decoration,EVENT_MANAGEMENT,20000,0,18,0,
+Catering (per plate),Catering,EVENT_MANAGEMENT,350,0,18,0,
+DJ & Sound System (per event),Entertainment,EVENT_MANAGEMENT,10000,0,18,0,
+Anchor/Host Services,Entertainment,EVENT_MANAGEMENT,8000,0,18,0,
+Stage Setup & Lighting,Decoration,EVENT_MANAGEMENT,15000,0,18,0,
+Return Gift Sourcing (per 100),Miscellaneous,EVENT_MANAGEMENT,5000,0,18,0,
+Event Photography Add-on,Photography,EVENT_MANAGEMENT,10000,0,18,0,

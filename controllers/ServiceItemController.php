@@ -84,12 +84,13 @@ class ServiceItemController {
 
     /** Sample starter service items per sector — downloadable straight from the
      * Bulk Import screen so a new business doesn't have to type its whole menu
-     * from scratch. Whitelisted to what actually exists under demodata/. */
+     * from scratch. Whitelisted against the real sector taxonomy (SectorHelper)
+     * so a bogus path segment can't be used to read an arbitrary file, then
+     * checked again against what actually exists under demodata/. */
     public function demoAction(?string $sector = null): void {
         Auth::requireOrgAccess(Tenant::current()['id']);
-        $available = ['SALON', 'REPAIR_SHOP', 'AUTOMOBILE_GARAGE', 'HEALTHCARE_CLINIC', 'AC_SERVICE'];
         $sector = strtoupper($sector ?? '');
-        if (!in_array($sector, $available, true)) {
+        if (!isset(SectorHelper::serviceSectors()[$sector])) {
             http_response_code(404);
             include __DIR__ . '/../views/404.php';
             return;

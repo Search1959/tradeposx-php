@@ -1,0 +1,11 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+General Pest Control (1BHK),Home Treatment,PEST_CONTROL,800,60,18,90,
+General Pest Control (2BHK),Home Treatment,PEST_CONTROL,1200,90,18,90,
+General Pest Control (3BHK),Home Treatment,PEST_CONTROL,1600,120,18,90,
+Cockroach Treatment,Home Treatment,PEST_CONTROL,700,45,18,60,
+Termite Treatment,Home Treatment,PEST_CONTROL,3500,180,18,365,
+Bed Bug Treatment,Home Treatment,PEST_CONTROL,1500,90,18,60,
+Mosquito Fogging,Home Treatment,PEST_CONTROL,600,45,18,15,
+Rodent Control,Home Treatment,PEST_CONTROL,900,60,18,60,
+Commercial Pest Control (per visit),Commercial,PEST_CONTROL,2500,120,18,30,
+Annual Maintenance Contract,Packages,PEST_CONTROL,4500,0,18,365,

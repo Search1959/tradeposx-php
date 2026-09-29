@@ -1,0 +1,11 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Domestic Flight Booking (service fee),Flights,TRAVEL_AGENCY,300,0,18,0,
+International Flight Booking (service fee),Flights,TRAVEL_AGENCY,800,0,18,0,
+Hotel Booking (service fee),Hotels,TRAVEL_AGENCY,200,0,18,0,
+Visa Assistance,Visa,TRAVEL_AGENCY,2000,0,18,0,
+Goa Tour Package (per person - 3N/4D),Packages,TRAVEL_AGENCY,12000,0,5,0,
+Kerala Tour Package (per person - 4N/5D),Packages,TRAVEL_AGENCY,18000,0,5,0,
+Car Rental (per day),Transport,TRAVEL_AGENCY,2500,0,18,0,
+Travel Insurance,Insurance,TRAVEL_AGENCY,500,0,18,0,
+Cab Booking (Airport Transfer),Transport,TRAVEL_AGENCY,800,0,18,0,
+Honeymoon Package (per couple),Packages,TRAVEL_AGENCY,45000,0,5,0,

@@ -1,11 +1,7 @@
-<?php $org = Tenant::current(); $base = '/' . $org['slug']; require __DIR__ . '/../../layouts/header.php';
-$sampleSectors = [
-    'SALON' => 'Salon',
-    'REPAIR_SHOP' => 'Repair Shop',
-    'AUTOMOBILE_GARAGE' => 'Automobile Garage',
-    'HEALTHCARE_CLINIC' => 'Healthcare Clinic',
-    'AC_SERVICE' => 'AC Service',
-];
+<?php
+$org = Tenant::current(); $base = '/' . $org['slug']; require __DIR__ . '/../../layouts/header.php';
+$sampleSectors = SectorHelper::serviceSectors();
+$orgSector = $org['trading_sector'] ?? '';
 ?>
 
 <div class="flex items-center justify-between mb-4">
@@ -50,14 +46,21 @@ $sampleSectors = [
   </form>
 </div>
 
-<div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 max-w-xl">
+<div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 max-w-3xl">
   <h2 class="font-semibold text-slate-900 mb-1">Sample Service Items by Sector</h2>
   <p class="text-sm text-slate-500 mb-4">
     Starting fresh? Download a ready-made list for your kind of business — edit prices/duration to match yours,
-    then upload it above.
+    then upload it above. Covers all <?= count($sampleSectors) ?> service sectors.
   </p>
-  <div class="grid grid-cols-2 gap-2">
-    <?php foreach ($sampleSectors as $code => $label): ?>
+  <?php if ($orgSector !== '' && isset($sampleSectors[$orgSector])): ?>
+    <a href="<?= $base ?>/service-items/demo/<?= strtolower($orgSector) ?>"
+       class="flex items-center justify-between text-sm border-2 border-indigo-400 bg-indigo-50 rounded-lg px-4 py-3 text-indigo-700 font-medium hover:bg-indigo-100 mb-4">
+      <span>⭐ <?= h($sampleSectors[$orgSector]) ?> <span class="font-normal text-indigo-500">(your sector)</span></span>
+      <span>⬇ Download</span>
+    </a>
+  <?php endif; ?>
+  <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+    <?php foreach ($sampleSectors as $code => $label): if ($code === $orgSector) continue; ?>
       <a href="<?= $base ?>/service-items/demo/<?= strtolower($code) ?>"
          class="text-sm text-center border border-slate-200 rounded px-3 py-2 text-slate-700 hover:border-indigo-400 hover:bg-indigo-50">
         ⬇ <?= h($label) ?>

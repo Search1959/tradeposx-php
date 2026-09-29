@@ -1,0 +1,11 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+General Consultation,Consultation,DOCTOR_CLINIC,400,15,0,0,
+Follow-up Visit,Consultation,DOCTOR_CLINIC,250,10,0,0,
+Specialist Consultation,Consultation,DOCTOR_CLINIC,700,20,0,0,
+Home Visit,Consultation,DOCTOR_CLINIC,1200,30,0,0,
+Prescription Renewal,Consultation,DOCTOR_CLINIC,150,5,0,0,
+Health Certificate,Documentation,DOCTOR_CLINIC,300,10,0,0,
+Vaccination,Procedures,DOCTOR_CLINIC,500,10,0,0,
+Minor Procedure,Procedures,DOCTOR_CLINIC,900,30,0,0,
+Blood Pressure Check,Diagnostics,DOCTOR_CLINIC,50,5,0,0,
+Weight Management Consultation,Consultation,DOCTOR_CLINIC,600,20,0,0,

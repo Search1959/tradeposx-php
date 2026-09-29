@@ -1,0 +1,11 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Social Media Management (Monthly),Social Media,DIGITAL_MARKETING_AGENCY,8000,0,18,30,
+Google Ads Campaign Setup,Paid Ads,DIGITAL_MARKETING_AGENCY,5000,0,18,0,
+Facebook/Instagram Ads Management (Monthly),Paid Ads,DIGITAL_MARKETING_AGENCY,6000,0,18,30,
+SEO Package (Monthly),SEO,DIGITAL_MARKETING_AGENCY,10000,0,18,30,
+Content Writing (per article),Content,DIGITAL_MARKETING_AGENCY,800,0,18,0,
+Logo Design,Branding,DIGITAL_MARKETING_AGENCY,3000,0,18,0,
+Brand Strategy Session,Consultation,DIGITAL_MARKETING_AGENCY,4000,90,18,0,
+Email Marketing Setup,Email Marketing,DIGITAL_MARKETING_AGENCY,3500,0,18,0,
+Influencer Marketing Coordination,Social Media,DIGITAL_MARKETING_AGENCY,5000,0,18,0,
+Full Digital Marketing Retainer,Retainer,DIGITAL_MARKETING_AGENCY,25000,0,18,30,

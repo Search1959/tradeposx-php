@@ -1,0 +1,13 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Complete Blood Count (CBC),Blood Tests,DIAGNOSTIC_CENTRE,300,15,0,0,
+Blood Sugar (Fasting),Blood Tests,DIAGNOSTIC_CENTRE,100,10,0,0,
+Lipid Profile,Blood Tests,DIAGNOSTIC_CENTRE,600,15,0,0,
+Thyroid Profile (T3 T4 TSH),Blood Tests,DIAGNOSTIC_CENTRE,700,15,0,0,
+Liver Function Test,Blood Tests,DIAGNOSTIC_CENTRE,650,15,0,0,
+Kidney Function Test,Blood Tests,DIAGNOSTIC_CENTRE,600,15,0,0,
+X-Ray (Single View),Imaging,DIAGNOSTIC_CENTRE,400,15,0,0,
+Ultrasound Abdomen,Imaging,DIAGNOSTIC_CENTRE,1200,30,0,0,
+ECG,Cardiac,DIAGNOSTIC_CENTRE,350,15,0,0,
+2D Echo,Cardiac,DIAGNOSTIC_CENTRE,2000,30,0,0,
+Full Body Health Checkup,Packages,DIAGNOSTIC_CENTRE,2500,60,0,0,
+Home Sample Collection,Services,DIAGNOSTIC_CENTRE,100,30,0,0,

@@ -1,0 +1,10 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+General Consultation,Consultation,GENERAL_SERVICE,300,30,18,0,
+Home Visit Service,Home Visit,GENERAL_SERVICE,500,60,18,0,
+Handyman Service (per hour),Handyman,GENERAL_SERVICE,300,60,18,15,
+Odd Job Assistance,Handyman,GENERAL_SERVICE,250,45,18,0,
+Delivery/Pickup Service,Logistics,GENERAL_SERVICE,100,0,18,0,
+Document Assistance,Documentation,GENERAL_SERVICE,200,30,18,0,
+General Cleaning Service,Cleaning,GENERAL_SERVICE,600,90,18,0,
+Errand Running,Miscellaneous,GENERAL_SERVICE,150,0,18,0,
+Custom Service Request,Miscellaneous,GENERAL_SERVICE,500,0,18,0,

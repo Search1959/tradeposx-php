@@ -1,0 +1,11 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Tap Repair/Replacement,Repair,PLUMBING,200,30,18,30,
+Leak Fixing,Repair,PLUMBING,300,45,18,30,
+Pipe Fitting (per point),Installation,PLUMBING,400,60,18,60,
+Toilet Seat Installation,Installation,PLUMBING,500,60,18,60,
+Wash Basin Installation,Installation,PLUMBING,600,60,18,60,
+Drainage Cleaning,Repair,PLUMBING,400,45,18,15,
+Water Tank Cleaning,Cleaning,PLUMBING,800,90,18,0,
+Bathroom Fitting (full),Installation,PLUMBING,5000,240,18,90,
+Motor/Pump Repair,Repair,PLUMBING,600,60,18,60,
+Emergency Call-out,Emergency,PLUMBING,500,30,18,0,

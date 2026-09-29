@@ -1,0 +1,11 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Desktop AMC (Annual - per unit),AMC Packages,COMPUTER_AMC,2500,0,18,365,
+Laptop AMC (Annual - per unit),AMC Packages,COMPUTER_AMC,2000,0,18,365,
+On-site Repair Visit,Repair,COMPUTER_AMC,500,60,18,15,
+OS Installation/Reinstall,Software,COMPUTER_AMC,500,60,18,15,
+Antivirus Installation,Software,COMPUTER_AMC,300,30,18,180,
+Network/LAN Setup,Networking,COMPUTER_AMC,1500,90,18,30,
+Printer Installation & Setup,Hardware,COMPUTER_AMC,400,45,18,15,
+Data Backup Service,Data Services,COMPUTER_AMC,800,60,18,0,
+Hardware Upgrade (RAM/SSD - labour only),Hardware,COMPUTER_AMC,300,30,18,30,
+Corporate IT Support (Monthly - per 10 systems),Corporate,COMPUTER_AMC,8000,0,18,30,

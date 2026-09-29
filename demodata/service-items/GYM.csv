@@ -1,0 +1,11 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Monthly Membership,Membership,GYM,1500,0,18,30,
+Quarterly Membership,Membership,GYM,4000,0,18,90,
+Annual Membership,Membership,GYM,15000,0,18,365,
+Personal Training Session,Training,GYM,600,60,18,0,
+Personal Training (10 sessions),Training,GYM,5000,600,18,0,
+Diet Consultation,Consultation,GYM,800,30,18,0,
+Zumba Class (drop-in),Classes,GYM,300,60,18,0,
+Yoga Class (drop-in),Classes,GYM,250,60,18,0,
+Body Composition Analysis,Assessment,GYM,300,15,18,0,
+Day Pass,Membership,GYM,200,0,18,1,

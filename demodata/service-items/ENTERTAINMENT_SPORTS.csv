@@ -1,0 +1,11 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Badminton Court Booking (per hour),Court Booking,ENTERTAINMENT_SPORTS,300,60,18,0,
+Cricket Turf Booking (per hour),Turf Booking,ENTERTAINMENT_SPORTS,1200,60,18,0,
+Football Turf Booking (per hour),Turf Booking,ENTERTAINMENT_SPORTS,1500,60,18,0,
+Swimming Pool Entry (per session),Pool,ENTERTAINMENT_SPORTS,200,60,18,0,
+Gaming Zone (per hour),Gaming,ENTERTAINMENT_SPORTS,150,60,18,0,
+Bowling Lane (per game),Bowling,ENTERTAINMENT_SPORTS,250,30,18,0,
+Snooker/Pool Table (per hour),Billiards,ENTERTAINMENT_SPORTS,200,60,18,0,
+Coaching - Cricket (per session),Coaching,ENTERTAINMENT_SPORTS,400,60,18,0,
+Coaching - Swimming (per session),Coaching,ENTERTAINMENT_SPORTS,350,45,18,0,
+Birthday Party Booking,Party,ENTERTAINMENT_SPORTS,5000,180,18,0,

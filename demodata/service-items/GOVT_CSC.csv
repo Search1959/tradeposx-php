@@ -1,0 +1,12 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Aadhaar Card Update,Aadhaar,GOVT_CSC,50,15,0,0,
+PAN Card Application,PAN,GOVT_CSC,110,15,0,0,
+Passport Application Assistance,Passport,GOVT_CSC,300,30,0,0,
+Voter ID Application,Voter ID,GOVT_CSC,50,15,0,0,
+Income Certificate,Certificates,GOVT_CSC,50,15,0,0,
+Caste Certificate,Certificates,GOVT_CSC,50,15,0,0,
+Birth Certificate,Certificates,GOVT_CSC,50,15,0,0,
+Ration Card Application,Ration Card,GOVT_CSC,50,15,0,0,
+Pension Scheme Enrollment,Schemes,GOVT_CSC,50,20,0,0,
+Bill Payment Service,Utility,GOVT_CSC,10,5,0,0,
+Printout/Photocopy (per page),Printing,GOVT_CSC,5,0,0,0,

@@ -1,0 +1,12 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Veg Thali,Meals,RESTAURANT_CAFE,180,0,5,0,
+Non-Veg Thali,Meals,RESTAURANT_CAFE,250,0,5,0,
+Paneer Butter Masala,Main Course,RESTAURANT_CAFE,220,0,5,0,
+Butter Chicken,Main Course,RESTAURANT_CAFE,280,0,5,0,
+Masala Dosa,South Indian,RESTAURANT_CAFE,120,0,5,0,
+Cold Coffee,Beverages,RESTAURANT_CAFE,120,0,5,0,
+Cappuccino,Beverages,RESTAURANT_CAFE,150,0,5,0,
+Veg Biryani,Rice,RESTAURANT_CAFE,200,0,5,0,
+Chicken Biryani,Rice,RESTAURANT_CAFE,280,0,5,0,
+Chocolate Brownie,Desserts,RESTAURANT_CAFE,150,0,5,0,
+Table Booking (per table),Reservation,RESTAURANT_CAFE,0,0,0,0,

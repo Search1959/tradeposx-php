@@ -1,0 +1,11 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Basic Exterior Wash,Wash,CAR_WASH,150,20,18,0,
+Interior + Exterior Wash,Wash,CAR_WASH,300,40,18,0,
+Foam Wash,Wash,CAR_WASH,400,30,18,0,
+Underbody Wash,Wash,CAR_WASH,200,20,18,0,
+Full Car Detailing,Detailing,CAR_WASH,2500,120,18,0,
+Interior Vacuuming,Interior,CAR_WASH,150,15,18,0,
+Wax Polish,Detailing,CAR_WASH,800,45,18,0,
+Ceramic Coating,Detailing,CAR_WASH,8000,240,18,365,
+Monthly Wash Package (8 washes),Packages,CAR_WASH,1000,0,18,30,
+Bike Wash,Wash,CAR_WASH,80,15,18,0,

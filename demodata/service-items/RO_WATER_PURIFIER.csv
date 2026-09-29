@@ -1,0 +1,10 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+RO Installation,Installation,RO_WATER_PURIFIER,800,60,18,90,
+Annual Maintenance (AMC),Service,RO_WATER_PURIFIER,2500,60,18,365,
+Filter Replacement (Sediment),Repair,RO_WATER_PURIFIER,400,30,18,180,
+Filter Replacement (Carbon),Repair,RO_WATER_PURIFIER,450,30,18,180,
+Membrane Replacement,Repair,RO_WATER_PURIFIER,1800,45,18,365,
+General Service & Cleaning,Service,RO_WATER_PURIFIER,500,45,18,90,
+UV Lamp Replacement,Repair,RO_WATER_PURIFIER,600,30,18,180,
+Pump Repair,Repair,RO_WATER_PURIFIER,700,45,18,90,
+Water Quality Testing,Diagnostics,RO_WATER_PURIFIER,200,20,18,0,

@@ -1,0 +1,9 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Puja Booking (General),Puja Services,RELIGIOUS_TRUST,500,60,0,0,
+Special Puja (Festival),Puja Services,RELIGIOUS_TRUST,2000,120,0,0,
+Havan/Yagna,Puja Services,RELIGIOUS_TRUST,3000,120,0,0,
+Priest Booking (Home Visit),Priest Services,RELIGIOUS_TRUST,1500,90,0,0,
+Community Hall Booking (per day),Facility,RELIGIOUS_TRUST,3000,0,0,0,
+Annadanam Sponsorship (per 100 people),Community Service,RELIGIOUS_TRUST,5000,0,0,0,
+Wedding Ceremony Booking,Ceremonies,RELIGIOUS_TRUST,10000,0,0,0,
+Donation Receipt Processing,Administration,RELIGIOUS_TRUST,0,0,0,0,

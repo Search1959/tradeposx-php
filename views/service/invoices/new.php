@@ -51,7 +51,23 @@
       <div x-show="cart.length === 0" class="text-sm text-slate-400 text-center py-8">Tap a service to add it.</div>
     </div>
 
+    <div class="pt-2">
+      <label class="block text-xs font-medium text-slate-700 mb-1">GST</label>
+      <select x-model="taxType" class="w-full rounded border border-slate-300 px-2 py-1.5 text-sm">
+        <option value="EXCLUSIVE">Add GST on top (prices exclude tax)</option>
+        <option value="INCLUSIVE">GST included in prices shown</option>
+        <option value="EXEMPT">No GST on this invoice</option>
+      </select>
+    </div>
+
     <div class="border-t border-slate-200 mt-2 pt-3 space-y-2 text-sm">
+      <div class="flex justify-between"><span class="text-slate-500">Taxable Amount</span><span x-text="'₹' + taxableAmount().toFixed(2)"></span></div>
+      <template x-if="taxType !== 'EXEMPT'">
+        <div>
+          <div class="flex justify-between"><span class="text-slate-500">CGST</span><span x-text="'₹' + (taxTotal()/2).toFixed(2)"></span></div>
+          <div class="flex justify-between"><span class="text-slate-500">SGST</span><span x-text="'₹' + (taxTotal()/2).toFixed(2)"></span></div>
+        </div>
+      </template>
       <div class="flex justify-between items-center"><span class="text-slate-500">Labour Charges</span><input type="number" step="0.01" x-model.number="labour" class="w-24 rounded border border-slate-300 px-2 py-1 text-right"></div>
       <div class="flex justify-between items-center"><span class="text-slate-500">Discount</span><input type="number" step="0.01" x-model.number="discount" class="w-24 rounded border border-slate-300 px-2 py-1 text-right"></div>
       <div class="flex justify-between font-semibold text-base pt-1 border-t border-slate-100"><span>Grand Total</span><span x-text="'₹' + grandTotal().toFixed(2)"></span></div>
@@ -62,6 +78,7 @@
       <input type="hidden" name="cart_json" :value="JSON.stringify(cart.map(l => ({id: l.id, qty: l.qty, staff_id: l.staff_id || null})))">
       <input type="hidden" name="labour_charges" :value="labour">
       <input type="hidden" name="discount" :value="discount">
+      <input type="hidden" name="tax_type" :value="taxType">
 
       <select name="customer_id" x-model="customerId" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
         <option value="">Walk-in customer</option>
@@ -94,8 +111,8 @@
 <script>
 function invoiceScreen() {
   return {
-    services: <?= json_encode(array_map(fn($s) => ['id'=>(int)$s['id'],'name'=>$s['name'],'category'=>$s['category'],'price'=>(float)$s['price']], $services)) ?>,
-    search: '', category: '', cart: [], labour: 0, discount: 0, customerId: '', paymentStatus: 'FULL', paidAmount: 0,
+    services: <?= json_encode(array_map(fn($s) => ['id'=>(int)$s['id'],'name'=>$s['name'],'category'=>$s['category'],'price'=>(float)$s['price'],'gst'=>(float)$s['gst_percent']], $services)) ?>,
+    search: '', category: '', cart: [], labour: 0, discount: 0, taxType: 'EXCLUSIVE', customerId: '', paymentStatus: 'FULL', paidAmount: 0,
     categories() {
       return [...new Set(this.services.map(s => s.category).filter(c => c))].sort();
     },
@@ -109,10 +126,21 @@ function invoiceScreen() {
     addToCart(s) {
       const existing = this.cart.find(l => l.id === s.id);
       if (existing) existing.qty += 1;
-      else this.cart.push({ id: s.id, name: s.name, price: s.price, qty: 1, staff_id: 0 });
+      else this.cart.push({ id: s.id, name: s.name, price: s.price, gst: s.gst, qty: 1, staff_id: 0 });
     },
-    subtotal() { return this.cart.reduce((s,l) => s + l.qty*l.price, 0); },
-    grandTotal() { return Math.max(0, this.subtotal() + (this.labour||0) - (this.discount||0)); },
+    lineTotal() { return this.cart.reduce((s,l) => s + l.qty*l.price, 0); },
+    taxableAmount() {
+      if (this.taxType === 'INCLUSIVE') {
+        return this.cart.reduce((s, l) => s + (l.qty * l.price) / (1 + (l.gst || 0) / 100), 0);
+      }
+      return this.lineTotal();
+    },
+    taxTotal() {
+      if (this.taxType === 'EXEMPT') return 0;
+      if (this.taxType === 'INCLUSIVE') return this.lineTotal() - this.taxableAmount();
+      return this.cart.reduce((s, l) => s + (l.qty * l.price) * ((l.gst || 0) / 100), 0);
+    },
+    grandTotal() { return Math.max(0, this.taxableAmount() + this.taxTotal() + (this.labour||0) - (this.discount||0)); },
     onSubmit(e) {
       if (this.cart.length === 0) { e.preventDefault(); return; }
       if (this.paymentStatus === 'FULL') this.paidAmount = this.grandTotal();

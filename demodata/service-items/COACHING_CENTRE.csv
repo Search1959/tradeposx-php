@@ -1,0 +1,10 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+JEE Foundation Course (Annual),Engineering Entrance,COACHING_CENTRE,45000,0,18,365,
+NEET Foundation Course (Annual),Medical Entrance,COACHING_CENTRE,45000,0,18,365,
+Bank PO Coaching (3 months),Banking Exams,COACHING_CENTRE,8000,0,18,90,
+SSC Coaching (3 months),Government Exams,COACHING_CENTRE,7000,0,18,90,
+Spoken English Course,Language,COACHING_CENTRE,4000,0,18,60,
+Class 10 Board Prep (Annual),School Boards,COACHING_CENTRE,20000,0,18,365,
+Class 12 Board Prep (Annual),School Boards,COACHING_CENTRE,22000,0,18,365,
+Mock Test Series,Test Series,COACHING_CENTRE,1500,0,18,0,
+Study Material Kit,Materials,COACHING_CENTRE,2000,0,18,0,

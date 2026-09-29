@@ -1,0 +1,11 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Portrait Photoshoot,Portraits,PHOTOGRAPHY,2000,60,18,0,
+Wedding Photography (Full Day),Wedding,PHOTOGRAPHY,35000,600,18,0,
+Pre-Wedding Shoot,Wedding,PHOTOGRAPHY,15000,240,18,0,
+Birthday Event Coverage,Events,PHOTOGRAPHY,8000,180,18,0,
+Corporate Event Coverage,Events,PHOTOGRAPHY,12000,240,18,0,
+Product Photography (per 10 items),Commercial,PHOTOGRAPHY,3000,120,18,0,
+Passport/ID Photos,Portraits,PHOTOGRAPHY,100,10,18,0,
+Photo Album Design & Print,Post-production,PHOTOGRAPHY,3500,0,18,0,
+Videography (per hour),Video,PHOTOGRAPHY,3000,60,18,0,
+Drone Photography,Aerial,PHOTOGRAPHY,5000,60,18,0,

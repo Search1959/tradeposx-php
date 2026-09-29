@@ -1,0 +1,9 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Business Consultation (per hour),Consultation,CONSULTANT,2000,60,18,0,
+Strategy Session,Consultation,CONSULTANT,5000,90,18,0,
+Market Research Report,Research,CONSULTANT,15000,0,18,0,
+Business Plan Preparation,Documentation,CONSULTANT,10000,0,18,0,
+HR Policy Consultation,Consultation,CONSULTANT,3000,60,18,0,
+Financial Advisory Session,Consultation,CONSULTANT,2500,60,18,0,
+Process Improvement Audit,Audit,CONSULTANT,20000,0,18,0,
+Retainer (Monthly),Retainer,CONSULTANT,25000,0,18,0,

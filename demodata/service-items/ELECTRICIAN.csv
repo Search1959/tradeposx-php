@@ -1,0 +1,11 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Switch/Socket Repair,Repair,ELECTRICIAN,150,30,18,30,
+Fan Installation,Installation,ELECTRICIAN,300,45,18,30,
+Light Fitting Installation,Installation,ELECTRICIAN,200,30,18,30,
+MCB/Fuse Replacement,Repair,ELECTRICIAN,250,30,18,60,
+House Wiring (per point),Wiring,ELECTRICIAN,400,60,18,90,
+Inverter Installation,Installation,ELECTRICIAN,800,90,18,90,
+Geyser Installation,Installation,ELECTRICIAN,500,60,18,60,
+Fault Finding & Diagnosis,Diagnostics,ELECTRICIAN,300,45,18,0,
+Full House Rewiring,Wiring,ELECTRICIAN,8000,480,18,180,
+Emergency Call-out,Emergency,ELECTRICIAN,500,30,18,0,

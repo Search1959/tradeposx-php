@@ -28,16 +28,31 @@ class ServiceInvoiceController {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             CsrfHelper::validate();
             $cart = json_decode($_POST['cart_json'] ?? '[]', true) ?: [];
+            $taxType = in_array($_POST['tax_type'] ?? '', ['EXCLUSIVE', 'INCLUSIVE', 'EXEMPT'], true) ? $_POST['tax_type'] : 'EXCLUSIVE';
             $items = [];
+            $taxableTotal = 0.0;
+            $taxTotal = 0.0;
             foreach ($cart as $line) {
                 $service = $this->itemModel->find($org['id'], (int) $line['id']);
                 if (!$service) continue;
                 $qty = max(1, (float) ($line['qty'] ?? 1));
-                $total = round($qty * (float) $service['price'], 2);
+                $lineAmount = round($qty * (float) $service['price'], 2);
+                $gstRate = $taxType === 'EXEMPT' ? 0.0 : (float) $service['gst_percent'];
+
+                if ($taxType === 'INCLUSIVE' && $gstRate > 0) {
+                    $lineTaxable = round($lineAmount / (1 + $gstRate / 100), 2);
+                    $gstAmount = round($lineAmount - $lineTaxable, 2);
+                } else {
+                    $lineTaxable = $lineAmount;
+                    $gstAmount = round($lineAmount * $gstRate / 100, 2);
+                }
+                $taxableTotal += $lineTaxable;
+                $taxTotal += $gstAmount;
+
                 $items[] = [
                     'service_id' => $service['id'], 'name' => $service['name'], 'item_type' => 'SERVICE',
-                    'price' => $service['price'], 'quantity' => $qty, 'total' => $total,
-                    'staff_id' => $line['staff_id'] ?: null,
+                    'price' => $service['price'], 'quantity' => $qty, 'total' => $lineAmount,
+                    'gst_rate' => $gstRate, 'gst_amount' => $gstAmount, 'staff_id' => $line['staff_id'] ?: null,
                 ];
             }
 
@@ -45,8 +60,10 @@ class ServiceInvoiceController {
                 $error = 'Cart is empty.';
             } else {
                 $customer = $_POST['customer_id'] ? $this->customerModel->find($org['id'], (int) $_POST['customer_id']) : null;
-                $grandTotal = array_reduce($items, fn($s, $i) => $s + $i['total'], 0.0)
-                    + (float) ($_POST['labour_charges'] ?? 0) - (float) ($_POST['discount'] ?? 0);
+                $cgstAmount = round($taxTotal / 2, 2);
+                $sgstAmount = round($taxTotal - $cgstAmount, 2);
+                $grandTotal = round($taxableTotal + $taxTotal
+                    + (float) ($_POST['labour_charges'] ?? 0) - (float) ($_POST['discount'] ?? 0), 2);
                 // Only PARTIAL trusts the client's typed amount — see SaleController for why.
                 $paidAmount = match ($_POST['payment_status'] ?? 'FULL') {
                     'CREDIT' => 0.0,
@@ -60,6 +77,11 @@ class ServiceInvoiceController {
                     'mobile'          => $customer['mobile'] ?? null,
                     'labour_charges'  => $_POST['labour_charges'] ?? 0,
                     'discount'        => $_POST['discount'] ?? 0,
+                    'tax_type'        => $taxType,
+                    'gst_amount'      => $taxTotal,
+                    'taxable_amount'  => $taxType === 'EXEMPT' ? null : $taxableTotal,
+                    'cgst_amount'     => $taxType === 'EXEMPT' ? null : $cgstAmount,
+                    'sgst_amount'     => $taxType === 'EXEMPT' ? null : $sgstAmount,
                     'payment_method'  => $_POST['payment_method'] ?? 'CASH',
                     'paid_amount'     => $paidAmount,
                     'notes'           => $_POST['notes'] ?? null,

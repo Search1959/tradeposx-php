@@ -1,0 +1,11 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+OPD Consultation,Consultation,HOSPITAL,500,15,0,0,
+Emergency Consultation,Consultation,HOSPITAL,1000,20,0,0,
+General Ward (per day),Admission,HOSPITAL,2000,1440,0,0,
+Private Room (per day),Admission,HOSPITAL,5000,1440,0,0,
+ICU (per day),Admission,HOSPITAL,12000,1440,0,0,
+Minor Surgery,Procedures,HOSPITAL,15000,120,0,0,
+Major Surgery,Procedures,HOSPITAL,80000,240,0,0,
+Ambulance Service,Emergency,HOSPITAL,1500,60,0,0,
+Physiotherapy Session,Rehabilitation,HOSPITAL,500,45,0,0,
+Nursing Care (per day),Services,HOSPITAL,1500,1440,0,0,

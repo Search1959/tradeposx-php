@@ -1,0 +1,11 @@
+name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
+Dental Checkup,Consultation,DENTAL_CLINIC,300,15,0,0,
+Teeth Cleaning (Scaling),Cleaning,DENTAL_CLINIC,800,30,0,0,
+Tooth Filling,Treatment,DENTAL_CLINIC,1200,30,0,90,
+Root Canal Treatment,Treatment,DENTAL_CLINIC,4500,60,0,365,
+Tooth Extraction,Treatment,DENTAL_CLINIC,800,20,0,0,
+Wisdom Tooth Removal,Treatment,DENTAL_CLINIC,3000,45,0,30,
+Dental Crown (per tooth),Treatment,DENTAL_CLINIC,6000,45,0,730,
+Teeth Whitening,Cosmetic,DENTAL_CLINIC,3500,45,0,180,
+Braces Consultation,Orthodontics,DENTAL_CLINIC,500,20,0,0,
+Dentures (per set),Prosthetics,DENTAL_CLINIC,8000,60,0,365,
