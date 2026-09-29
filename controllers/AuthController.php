@@ -18,12 +18,12 @@ class AuthController {
         $error = null;
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             CsrfHelper::validate();
-            $email = trim($_POST['email'] ?? '');
+            $identifier = trim($_POST['email'] ?? '');
             $password = $_POST['password'] ?? '';
 
             $user = $org
-                ? $this->userModel->findByEmailInOrg($org['id'], $email)
-                : $this->userModel->findSuperAdminByEmail($email);
+                ? $this->userModel->findByLoginInOrg($org['id'], $identifier)
+                : $this->userModel->findSuperAdminByEmail($identifier);
 
             if ($user && $user['status'] === 'active' && $this->userModel->verifyPassword($user, $password)) {
                 Auth::login($user);

@@ -26,14 +26,22 @@ CREATE TABLE users (
   org_id        INT NULL,                        -- NULL only for platform superadmin
   name          VARCHAR(120) NOT NULL,
   email         VARCHAR(150) NULL,
+  -- Nullable, optional alongside email — the old KiranaMate app logged in by
+  -- username only (sometimes an email-shaped string, sometimes not), so
+  -- migrated accounts need this to keep their exact existing login working.
+  -- New (non-migrated) signups from the SuperAdmin form just leave it null
+  -- and log in with email as usual.
+  username      VARCHAR(60) NULL,
   mobile        VARCHAR(20) NULL,
   password_hash VARCHAR(255) NOT NULL,
   role          ENUM('superadmin','owner','admin','staff') NOT NULL DEFAULT 'staff',
   permissions   JSON NULL,
   status        ENUM('active','disabled') NOT NULL DEFAULT 'active',
+  legacy_id     VARCHAR(64) NULL,
   created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (org_id) REFERENCES organizations(id) ON DELETE CASCADE,
-  INDEX idx_users_org (org_id)
+  INDEX idx_users_org (org_id),
+  UNIQUE KEY uniq_users_org_username (org_id, username)
 ) ENGINE=InnoDB;
 
 CREATE TABLE activity_log (

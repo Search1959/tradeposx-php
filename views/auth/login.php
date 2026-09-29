@@ -17,8 +17,8 @@
     <form method="POST" class="space-y-4">
       <?= CsrfHelper::getField() ?>
       <div>
-        <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
-        <input type="email" name="email" required class="w-full rounded border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <label class="block text-sm font-medium text-slate-700 mb-1"><?= $org ? 'Username or Email' : 'Email' ?></label>
+        <input type="text" name="email" required autocapitalize="off" class="w-full rounded border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
       </div>
       <div>
         <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>

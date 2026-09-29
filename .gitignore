@@ -9,3 +9,7 @@ Thumbs.db
 /config/database.php
 /config/database.production.php
 /php_server.log
+
+# Real customer/business data pulled from the old app for the P5 migration —
+# never goes into this public repo, stays local only.
+/sql/migrate/data/
