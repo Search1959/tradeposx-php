@@ -1,10 +1,18 @@
-<?php $org = Tenant::current(); $base = '/' . $org['slug']; require __DIR__ . '/../../layouts/header.php'; ?>
+<?php
+$org = Tenant::current(); $base = '/' . $org['slug']; require __DIR__ . '/../../layouts/header.php';
+$quotation = $quotation ?? null;
+$isEdit = !empty($quotation['id']);
+?>
 
 <?php if (!empty($error)): ?>
   <div class="mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2"><?= h($error) ?></div>
 <?php endif; ?>
 
-<div x-data="quoteScreen()" x-cloak class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+<div x-data="quoteScreen(<?= h(json_encode([
+  'cart' => array_map(fn($i) => ['id' => (int)$i['service_id'], 'name' => $i['name'], 'price' => (float)$i['price'], 'qty' => (float)$i['quantity']], $quotation['items'] ?? []),
+  'labour' => (float)($quotation['labour_charges'] ?? 0),
+  'discount' => (float)($quotation['discount'] ?? 0),
+])) ?>)" x-cloak class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
   <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border border-slate-200 p-4">
     <input type="text" x-model="search" placeholder="Search services…" class="w-full rounded border border-slate-300 px-3 py-2 text-sm mb-3">
@@ -48,31 +56,32 @@
       <select name="customer_id" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
         <option value="">Walk-in customer</option>
         <?php foreach ($customers as $c): ?>
-          <option value="<?= (int)$c['id'] ?>"><?= h($c['name']) ?> · <?= h($c['mobile']) ?></option>
+          <option value="<?= (int)$c['id'] ?>" <?= (int)($quotation['customer_id'] ?? 0) === (int)$c['id'] ? 'selected' : '' ?>><?= h($c['name']) ?> · <?= h($c['mobile']) ?></option>
         <?php endforeach; ?>
       </select>
       <div class="grid grid-cols-2 gap-2">
         <div>
           <label class="block text-xs font-medium text-slate-700 mb-1">Quote Date</label>
-          <input type="date" name="quote_date" value="<?= date('Y-m-d') ?>" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+          <input type="date" name="quote_date" value="<?= h($quotation['quote_date'] ?? date('Y-m-d')) ?>" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
         </div>
         <div>
           <label class="block text-xs font-medium text-slate-700 mb-1">Valid Until</label>
-          <input type="date" name="valid_until" value="<?= date('Y-m-d', strtotime('+7 days')) ?>" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+          <input type="date" name="valid_until" value="<?= h($quotation['valid_until'] ?? date('Y-m-d', strtotime('+7 days'))) ?>" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
         </div>
       </div>
-      <textarea name="notes" placeholder="Notes" rows="2" class="w-full rounded border border-slate-300 px-3 py-2 text-sm"></textarea>
+      <textarea name="notes" placeholder="Notes" rows="2" class="w-full rounded border border-slate-300 px-3 py-2 text-sm"><?= h($quotation['notes'] ?? '') ?></textarea>
 
-      <button type="submit" :disabled="cart.length === 0" class="w-full bg-indigo-600 disabled:bg-slate-300 text-white font-medium py-2.5 rounded hover:bg-indigo-700">Save Quotation</button>
+      <button type="submit" :disabled="cart.length === 0" class="w-full bg-indigo-600 disabled:bg-slate-300 text-white font-medium py-2.5 rounded hover:bg-indigo-700"><?= $isEdit ? 'Save Changes' : 'Save Quotation' ?></button>
     </form>
   </div>
 </div>
 
 <script>
-function quoteScreen() {
+function quoteScreen(initial) {
+  initial = initial || {};
   return {
     services: <?= json_encode(array_map(fn($s) => ['id'=>(int)$s['id'],'name'=>$s['name'],'category'=>$s['category'],'price'=>(float)$s['price']], $services)) ?>,
-    search: '', cart: [], labour: 0, discount: 0,
+    search: '', cart: initial.cart || [], labour: initial.labour || 0, discount: initial.discount || 0,
     filteredServices() {
       const q = this.search.trim().toLowerCase();
       if (!q) return this.services.slice(0, 60);

@@ -68,6 +68,56 @@ class JobCardController {
         require __DIR__ . '/../views/service/jobcards/form.php';
     }
 
+    public function editAction(?string $id = null): void {
+        $org = Tenant::current();
+        Auth::requireOrgAccess($org['id']);
+        $job = $this->model->find($org['id'], (int) $id);
+        if (!$job) { http_response_code(404); include __DIR__ . '/../views/404.php'; return; }
+        $error = null;
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            CsrfHelper::validate();
+            $customer = $_POST['customer_id'] ? $this->customerModel->find($org['id'], (int) $_POST['customer_id']) : null;
+            $staffMember = $_POST['assigned_staff_id'] ? $this->staffModel->find($org['id'], (int) $_POST['assigned_staff_id']) : null;
+            $rawParts = json_decode($_POST['parts_json'] ?? '[]', true) ?: [];
+            $parts = [];
+            foreach ($rawParts as $p) {
+                if (trim($p['name'] ?? '') === '') continue;
+                $qty = (float) ($p['quantity'] ?? 0);
+                $unitPrice = (float) ($p['unit_price'] ?? 0);
+                $parts[] = ['name' => $p['name'], 'quantity' => $qty, 'unit_price' => $unitPrice, 'total_price' => round($qty * $unitPrice, 2)];
+            }
+
+            if (trim($_POST['issue_description'] ?? '') === '') {
+                $error = 'Issue description is required.';
+                $job = array_merge($job, $_POST);
+            } else {
+                $this->model->update($org['id'], (int) $id, [
+                    'customer_id' => $_POST['customer_id'] ?: null,
+                    'customer_name' => $customer['name'] ?? $job['customer_name'],
+                    'mobile' => $customer['mobile'] ?? $job['mobile'],
+                    'service_sector' => $_POST['service_sector'] ?? $job['service_sector'],
+                    'assigned_staff_id' => $_POST['assigned_staff_id'] ?: null,
+                    'assigned_staff_name' => $staffMember['name'] ?? null,
+                    'priority' => $_POST['priority'] ?? 'Medium',
+                    'issue_description' => $_POST['issue_description'],
+                    'device_or_vehicle_info' => $_POST['device_or_vehicle_info'] ?? null,
+                    'warranty_status' => $_POST['warranty_status'] ?? 'None',
+                    'warranty_expiry_date' => $_POST['warranty_expiry_date'] ?? null,
+                    'labour_charges' => $_POST['labour_charges'] ?? 0,
+                    'estimated_completion_date' => $_POST['estimated_completion_date'] ?? null,
+                ], $parts);
+                redirect($org['slug'] . '/job-cards/view/' . (int) $id);
+                return;
+            }
+        }
+
+        $customers = $this->customerModel->allForOrg($org['id']);
+        $staff = $this->staffModel->allForOrg($org['id']);
+        $pageTitle = 'Edit Job Card';
+        require __DIR__ . '/../views/service/jobcards/form.php';
+    }
+
     public function viewAction(?string $id = null): void {
         $org = Tenant::current();
         Auth::requireOrgAccess($org['id']);

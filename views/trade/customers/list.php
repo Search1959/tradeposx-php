@@ -35,6 +35,10 @@
         <div class="flex items-center gap-3">
           <a href="<?= $base ?>/customers/statement/<?= (int)$c['id'] ?>" class="text-indigo-600 font-medium">Udhaar</a>
           <a href="<?= $base ?>/customers/edit/<?= (int)$c['id'] ?>" class="text-slate-500">Edit</a>
+          <form method="POST" action="<?= $base ?>/customers/delete/<?= (int)$c['id'] ?>" onsubmit="return confirm('Delete this customer? Their Udhaar history will also be deleted.');">
+            <?= CsrfHelper::getField() ?>
+            <button class="text-red-600">Delete</button>
+          </form>
         </div>
       </div>
     </div>
@@ -71,6 +75,10 @@
           <?php endif; ?>
           <a href="<?= $base ?>/customers/statement/<?= (int)$c['id'] ?>" class="text-indigo-600 hover:underline text-xs ml-2">Udhaar</a>
           <a href="<?= $base ?>/customers/edit/<?= (int)$c['id'] ?>" class="text-indigo-600 hover:underline text-xs ml-2">Edit</a>
+          <form method="POST" action="<?= $base ?>/customers/delete/<?= (int)$c['id'] ?>" class="inline" onsubmit="return confirm('Delete this customer? Their Udhaar history will also be deleted.');">
+            <?= CsrfHelper::getField() ?>
+            <button class="text-red-600 hover:underline text-xs ml-2">Delete</button>
+          </form>
         </td>
       </tr>
       <?php endforeach; ?>

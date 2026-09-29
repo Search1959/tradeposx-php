@@ -7,14 +7,17 @@ $statusColors = ['Pending'=>'bg-slate-100 text-slate-600','In-Progress'=>'bg-blu
     <h1 class="text-xl font-semibold text-slate-900"><?= h($job['job_no']) ?></h1>
     <div class="text-sm text-slate-500"><?= h($job['customer_name'] ?? 'Walk-in') ?> <?= $job['mobile'] ? '· ' . h($job['mobile']) : '' ?></div>
   </div>
-  <form method="POST" action="<?= $base ?>/job-cards/status/<?= (int)$job['id'] ?>">
-    <?= CsrfHelper::getField() ?>
-    <select name="status" onchange="this.form.submit()" class="text-sm px-3 py-1.5 rounded-full border-0 <?= $statusColors[$job['status']] ?? '' ?>">
-      <?php foreach (['Pending','In-Progress','Completed','Delivered','Cancelled'] as $st): ?>
-        <option value="<?= $st ?>" <?= $job['status']===$st?'selected':'' ?>><?= $st ?></option>
-      <?php endforeach; ?>
-    </select>
-  </form>
+  <div class="flex items-center gap-2">
+    <a href="<?= $base ?>/job-cards/edit/<?= (int)$job['id'] ?>" class="bg-white border border-slate-300 text-slate-700 text-sm px-3 py-1.5 rounded hover:bg-slate-50">Edit</a>
+    <form method="POST" action="<?= $base ?>/job-cards/status/<?= (int)$job['id'] ?>">
+      <?= CsrfHelper::getField() ?>
+      <select name="status" onchange="this.form.submit()" class="text-sm px-3 py-1.5 rounded-full border-0 <?= $statusColors[$job['status']] ?? '' ?>">
+        <?php foreach (['Pending','In-Progress','Completed','Delivered','Cancelled'] as $st): ?>
+          <option value="<?= $st ?>" <?= $job['status']===$st?'selected':'' ?>><?= $st ?></option>
+        <?php endforeach; ?>
+      </select>
+    </form>
+  </div>
 </div>
 
 <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 mb-4">

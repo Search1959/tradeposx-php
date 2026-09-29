@@ -48,6 +48,54 @@ class JobCard extends BaseModel {
         return $jobId;
     }
 
+    /** Recomputes total/balance from the new labour+material charges (preserving
+     * whatever has already been paid, same as create()'s totalAmount logic) and
+     * replaces the parts list wholesale — simplest way to keep job_card_parts in
+     * sync with a freely-edited cart without diffing rows. */
+    public function update(int $orgId, int $id, array $d, array $parts = []): bool {
+        $existing = $this->queryOne('SELECT paid_amount FROM job_cards WHERE org_id = ? AND id = ?', [$orgId, $id]);
+        if (!$existing) return false;
+
+        $materialCharges = array_reduce($parts, fn($sum, $p) => $sum + (float)$p['total_price'], 0.0);
+        $labourCharges = (float) ($d['labour_charges'] ?? 0);
+        $totalAmount = round($labourCharges + $materialCharges, 2);
+        $balanceAmount = max(0, round($totalAmount - (float) $existing['paid_amount'], 2));
+
+        $this->db->beginTransaction();
+        try {
+            $this->execute(
+                'UPDATE job_cards SET customer_id = ?, customer_name = ?, mobile = ?, service_sector = ?,
+                 assigned_staff_id = ?, assigned_staff_name = ?, priority = ?, issue_description = ?,
+                 device_or_vehicle_info = ?, warranty_status = ?, warranty_expiry_date = ?, labour_charges = ?,
+                 material_charges = ?, total_amount = ?, balance_amount = ?, estimated_completion_date = ?
+                 WHERE org_id = ? AND id = ?',
+                [
+                    $d['customer_id'] ?: null, $d['customer_name'] ?? null, $d['mobile'] ?? null,
+                    $d['service_sector'] ?? null, $d['assigned_staff_id'] ?: null, $d['assigned_staff_name'] ?? null,
+                    $d['priority'] ?? 'Medium', $d['issue_description'] ?? null, $d['device_or_vehicle_info'] ?? null,
+                    $d['warranty_status'] ?? 'None', $d['warranty_expiry_date'] ?: null,
+                    $labourCharges, $materialCharges, $totalAmount, $balanceAmount, $d['estimated_completion_date'] ?: null,
+                    $orgId, $id,
+                ]
+            );
+
+            $this->execute('DELETE FROM job_card_parts WHERE org_id = ? AND job_card_id = ?', [$orgId, $id]);
+            foreach ($parts as $p) {
+                $this->insert(
+                    'INSERT INTO job_card_parts (org_id, job_card_id, name, quantity, unit_price, total_price) VALUES (?,?,?,?,?,?)',
+                    [$orgId, $id, $p['name'], $p['quantity'], $p['unit_price'], $p['total_price']]
+                );
+            }
+
+            $this->db->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            error_log('JobCard::update failed: ' . $e->getMessage());
+            return false;
+        }
+    }
+
     public function updateStatus(int $orgId, int $id, string $status): bool {
         $sql = 'UPDATE job_cards SET status = ?';
         $params = [$status];

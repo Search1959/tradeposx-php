@@ -11,6 +11,17 @@ class Expense extends BaseModel {
         );
     }
 
+    public function find(int $orgId, int $id): ?array {
+        return $this->queryOne('SELECT * FROM expenses WHERE org_id = ? AND id = ?', [$orgId, $id]);
+    }
+
+    public function update(int $orgId, int $id, array $d): bool {
+        return $this->execute(
+            'UPDATE expenses SET category = ?, amount = ?, notes = ? WHERE org_id = ? AND id = ?',
+            [$d['category'], $d['amount'], $d['notes'] ?? null, $orgId, $id]
+        );
+    }
+
     public function delete(int $orgId, int $id): bool {
         return $this->execute('DELETE FROM expenses WHERE org_id = ? AND id = ?', [$orgId, $id]);
     }

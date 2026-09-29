@@ -190,6 +190,9 @@ CREATE TABLE purchases (
   payment_status      ENUM('PAID','PENDING','PARTIAL') NOT NULL DEFAULT 'PENDING',
   payment_method      ENUM('CASH','UPI','BANK','OTHER') NULL,
   notes               TEXT NULL,
+  status              ENUM('CANCELLED') NULL,   -- NULL = normal completed purchase; never hard-delete a purchase
+  cancel_reason       VARCHAR(255) NULL,
+  cancelled_at        TIMESTAMP NULL,
   legacy_id           VARCHAR(64) NULL,
   created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (org_id) REFERENCES organizations(id) ON DELETE CASCADE,
@@ -565,3 +568,7 @@ CREATE TABLE service_payments (
 -- UUID (client_ref) so a retried sync after a flaky connection can't double-insert it.
 ALTER TABLE sales ADD COLUMN client_ref VARCHAR(64) NULL, ADD UNIQUE KEY uniq_sales_org_clientref (org_id, client_ref);
 ALTER TABLE service_invoices ADD COLUMN client_ref VARCHAR(64) NULL, ADD UNIQUE KEY uniq_svcinv_org_clientref (org_id, client_ref);
+
+-- Lets a purchase be cancelled (reversing its stock-in and supplier balance), matching
+-- how sales/service_invoices are voided/cancelled rather than hard-deleted.
+ALTER TABLE purchases ADD COLUMN status ENUM('CANCELLED') NULL, ADD COLUMN cancel_reason VARCHAR(255) NULL, ADD COLUMN cancelled_at TIMESTAMP NULL;

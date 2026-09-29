@@ -10,20 +10,29 @@ $statusColors = ['Draft'=>'bg-slate-100 text-slate-600','Sent'=>'bg-blue-100 tex
 <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
   <table class="w-full text-sm">
     <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
-      <tr><th class="text-left px-4 py-2">Quote #</th><th class="text-left px-4 py-2">Date</th><th class="text-left px-4 py-2">Customer</th><th class="text-right px-4 py-2">Amount</th><th class="text-center px-4 py-2">Status</th></tr>
+      <tr><th class="text-left px-4 py-2">Quote #</th><th class="text-left px-4 py-2">Date</th><th class="text-left px-4 py-2">Customer</th><th class="text-right px-4 py-2">Amount</th><th class="text-center px-4 py-2">Status</th><th class="px-4 py-2"></th></tr>
     </thead>
     <tbody class="divide-y divide-slate-100">
-      <?php foreach ($quotations as $q): ?>
+      <?php foreach ($quotations as $q): $converted = in_array($q['status'], ['ConvertedToJob', 'ConvertedToInvoice'], true); ?>
       <tr class="hover:bg-slate-50 cursor-pointer" onclick="location.href='<?= $base ?>/service-quotations/view/<?= (int)$q['id'] ?>'">
         <td class="px-4 py-2 font-medium text-slate-900"><?= h($q['quote_no']) ?></td>
         <td class="px-4 py-2 text-slate-500"><?= formatDate($q['quote_date']) ?></td>
         <td class="px-4 py-2 text-slate-600"><?= h($q['customer_name'] ?? 'Walk-in') ?></td>
         <td class="px-4 py-2 text-right font-medium"><?= formatCurrency((float)$q['grand_total']) ?></td>
         <td class="px-4 py-2 text-center"><span class="text-xs px-2 py-0.5 rounded-full <?= $statusColors[$q['status']] ?? '' ?>"><?= h(str_replace(['ConvertedToJob','ConvertedToInvoice'], ['Converted (Job)','Converted (Invoice)'], $q['status'])) ?></span></td>
+        <td class="px-4 py-2 text-right whitespace-nowrap" onclick="event.stopPropagation()">
+          <?php if (!$converted): ?>
+            <a href="<?= $base ?>/service-quotations/edit/<?= (int)$q['id'] ?>" class="text-indigo-600 hover:underline text-xs">Edit</a>
+            <form method="POST" action="<?= $base ?>/service-quotations/delete/<?= (int)$q['id'] ?>" class="inline" onsubmit="return confirm('Delete this quotation?');">
+              <?= CsrfHelper::getField() ?>
+              <button class="text-red-600 hover:underline text-xs ml-2">Delete</button>
+            </form>
+          <?php endif; ?>
+        </td>
       </tr>
       <?php endforeach; ?>
       <?php if (empty($quotations)): ?>
-      <tr><td colspan="5" class="px-4 py-8 text-center text-slate-400">No quotations yet.</td></tr>
+      <tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">No quotations yet.</td></tr>
       <?php endif; ?>
     </tbody>
   </table>

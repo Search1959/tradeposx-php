@@ -6,7 +6,16 @@ $converted = in_array($quotation['status'], ['ConvertedToJob', 'ConvertedToInvoi
 <div class="max-w-md mx-auto">
   <div class="flex items-center justify-between mb-4 print:hidden">
     <a href="<?= $base ?>/service-quotations" class="text-sm text-slate-500">&larr; Back to Quotations</a>
-    <button onclick="window.print()" class="bg-slate-700 text-white text-sm px-3 py-1.5 rounded">Print</button>
+    <div class="flex gap-2">
+      <button onclick="window.print()" class="bg-slate-700 text-white text-sm px-3 py-1.5 rounded">Print</button>
+      <?php if (!$converted): ?>
+        <a href="<?= $base ?>/service-quotations/edit/<?= (int)$quotation['id'] ?>" class="bg-white border border-slate-300 text-slate-700 text-sm px-3 py-1.5 rounded hover:bg-slate-50">Edit</a>
+        <form method="POST" action="<?= $base ?>/service-quotations/delete/<?= (int)$quotation['id'] ?>" onsubmit="return confirm('Delete this quotation?');">
+          <?= CsrfHelper::getField() ?>
+          <button class="bg-red-600 text-white text-sm px-3 py-1.5 rounded">Delete</button>
+        </form>
+      <?php endif; ?>
+    </div>
   </div>
 
   <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 font-mono text-sm mb-4">

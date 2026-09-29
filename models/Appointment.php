@@ -26,6 +26,20 @@ class Appointment extends BaseModel {
         );
     }
 
+    public function update(int $orgId, int $id, array $d): bool {
+        return $this->execute(
+            'UPDATE appointments SET customer_id = ?, customer_name = ?, mobile = ?, service_id = ?, service_name = ?,
+             service_sector = ?, staff_id = ?, staff_name = ?, appt_date = ?, appt_time = ?, notes = ?, total_amount = ?
+             WHERE org_id = ? AND id = ?',
+            [
+                $d['customer_id'] ?: null, $d['customer_name'] ?? null, $d['mobile'] ?? null,
+                $d['service_id'] ?: null, $d['service_name'] ?? null, $d['service_sector'] ?? null,
+                $d['staff_id'] ?: null, $d['staff_name'] ?? null, $d['appt_date'], $d['appt_time'],
+                $d['notes'] ?? null, $d['total_amount'] ?? 0, $orgId, $id,
+            ]
+        );
+    }
+
     public function updateStatus(int $orgId, int $id, string $status): bool {
         return $this->execute('UPDATE appointments SET status = ? WHERE org_id = ? AND id = ?', [$status, $orgId, $id]);
     }

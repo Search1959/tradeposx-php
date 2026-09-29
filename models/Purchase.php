@@ -95,4 +95,41 @@ class Purchase extends BaseModel {
             return ['error' => 'Could not save purchase. Please try again.'];
         }
     }
+
+    /** Reverses a purchase's stock-in and supplier balance, mirroring Sale::voidSale() —
+     * a purchase is never hard-deleted since it's a financial record, only cancelled. */
+    public function cancelPurchase(int $orgId, int $id, string $reason): bool {
+        $purchase = $this->find($orgId, $id);
+        if (!$purchase || $purchase['status'] === 'CANCELLED') return false;
+
+        $productModel = new Product();
+        $invModel = new InventoryTransaction();
+        $supplierModel = new Supplier();
+
+        $this->db->beginTransaction();
+        try {
+            foreach ($purchase['items'] as $item) {
+                if ($item['product_id']) {
+                    $productModel->adjustStock($orgId, (int) $item['product_id'], -(float) $item['quantity']);
+                    $invModel->record($orgId, (int) $item['product_id'], 'MANUAL_REDUCE', -(float) $item['quantity'], $purchase['purchase_number']);
+                }
+            }
+
+            $balance = round((float) $purchase['grand_total'] - (float) $purchase['paid_amount'], 2);
+            if ($balance > 0 && $purchase['supplier_id']) {
+                $supplierModel->adjustOutstanding($orgId, (int) $purchase['supplier_id'], -$balance);
+            }
+
+            $this->execute(
+                "UPDATE purchases SET status = 'CANCELLED', cancel_reason = ?, cancelled_at = NOW() WHERE org_id = ? AND id = ?",
+                [$reason, $orgId, $id]
+            );
+            $this->db->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            error_log('Purchase::cancelPurchase failed: ' . $e->getMessage());
+            return false;
+        }
+    }
 }

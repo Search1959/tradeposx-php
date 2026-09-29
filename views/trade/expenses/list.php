@@ -43,10 +43,11 @@ $categories = ['Rent','Electricity','Delivery/Transport','Staff Salary','Packagi
         <td class="px-4 py-2 text-slate-900"><?= h($e['category']) ?></td>
         <td class="px-4 py-2 text-slate-500"><?= h($e['notes'] ?? '') ?></td>
         <td class="px-4 py-2 text-right font-medium"><?= formatCurrency((float)$e['amount']) ?></td>
-        <td class="px-4 py-2 text-right">
-          <form method="POST" action="<?= $base ?>/expenses/delete/<?= (int)$e['id'] ?>" onsubmit="return confirm('Delete this expense?');">
+        <td class="px-4 py-2 text-right whitespace-nowrap">
+          <a href="<?= $base ?>/expenses/edit/<?= (int)$e['id'] ?>" class="text-indigo-600 hover:underline text-xs">Edit</a>
+          <form method="POST" action="<?= $base ?>/expenses/delete/<?= (int)$e['id'] ?>" class="inline" onsubmit="return confirm('Delete this expense?');">
             <?= CsrfHelper::getField() ?>
-            <button class="text-red-600 hover:underline text-xs">Delete</button>
+            <button class="text-red-600 hover:underline text-xs ml-2">Delete</button>
           </form>
         </td>
       </tr>

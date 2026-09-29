@@ -34,6 +34,10 @@
           </form>
           <?php endif; ?>
           <a href="<?= $base ?>/service-staff/edit/<?= (int)$s['id'] ?>" class="text-indigo-600 hover:underline text-xs ml-2">Edit</a>
+          <form method="POST" action="<?= $base ?>/service-staff/delete/<?= (int)$s['id'] ?>" class="inline" onsubmit="return confirm('Delete this staff member?');">
+            <?= CsrfHelper::getField() ?>
+            <button class="text-red-600 hover:underline text-xs ml-2">Delete</button>
+          </form>
         </td>
       </tr>
       <?php endforeach; ?>

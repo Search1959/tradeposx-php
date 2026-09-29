@@ -62,6 +62,52 @@ class ServiceQuotation extends BaseModel {
         return $this->execute('UPDATE service_quotations SET status = ? WHERE org_id = ? AND id = ?', [$status, $orgId, $id]);
     }
 
+    /** @param array $items each: service_id?, name, item_type, price, quantity, total */
+    public function update(int $orgId, int $id, array $data, array $items): array {
+        if (empty($items)) return ['error' => 'At least one item is required.'];
+
+        $itemsTotal = array_reduce($items, fn($sum, $i) => $sum + (float) $i['total'], 0.0);
+        $labourCharges = (float) ($data['labour_charges'] ?? 0);
+        $materialCharges = (float) ($data['material_charges'] ?? 0);
+        $discount = (float) ($data['discount'] ?? 0);
+        $gstAmount = (float) ($data['gst_amount'] ?? 0);
+        $grandTotal = round($itemsTotal + $labourCharges + $materialCharges + $gstAmount - $discount, 2);
+
+        $this->db->beginTransaction();
+        try {
+            $this->execute(
+                'UPDATE service_quotations SET customer_id = ?, customer_name = ?, mobile = ?, quote_date = ?,
+                 valid_until = ?, labour_charges = ?, material_charges = ?, discount = ?, gst_amount = ?, grand_total = ?, notes = ?
+                 WHERE org_id = ? AND id = ?',
+                [
+                    $data['customer_id'] ?: null, $data['customer_name'] ?? null, $data['mobile'] ?? null,
+                    $data['quote_date'] ?: date('Y-m-d'), $data['valid_until'] ?: null, $labourCharges, $materialCharges,
+                    $discount, $gstAmount, $grandTotal, $data['notes'] ?? null, $orgId, $id,
+                ]
+            );
+
+            $this->execute('DELETE FROM service_invoice_items WHERE org_id = ? AND quotation_id = ?', [$orgId, $id]);
+            foreach ($items as $item) {
+                $this->insert(
+                    'INSERT INTO service_invoice_items (org_id, quotation_id, service_id, name, item_type, price, quantity, total)
+                     VALUES (?,?,?,?,?,?,?,?)',
+                    [$orgId, $id, $item['service_id'] ?? null, $item['name'], $item['item_type'] ?? 'SERVICE',
+                     $item['price'], $item['quantity'], $item['total']]
+                );
+            }
+            $this->db->commit();
+            return ['id' => $id];
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            error_log('ServiceQuotation::update failed: ' . $e->getMessage());
+            return ['error' => 'Could not save quotation. Please try again.'];
+        }
+    }
+
+    public function delete(int $orgId, int $id): bool {
+        return $this->execute('DELETE FROM service_quotations WHERE org_id = ? AND id = ?', [$orgId, $id]);
+    }
+
     /** Converts an Approved quotation into a real invoice, carrying its items
      * over unpaid (status UNPAID — collecting payment happens on the invoice
      * itself afterwards, same as any other invoice), and marks the quotation

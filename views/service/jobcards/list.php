@@ -27,11 +27,12 @@ $priorityColors = ['Low'=>'text-slate-400','Medium'=>'text-slate-600','High'=>'t
         </td>
         <td class="px-4 py-2 text-right <?= $bal > 0 ? 'text-amber-600 font-semibold' : 'text-slate-400' ?>"><?= formatCurrency($bal) ?></td>
         <td class="px-4 py-2 text-center"><span class="text-xs px-2 py-0.5 rounded-full <?= $statusColors[$j['status']] ?? '' ?>"><?= h($j['status']) ?></span></td>
-        <td class="px-4 py-2 text-right" onclick="event.stopPropagation()">
+        <td class="px-4 py-2 text-right whitespace-nowrap" onclick="event.stopPropagation()">
           <?php if ($bal > 0 && !empty($j['mobile'])): ?>
             <?php $msg = serviceBalanceReminderMessage($org['name'], $j['customer_name'] ?: 'Customer', $j['job_no'], $bal, $org['phone'] ?? null); ?>
             <a href="<?= h(whatsappLink($j['mobile'], $msg)) ?>" target="_blank" rel="noopener" class="text-green-600 hover:underline text-xs">💬 Remind</a>
           <?php endif; ?>
+          <a href="<?= $base ?>/job-cards/edit/<?= (int)$j['id'] ?>" class="text-indigo-600 hover:underline text-xs ml-2">Edit</a>
         </td>
       </tr>
       <?php endforeach; ?>

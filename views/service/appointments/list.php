@@ -29,9 +29,10 @@ $statusColors = ['Scheduled'=>'bg-slate-100 text-slate-600','In-Progress'=>'bg-b
             </select>
           </form>
         </td>
-        <td class="px-4 py-2 text-right">
-          <form method="POST" action="<?= $base ?>/appointments/delete/<?= (int)$a['id'] ?>" onsubmit="return confirm('Delete?');">
-            <?= CsrfHelper::getField() ?><button class="text-red-600 hover:underline text-xs">Delete</button>
+        <td class="px-4 py-2 text-right whitespace-nowrap">
+          <a href="<?= $base ?>/appointments/edit/<?= (int)$a['id'] ?>" class="text-indigo-600 hover:underline text-xs">Edit</a>
+          <form method="POST" action="<?= $base ?>/appointments/delete/<?= (int)$a['id'] ?>" class="inline" onsubmit="return confirm('Delete?');">
+            <?= CsrfHelper::getField() ?><button class="text-red-600 hover:underline text-xs ml-2">Delete</button>
           </form>
         </td>
       </tr>

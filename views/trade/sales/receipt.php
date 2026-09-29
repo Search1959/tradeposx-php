@@ -15,6 +15,11 @@ $sgstDisplay = $sale['sgst_amount'] !== null ? (float)$sale['sgst_amount'] : rou
     <a href="<?= $base ?>/sales" class="text-sm text-slate-500">&larr; Back to Sales</a>
     <div class="flex gap-2">
       <button onclick="window.print()" class="bg-slate-700 text-white text-sm px-3 py-1.5 rounded">Print</button>
+      <?php if (!empty($sale['customer_mobile'])): ?>
+        <?php $billMsg = saleBillWhatsAppMessage($org['name'], $sale['sale_number'], $sale['customer_name'] ?: 'Customer', $sale['items'], (float)$sale['grand_total'], (float)$sale['received_amount'], $owed, $org['phone'] ?? null); ?>
+        <a href="<?= h(whatsappLink($sale['customer_mobile'], $billMsg)) ?>" target="_blank" rel="noopener"
+           class="bg-green-600 text-white text-sm px-3 py-1.5 rounded hover:bg-green-700">💬 Send Bill</a>
+      <?php endif; ?>
       <?php if (!$sale['status']): ?>
       <form method="POST" action="<?= $base ?>/sales/void/<?= (int)$sale['id'] ?>" onsubmit="return confirm('Void this sale? Stock and Udhaar will be reversed.') && (this.reason.value = prompt('Reason for voiding?') || 'No reason given');">
         <?= CsrfHelper::getField() ?>

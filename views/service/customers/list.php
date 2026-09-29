@@ -20,7 +20,13 @@
         <td class="px-4 py-2 text-slate-600"><?= h($c['mobile']) ?></td>
         <td class="px-4 py-2 text-slate-600"><?= h($c['sector'] ?? '') ?></td>
         <td class="px-4 py-2 text-right"><?= formatCurrency((float)$c['total_spent']) ?></td>
-        <td class="px-4 py-2 text-right"><a href="<?= $base ?>/service-customers/edit/<?= (int)$c['id'] ?>" class="text-indigo-600 hover:underline text-xs">Edit</a></td>
+        <td class="px-4 py-2 text-right whitespace-nowrap">
+          <a href="<?= $base ?>/service-customers/edit/<?= (int)$c['id'] ?>" class="text-indigo-600 hover:underline text-xs">Edit</a>
+          <form method="POST" action="<?= $base ?>/service-customers/delete/<?= (int)$c['id'] ?>" class="inline" onsubmit="return confirm('Delete this customer?');">
+            <?= CsrfHelper::getField() ?>
+            <button class="text-red-600 hover:underline text-xs ml-2">Delete</button>
+          </form>
+        </td>
       </tr>
       <?php endforeach; ?>
       <?php if (empty($customers)): ?>

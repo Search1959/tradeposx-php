@@ -179,4 +179,15 @@ class PurchaseController {
         $pageTitle = 'Purchase ' . $purchase['purchase_number'];
         require __DIR__ . '/../views/trade/purchases/view.php';
     }
+
+    public function cancelAction(?string $id = null): void {
+        $org = Tenant::current();
+        Auth::requireRole(['owner', 'admin']);
+        Auth::requireOrgAccess($org['id']);
+        CsrfHelper::validate();
+        $reason = $_POST['reason'] ?? 'No reason given';
+        $this->model->cancelPurchase($org['id'], (int) $id, $reason);
+        logActivity($org['id'], 'purchase_cancelled', 'purchase', (int) $id, $reason);
+        redirect($org['slug'] . '/purchases/view/' . (int) $id);
+    }
 }

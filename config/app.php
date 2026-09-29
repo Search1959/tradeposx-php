@@ -165,6 +165,71 @@ function serviceBalanceReminderMessage(string $businessName, string $customerNam
     return implode("\n", $lines);
 }
 
+/** Full itemized bill as a WhatsApp message — for the "📤 Send Bill" button, distinct
+ * from udhaarReminderMessage() which only nags about an outstanding balance. $items
+ * is $sale['items'] (product_name, quantity, unit_price, total_price). */
+function saleBillWhatsAppMessage(string $businessName, string $saleNumber, string $customerName, array $items, float $grandTotal, float $paid, float $balance, ?string $businessPhone = null): string {
+    $lines = [];
+    $lines[] = "🧾 *{$businessName}*";
+    $lines[] = "_Bill No: {$saleNumber}_";
+    $lines[] = "";
+    $lines[] = "Dear {$customerName},";
+    $lines[] = "Thank you for your purchase! Here's your bill:";
+    $lines[] = "";
+    $lines[] = "```";
+    foreach ($items as $item) {
+        $qty = rtrim(rtrim(number_format((float) $item['quantity'], 2), '0'), '.');
+        $lines[] = $item['product_name'];
+        $lines[] = '  ' . $qty . ' x ' . number_format((float) $item['unit_price'], 2) . ' = ' . number_format((float) $item['total_price'], 2);
+    }
+    $lines[] = "```";
+    $lines[] = "";
+    $lines[] = "*Grand Total: " . formatCurrency($grandTotal) . "*";
+    $lines[] = "Paid: " . formatCurrency($paid);
+    if ($balance > 0) {
+        $lines[] = "*Balance (Udhaar): " . formatCurrency($balance) . "*";
+    }
+    $lines[] = "";
+    if ($businessPhone) {
+        $lines[] = "📞 {$businessPhone}";
+    }
+    $lines[] = "🙏 Thank you for your business — {$businessName}";
+
+    return implode("\n", $lines);
+}
+
+/** Same bill-style formatting as saleBillWhatsAppMessage(), for a ServiceERP invoice.
+ * $items is $invoice['items'] (name, quantity, price, total). */
+function serviceInvoiceWhatsAppMessage(string $businessName, string $invoiceNo, string $customerName, array $items, float $grandTotal, float $paid, float $balance, ?string $businessPhone = null): string {
+    $lines = [];
+    $lines[] = "🧾 *{$businessName}*";
+    $lines[] = "_Invoice No: {$invoiceNo}_";
+    $lines[] = "";
+    $lines[] = "Dear {$customerName},";
+    $lines[] = "Thank you for your business! Here's your invoice:";
+    $lines[] = "";
+    $lines[] = "```";
+    foreach ($items as $item) {
+        $qty = rtrim(rtrim(number_format((float) $item['quantity'], 2), '0'), '.');
+        $lines[] = $item['name'];
+        $lines[] = '  ' . $qty . ' x ' . number_format((float) $item['price'], 2) . ' = ' . number_format((float) $item['total'], 2);
+    }
+    $lines[] = "```";
+    $lines[] = "";
+    $lines[] = "*Grand Total: " . formatCurrency($grandTotal) . "*";
+    $lines[] = "Paid: " . formatCurrency($paid);
+    if ($balance > 0) {
+        $lines[] = "*Balance Due: " . formatCurrency($balance) . "*";
+    }
+    $lines[] = "";
+    if ($businessPhone) {
+        $lines[] = "📞 {$businessPhone}";
+    }
+    $lines[] = "🙏 Thank you for your business — {$businessName}";
+
+    return implode("\n", $lines);
+}
+
 /** Random client-generated reference for idempotent offline-sale sync — see
  * sales.client_ref / service_invoices.client_ref in sql/schema.sql. */
 function generateClientRef(): string {

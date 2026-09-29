@@ -2,8 +2,23 @@
 
 <div class="flex items-center justify-between mb-4">
   <h1 class="text-xl font-semibold text-slate-900"><?= h($purchase['purchase_number']) ?></h1>
-  <a href="<?= $base ?>/purchases" class="text-sm text-slate-500">&larr; Back to Purchases</a>
+  <div class="flex items-center gap-2">
+    <a href="<?= $base ?>/purchases" class="text-sm text-slate-500">&larr; Back to Purchases</a>
+    <?php if ($purchase['status'] !== 'CANCELLED'): ?>
+      <form method="POST" action="<?= $base ?>/purchases/cancel/<?= (int)$purchase['id'] ?>" onsubmit="return confirm('Cancel this purchase? Stock and supplier balance will be reversed.') && (this.reason.value = prompt('Reason for cancelling?') || 'No reason given');">
+        <?= CsrfHelper::getField() ?>
+        <input type="hidden" name="reason" value="">
+        <button class="bg-red-600 text-white text-sm px-3 py-1.5 rounded">Cancel Purchase</button>
+      </form>
+    <?php endif; ?>
+  </div>
 </div>
+
+<?php if ($purchase['status'] === 'CANCELLED'): ?>
+  <div class="mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2">
+    Cancelled: <?= h($purchase['cancel_reason']) ?> · <?= formatDateTime($purchase['cancelled_at']) ?>
+  </div>
+<?php endif; ?>
 
 <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 mb-4">
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
