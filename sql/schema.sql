@@ -41,7 +41,11 @@ CREATE TABLE users (
   created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (org_id) REFERENCES organizations(id) ON DELETE CASCADE,
   INDEX idx_users_org (org_id),
-  UNIQUE KEY uniq_users_org_username (org_id, username)
+  UNIQUE KEY uniq_users_org_username (org_id, username),
+  -- Global, since the platform-level /login "Login" tab looks a user up by
+  -- email alone with no org in the URL to scope by. NULL-safe in MySQL —
+  -- migrated username-only accounts (email NULL) never collide on this.
+  UNIQUE KEY uniq_users_email (email)
 ) ENGINE=InnoDB;
 
 CREATE TABLE activity_log (

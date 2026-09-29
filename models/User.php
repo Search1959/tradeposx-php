@@ -19,6 +19,12 @@ class User extends BaseModel {
         return $this->queryOne("SELECT * FROM users WHERE org_id IS NULL AND role = 'superadmin' AND email = ?", [$email]);
     }
 
+    /** Platform-level /login "Login" tab has no org-slug in the URL to scope by —
+     * looks a tenant user up by email alone, relying on uniq_users_email. */
+    public function findByEmailAcrossOrgs(string $email): ?array {
+        return $this->queryOne('SELECT * FROM users WHERE org_id IS NOT NULL AND email = ?', [$email]);
+    }
+
     public function allForOrg(int $orgId): array {
         return $this->query('SELECT * FROM users WHERE org_id = ? ORDER BY created_at DESC', [$orgId]);
     }
