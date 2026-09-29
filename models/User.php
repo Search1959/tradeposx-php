@@ -64,6 +64,14 @@ class User extends BaseModel {
         return $this->execute('UPDATE users SET status = ? WHERE id = ?', [$status, $id]);
     }
 
+    public function updateProfile(int $orgId, int $id, string $name, ?string $email, string $role): bool {
+        return $this->execute('UPDATE users SET name = ?, email = ?, role = ? WHERE org_id = ? AND id = ?', [$name, $email, $role, $orgId, $id]);
+    }
+
+    public function countByRole(int $orgId, string $role): int {
+        return (int) $this->count('users', 'org_id = ? AND role = ?', [$orgId, $role]);
+    }
+
     public function updatePassword(int $id, string $newPassword): bool {
         return $this->execute('UPDATE users SET password_hash = ? WHERE id = ?', [password_hash($newPassword, PASSWORD_DEFAULT), $id]);
     }

@@ -139,7 +139,9 @@ class SaleController {
         Auth::requireRole(['owner', 'admin']);
         Auth::requireOrgAccess($org['id']);
         CsrfHelper::validate();
-        $this->model->voidSale($org['id'], (int) $id, $_POST['reason'] ?? 'No reason given');
+        $reason = $_POST['reason'] ?? 'No reason given';
+        $this->model->voidSale($org['id'], (int) $id, $reason);
+        logActivity($org['id'], 'sale_voided', 'sale', (int) $id, $reason);
         redirect($org['slug'] . '/sales/receipt/' . (int) $id);
     }
 }

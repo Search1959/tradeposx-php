@@ -73,6 +73,11 @@ $workspace = match ($org['business_type'] ?? 'both') {
       <?php if (($org['business_type'] ?? 'both') === 'both'): ?>
         <a href="<?= $base ?>/choose" class="block px-3 py-2 mt-2 rounded border border-slate-800 text-slate-400 hover:bg-slate-800 hover:text-slate-200">⇄ Switch Workspace</a>
       <?php endif; ?>
+      <?php if (in_array($user['role'] ?? '', ['owner', 'admin'], true)): ?>
+        <div class="pt-3 pb-1 px-3 text-xs uppercase tracking-wide text-slate-500">System Admin</div>
+        <a href="<?= $base ?>/team" class="block px-3 py-2 rounded hover:bg-slate-800">👥 Team</a>
+        <a href="<?= $base ?>/activity-log" class="block px-3 py-2 rounded hover:bg-slate-800">📋 Activity Log</a>
+      <?php endif; ?>
     </nav>
     <div class="px-3 py-3 border-t border-slate-800 text-xs space-x-2">
       <div class="text-slate-300 mb-1"><?= h($user['name'] ?? '') ?></div>

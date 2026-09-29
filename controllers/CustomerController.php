@@ -105,6 +105,7 @@ class CustomerController {
                 $org['id'], (int) $id, 'PAYMENT_RECEIVED', $amount, $balanceAfter,
                 $_POST['payment_method'] ?? 'CASH', null, $_POST['notes'] ?? null
             );
+            logActivity($org['id'], 'customer_payment_recorded', 'customer', (int) $id, "{$customer['name']} — " . formatCurrency($amount));
         }
         redirect($org['slug'] . '/customers/statement/' . (int) $id);
     }

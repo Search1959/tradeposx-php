@@ -94,6 +94,9 @@ $tenantRouteMap = [
     'pos-mobile'         => 'MobilePosController',
     // Platform-within-tenant
     'settings'           => 'SettingsController',
+    // System Admin (owner/admin only — team accounts, audit trail)
+    'team'               => 'TeamController',
+    'activity-log'       => 'ActivityLogController',
 ];
 $moduleDefaultAction = [
     'dashboard'          => 'index',
@@ -118,6 +121,8 @@ $moduleDefaultAction = [
     'service-quotations' => 'list',
     'pos-mobile'         => 'index',
     'settings'           => 'index',
+    'team'               => 'list',
+    'activity-log'       => 'list',
 ];
 
 // Bare org slug (no module segment) sends staff to login/dashboard.
