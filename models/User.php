@@ -57,4 +57,8 @@ class User extends BaseModel {
     public function updateStatus(int $id, string $status): bool {
         return $this->execute('UPDATE users SET status = ? WHERE id = ?', [$status, $id]);
     }
+
+    public function updatePassword(int $id, string $newPassword): bool {
+        return $this->execute('UPDATE users SET password_hash = ? WHERE id = ?', [password_hash($newPassword, PASSWORD_DEFAULT), $id]);
+    }
 }

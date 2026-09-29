@@ -1,0 +1,51 @@
+<?php
+class SettingsController {
+    private User $userModel;
+    private Organization $orgModel;
+
+    public function __construct() {
+        $this->userModel = new User();
+        $this->orgModel = new Organization();
+    }
+
+    public function indexAction(): void {
+        $org = Tenant::current();
+        Auth::requireOrgAccess($org['id']);
+
+        $error = null;
+        $success = null;
+        $currentUser = Auth::user();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            CsrfHelper::validate();
+
+            if (($_POST['form'] ?? '') === 'password') {
+                $current = $_POST['current_password'] ?? '';
+                $new = $_POST['new_password'] ?? '';
+                $confirm = $_POST['confirm_password'] ?? '';
+                if (!$this->userModel->verifyPassword($currentUser, $current)) {
+                    $error = 'Current password is incorrect.';
+                } elseif (strlen($new) < 6) {
+                    $error = 'New password must be at least 6 characters.';
+                } elseif ($new !== $confirm) {
+                    $error = 'New password and confirmation do not match.';
+                } else {
+                    $this->userModel->updatePassword($currentUser['id'], $new);
+                    $success = 'Password updated.';
+                }
+            } elseif (($_POST['form'] ?? '') === 'business' && in_array(Auth::role(), ['owner', 'admin'], true)) {
+                $name = trim($_POST['name'] ?? '');
+                if ($name === '') {
+                    $error = 'Business name is required.';
+                } else {
+                    $this->orgModel->updateProfile($org['id'], $name, $_POST['trading_sector'] ?? null);
+                    $org = $this->orgModel->find($org['id']); // refresh for the view
+                    $success = 'Business details updated.';
+                }
+            }
+        }
+
+        $pageTitle = 'Settings';
+        require __DIR__ . '/../views/settings/index.php';
+    }
+}

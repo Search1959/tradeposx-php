@@ -24,6 +24,10 @@ class Organization extends BaseModel {
         );
     }
 
+    public function updateProfile(int $id, string $name, ?string $tradingSector): bool {
+        return $this->execute('UPDATE organizations SET name = ?, trading_sector = ? WHERE id = ?', [$name, $tradingSector, $id]);
+    }
+
     public function updateStatus(int $id, string $status): bool {
         return $this->execute('UPDATE organizations SET status = ? WHERE id = ?', [$status, $id]);
     }

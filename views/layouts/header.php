@@ -43,6 +43,8 @@ $user = Auth::user();
     </nav>
     <div class="px-3 py-3 border-t border-slate-800 text-xs">
       <div class="text-slate-300"><?= h($user['name'] ?? '') ?></div>
+      <a href="<?= $base ?>/settings" class="text-slate-500 hover:text-slate-300">Settings</a>
+      <span class="text-slate-700">·</span>
       <a href="<?= $base ?>/logout" class="text-slate-500 hover:text-slate-300">Logout</a>
     </div>
   </aside>

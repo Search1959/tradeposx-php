@@ -1,0 +1,59 @@
+<?php $base = '/' . $org['slug']; require __DIR__ . '/../layouts/header.php'; ?>
+
+<h1 class="text-xl font-semibold text-slate-900 mb-4">Settings</h1>
+
+<?php if (!empty($error)): ?>
+  <div class="mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2"><?= h($error) ?></div>
+<?php endif; ?>
+<?php if (!empty($success)): ?>
+  <div class="mb-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2"><?= h($success) ?></div>
+<?php endif; ?>
+
+<div class="grid gap-6 max-w-xl">
+  <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+    <h2 class="font-semibold text-slate-900 mb-1">Your Account</h2>
+    <p class="text-sm text-slate-500 mb-4"><?= h($currentUser['name']) ?> · <?= h($currentUser['email'] ?? $currentUser['username'] ?? '') ?> · <?= h(ucfirst($currentUser['role'])) ?></p>
+
+    <form method="POST" class="space-y-3">
+      <?= CsrfHelper::getField() ?>
+      <input type="hidden" name="form" value="password">
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Current Password</label>
+        <input type="password" name="current_password" required class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">New Password</label>
+          <input type="password" name="new_password" required minlength="6" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Confirm New Password</label>
+          <input type="password" name="confirm_password" required minlength="6" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+        </div>
+      </div>
+      <button type="submit" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">Change Password</button>
+    </form>
+  </div>
+
+  <?php if (in_array(Auth::role(), ['owner', 'admin'], true)): ?>
+  <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+    <h2 class="font-semibold text-slate-900 mb-4">Business Details</h2>
+    <form method="POST" class="space-y-3">
+      <?= CsrfHelper::getField() ?>
+      <input type="hidden" name="form" value="business">
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Business Name</label>
+        <input type="text" name="name" required value="<?= h($org['name']) ?>" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Trading Sector</label>
+        <input type="text" name="trading_sector" value="<?= h($org['trading_sector'] ?? '') ?>" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+      </div>
+      <div class="text-xs text-slate-400">URL: tradeposx.com/<?= h($org['slug']) ?>/ (slug can't be changed here)</div>
+      <button type="submit" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">Save</button>
+    </form>
+  </div>
+  <?php endif; ?>
+</div>
+
+<?php require __DIR__ . '/../layouts/footer.php'; ?>
