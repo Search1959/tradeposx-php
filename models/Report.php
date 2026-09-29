@@ -70,6 +70,26 @@ class Report extends BaseModel {
         return $this->count('job_cards', "org_id = ? AND status IN ('Pending','In-Progress')", [$orgId]);
     }
 
+    public function serviceRevenueSummary(int $orgId): array {
+        $today = $this->queryOne(
+            "SELECT COALESCE(SUM(grand_total),0) as total, COUNT(*) as cnt FROM service_invoices WHERE org_id = ? AND status != 'CANCELLED' AND DATE(created_at) = CURDATE()",
+            [$orgId]
+        );
+        $week = $this->queryOne(
+            "SELECT COALESCE(SUM(grand_total),0) as total, COUNT(*) as cnt FROM service_invoices WHERE org_id = ? AND status != 'CANCELLED' AND YEARWEEK(created_at, 1) = YEARWEEK(CURDATE(), 1)",
+            [$orgId]
+        );
+        $month = $this->queryOne(
+            "SELECT COALESCE(SUM(grand_total),0) as total, COUNT(*) as cnt FROM service_invoices WHERE org_id = ? AND status != 'CANCELLED' AND YEAR(created_at) = YEAR(CURDATE()) AND MONTH(created_at) = MONTH(CURDATE())",
+            [$orgId]
+        );
+        return ['today' => $today, 'week' => $week, 'month' => $month];
+    }
+
+    public function upcomingAppointmentsCount(int $orgId): int {
+        return $this->count('appointments', "org_id = ? AND appt_date >= CURDATE() AND status NOT IN ('Completed','Cancelled')", [$orgId]);
+    }
+
     public function serviceOutstanding(int $orgId): float {
         $invRow = $this->queryOne("SELECT COALESCE(SUM(balance_amount),0) as total FROM service_invoices WHERE org_id = ? AND status != 'CANCELLED'", [$orgId]);
         $jobRow = $this->queryOne("SELECT COALESCE(SUM(balance_amount),0) as total FROM job_cards WHERE org_id = ? AND status != 'Cancelled'", [$orgId]);

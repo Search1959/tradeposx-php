@@ -24,7 +24,7 @@
         <div class="text-xl font-semibold text-slate-900"><?= formatCurrency($todaySales) ?></div>
       </a>
 
-      <a href="<?= $base ?>/appointments" class="group bg-white rounded-2xl border-2 border-slate-200 hover:border-indigo-500 p-8 transition shadow-sm hover:shadow-md">
+      <a href="<?= $base ?>/service-dashboard" class="group bg-white rounded-2xl border-2 border-slate-200 hover:border-indigo-500 p-8 transition shadow-sm hover:shadow-md">
         <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mb-4">🛠️</div>
         <h2 class="text-lg font-semibold text-slate-900 mb-1 group-hover:text-indigo-600">ServiceERP</h2>
         <p class="text-sm text-slate-500 mb-4">Appointments, job cards, staff &amp; service invoices.</p>

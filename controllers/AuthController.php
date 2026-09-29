@@ -137,8 +137,12 @@ class AuthController {
         // A "both" business picks TradeERP or ServiceERP right after logging in
         // (matching how the old app kept them as genuinely separate logins) —
         // trade-only/service-only orgs have nothing to choose, so they go
-        // straight to the dashboard as before.
-        $landingPage = ($org && $org['business_type'] === 'both') ? 'choose' : 'dashboard';
+        // straight to their own dashboard (not the other module's) as before.
+        $landingPage = match ($org['business_type'] ?? 'both') {
+            'service' => 'service-dashboard',
+            'both' => 'choose',
+            default => 'dashboard',
+        };
         redirect(($org ? $org['slug'] . '/' : '') . $landingPage);
     }
 

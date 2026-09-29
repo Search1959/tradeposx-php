@@ -69,6 +69,7 @@ if ($org['status'] === 'suspended' && !Auth::isSuperAdmin()) {
 
 $tenantRouteMap = [
     'dashboard'          => 'DashboardController',
+    'service-dashboard'  => 'DashboardController',
     'choose'             => 'DashboardController',
     'login'              => 'AuthController',
     'logout'             => 'AuthController',
@@ -96,6 +97,7 @@ $tenantRouteMap = [
 ];
 $moduleDefaultAction = [
     'dashboard'          => 'index',
+    'service-dashboard'  => 'service',
     'choose'             => 'choose',
     'login'              => 'index',
     'logout'             => 'logout',

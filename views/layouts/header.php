@@ -2,6 +2,25 @@
 /** Included by every tenant-scoped view. Expects $pageTitle to be set by the caller. */
 $org = Tenant::current();
 $user = Auth::user();
+
+// Which side of the app is currently active, so the sidebar shows one menu,
+// not both stacked together. A single-type org has no choice - it's always
+// its own type. A "both" org's active side is whichever module the visitor
+// most recently opened, tracked in session (defaults to trade until they
+// pick, or visit a service-side page, or use "Switch Workspace" below).
+$serviceModules = ['service-dashboard', 'appointments', 'job-cards', 'service-invoices', 'service-quotations', 'service-customers', 'service-staff', 'service-items'];
+$tradeModules = ['dashboard', 'sales', 'pos', 'products', 'customers', 'suppliers', 'purchases', 'reports', 'expenses'];
+$currentModule = explode('/', trim($_GET['url'] ?? '', '/'))[1] ?? '';
+if (in_array($currentModule, $serviceModules, true)) {
+    $_SESSION['workspace'] = 'service';
+} elseif (in_array($currentModule, $tradeModules, true)) {
+    $_SESSION['workspace'] = 'trade';
+}
+$workspace = match ($org['business_type'] ?? 'both') {
+    'trade' => 'trade',
+    'service' => 'service',
+    default => $_SESSION['workspace'] ?? 'trade',
+};
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,24 +42,36 @@ $user = Auth::user();
 <div class="min-h-screen flex">
   <aside class="hidden md:flex md:w-56 md:flex-col bg-slate-900 text-slate-200">
     <div class="px-4 py-4 text-lg font-semibold text-white border-b border-slate-800"><?= h($org['name'] ?? APP_NAME) ?></div>
+    <?php if (($org['business_type'] ?? 'both') === 'both'): ?>
+      <div class="px-3 pt-3 pb-1">
+        <span class="inline-block text-xs font-medium px-2 py-0.5 rounded <?= $workspace === 'trade' ? 'bg-indigo-500/20 text-indigo-300' : 'bg-emerald-500/20 text-emerald-300' ?>">
+          <?= $workspace === 'trade' ? '🛒 TradeERP' : '🛠️ ServiceERP' ?>
+        </span>
+      </div>
+    <?php endif; ?>
     <nav class="flex-1 px-2 py-3 space-y-1 text-sm">
       <?php $base = $org ? '/' . h($org['slug']) : ''; ?>
-      <a href="<?= $base ?>/dashboard" class="block px-3 py-2 rounded hover:bg-slate-800">Dashboard</a>
+      <a href="<?= $base . ($workspace === 'service' ? '/service-dashboard' : '/dashboard') ?>" class="block px-3 py-2 rounded hover:bg-slate-800">Dashboard</a>
       <a href="<?= $base ?>/pos-mobile" class="block px-3 py-2 rounded hover:bg-slate-800">📱 Quick Sale (Mobile)</a>
-      <div class="pt-3 pb-1 px-3 text-xs uppercase tracking-wide text-slate-500">TradeERP</div>
-      <a href="<?= $base ?>/sales" class="block px-3 py-2 rounded hover:bg-slate-800">POS / Sales</a>
-      <a href="<?= $base ?>/products" class="block px-3 py-2 rounded hover:bg-slate-800">Products</a>
-      <a href="<?= $base ?>/customers" class="block px-3 py-2 rounded hover:bg-slate-800">Customers / Udhaar</a>
-      <a href="<?= $base ?>/purchases" class="block px-3 py-2 rounded hover:bg-slate-800">Purchases</a>
-      <a href="<?= $base ?>/suppliers" class="block px-3 py-2 rounded hover:bg-slate-800">Suppliers</a>
-      <a href="<?= $base ?>/reports" class="block px-3 py-2 rounded hover:bg-slate-800">Reports</a>
-      <div class="pt-3 pb-1 px-3 text-xs uppercase tracking-wide text-slate-500">ServiceERP</div>
-      <a href="<?= $base ?>/appointments" class="block px-3 py-2 rounded hover:bg-slate-800">Appointments</a>
-      <a href="<?= $base ?>/job-cards" class="block px-3 py-2 rounded hover:bg-slate-800">Job Cards</a>
-      <a href="<?= $base ?>/service-invoices" class="block px-3 py-2 rounded hover:bg-slate-800">Service Invoices</a>
-      <a href="<?= $base ?>/service-quotations" class="block px-3 py-2 rounded hover:bg-slate-800">Quotations</a>
-      <a href="<?= $base ?>/service-customers" class="block px-3 py-2 rounded hover:bg-slate-800">Service Customers</a>
-      <a href="<?= $base ?>/service-staff" class="block px-3 py-2 rounded hover:bg-slate-800">Staff</a>
+      <?php if ($workspace === 'trade'): ?>
+        <a href="<?= $base ?>/sales" class="block px-3 py-2 rounded hover:bg-slate-800">POS / Sales</a>
+        <a href="<?= $base ?>/products" class="block px-3 py-2 rounded hover:bg-slate-800">Products</a>
+        <a href="<?= $base ?>/customers" class="block px-3 py-2 rounded hover:bg-slate-800">Customers / Udhaar</a>
+        <a href="<?= $base ?>/purchases" class="block px-3 py-2 rounded hover:bg-slate-800">Purchases</a>
+        <a href="<?= $base ?>/suppliers" class="block px-3 py-2 rounded hover:bg-slate-800">Suppliers</a>
+        <a href="<?= $base ?>/reports" class="block px-3 py-2 rounded hover:bg-slate-800">Reports</a>
+      <?php else: ?>
+        <a href="<?= $base ?>/appointments" class="block px-3 py-2 rounded hover:bg-slate-800">Appointments</a>
+        <a href="<?= $base ?>/job-cards" class="block px-3 py-2 rounded hover:bg-slate-800">Job Cards</a>
+        <a href="<?= $base ?>/service-invoices" class="block px-3 py-2 rounded hover:bg-slate-800">Service Invoices</a>
+        <a href="<?= $base ?>/service-quotations" class="block px-3 py-2 rounded hover:bg-slate-800">Quotations</a>
+        <a href="<?= $base ?>/service-customers" class="block px-3 py-2 rounded hover:bg-slate-800">Service Customers</a>
+        <a href="<?= $base ?>/service-items" class="block px-3 py-2 rounded hover:bg-slate-800">Service Items</a>
+        <a href="<?= $base ?>/service-staff" class="block px-3 py-2 rounded hover:bg-slate-800">Staff</a>
+      <?php endif; ?>
+      <?php if (($org['business_type'] ?? 'both') === 'both'): ?>
+        <a href="<?= $base ?>/choose" class="block px-3 py-2 mt-2 rounded border border-slate-800 text-slate-400 hover:bg-slate-800 hover:text-slate-200">⇄ Switch Workspace</a>
+      <?php endif; ?>
     </nav>
     <div class="px-3 py-3 border-t border-slate-800 text-xs space-x-2">
       <div class="text-slate-300 mb-1"><?= h($user['name'] ?? '') ?></div>
