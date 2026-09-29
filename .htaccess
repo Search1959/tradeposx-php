@@ -1,0 +1,22 @@
+RewriteEngine On
+
+# Force HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+# Force non-www
+RewriteCond %{HTTP_HOST} ^www\.tradeposx\.com$ [NC]
+RewriteRule ^(.*)$ https://tradeposx.com/$1 [R=301,L]
+
+# Block direct access to sensitive directories
+RewriteRule ^(config|models|includes|sql)(/|$) - [F,L]
+
+# Block direct PHP access in uploads
+RewriteRule ^uploads/.*\.php$ - [F,L]
+
+# Don't rewrite real files or directories (lets the PWA manifest/service worker/assets through)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Route everything through the front controller
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
