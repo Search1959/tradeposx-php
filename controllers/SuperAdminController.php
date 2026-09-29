@@ -68,4 +68,20 @@ class SuperAdminController {
         $this->orgModel->updateStatus((int) $id, 'active');
         redirect('superadmin');
     }
+
+    /** Generates (or regenerates) the sales-demo organization — every id is
+     * assigned by this database's own AUTO_INCREMENT via lastInsertId(), so
+     * it's safe to run here regardless of what else already exists — unlike
+     * a hand-crafted SQL dump with hardcoded ids carried over from a
+     * different database, which can collide with real rows. */
+    public function seedDemoAction(): void {
+        Auth::requireSuperAdmin();
+        CsrfHelper::validate();
+        $db = Database::getInstance()->getConnection();
+        $result = DemoSeeder::seed($db);
+        $_SESSION['flash_success'] = "Demo org ready — {$result['salesCreated']} sales, {$result['invoicesCreated']} service invoices."
+            . ($result['removed'] ? ' (previous demo data replaced.)' : '')
+            . ' Login: demo@tradeposx.com / Demo@2026';
+        redirect('superadmin');
+    }
 }

@@ -11,10 +11,18 @@
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-xl font-semibold">Organizations</h1>
       <div class="flex items-center gap-3">
+        <form method="POST" action="/superadmin/seedDemo">
+          <?= CsrfHelper::getField() ?>
+          <button class="bg-white border border-slate-300 text-slate-700 text-sm font-medium px-4 py-2 rounded hover:bg-slate-50">🎬 Seed Demo Data</button>
+        </form>
         <a href="/superadmin/newOrg" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">+ New Organization</a>
         <a href="/logout" class="text-sm text-slate-500">Logout</a>
       </div>
     </div>
+    <?php if (!empty($_SESSION['flash_success'])): ?>
+      <div class="mb-4 text-sm text-green-800 bg-green-50 border border-green-200 rounded px-4 py-3"><?= h($_SESSION['flash_success']) ?></div>
+      <?php unset($_SESSION['flash_success']); ?>
+    <?php endif; ?>
     <div class="bg-white rounded-lg shadow-sm border border-slate-200 divide-y">
       <?php foreach ($organizations as $org): ?>
         <div class="flex items-center justify-between px-4 py-3 hover:bg-slate-50">
