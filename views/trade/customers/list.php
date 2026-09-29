@@ -1,15 +1,51 @@
 <?php $org = Tenant::current(); $base = '/' . $org['slug']; require __DIR__ . '/../../layouts/header.php'; ?>
 
-<div class="flex items-center justify-between mb-4 gap-3">
+<div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-3">
   <h1 class="text-xl font-semibold text-slate-900">Customers</h1>
-  <form method="GET" class="flex-1 max-w-xs">
+  <form method="GET" class="md:flex-1 md:max-w-xs">
     <input type="text" name="q" value="<?= h($_GET['q'] ?? '') ?>" placeholder="Search name / mobile"
            class="w-full rounded border border-slate-300 px-3 py-1.5 text-sm">
   </form>
-  <a href="<?= $base ?>/customers/new" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700 whitespace-nowrap">+ New Customer</a>
+  <a href="<?= $base ?>/customers/new" class="text-center bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700 whitespace-nowrap">+ New Customer</a>
 </div>
 
-<div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
+<!-- Mobile: light card stack -->
+<div class="md:hidden space-y-2">
+  <?php foreach ($customers as $c): $bal = (float)$c['current_balance']; ?>
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-3">
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          <div class="font-medium text-slate-900 truncate"><?= h($c['name']) ?></div>
+          <div class="text-xs text-slate-500"><?= h($c['mobile']) ?></div>
+          <?php if (!empty($c['area'])): ?><div class="text-xs text-slate-400"><?= h($c['area']) ?></div><?php endif; ?>
+        </div>
+        <div class="text-right shrink-0">
+          <div class="text-xs text-slate-400">Udhaar</div>
+          <div class="font-semibold <?= $bal > 0 ? 'text-amber-600' : 'text-slate-300' ?>"><?= formatCurrency($bal) ?></div>
+        </div>
+      </div>
+      <div class="flex items-center justify-between mt-2.5 pt-2.5 border-t border-slate-100 text-xs">
+        <?php if ($bal > 0 && !empty($c['mobile'])): ?>
+          <?php $msg = udhaarReminderMessage($org['name'], $c['name'], $bal, $recentCredits[$c['id']] ?? [], $org['phone'] ?? null); ?>
+          <a href="<?= h(whatsappLink($c['mobile'], $msg)) ?>" target="_blank" rel="noopener"
+             class="text-green-600 font-medium bg-green-50 px-2.5 py-1 rounded-full">💬 Remind</a>
+        <?php else: ?>
+          <span></span>
+        <?php endif; ?>
+        <div class="flex items-center gap-3">
+          <a href="<?= $base ?>/customers/statement/<?= (int)$c['id'] ?>" class="text-indigo-600 font-medium">Udhaar</a>
+          <a href="<?= $base ?>/customers/edit/<?= (int)$c['id'] ?>" class="text-slate-500">Edit</a>
+        </div>
+      </div>
+    </div>
+  <?php endforeach; ?>
+  <?php if (empty($customers)): ?>
+    <div class="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-400 text-sm">No customers yet.</div>
+  <?php endif; ?>
+</div>
+
+<!-- Desktop: table -->
+<div class="hidden md:block bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
   <table class="w-full text-sm">
     <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
       <tr>

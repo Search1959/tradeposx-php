@@ -39,9 +39,16 @@ $workspace = match ($org['business_type'] ?? 'both') {
 </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
-<div class="min-h-screen flex">
-  <aside class="hidden md:flex md:w-56 md:flex-col bg-slate-900 text-slate-200">
-    <div class="px-4 py-4 text-lg font-semibold text-white border-b border-slate-800"><?= h($org['name'] ?? APP_NAME) ?></div>
+<?php
+$base = $org ? '/' . h($org['slug']) : '';
+// Built once, rendered twice (desktop sidebar + mobile off-canvas panel) so the
+// two navs can never silently drift apart.
+ob_start();
+?>
+    <div class="px-4 py-4 text-lg font-semibold text-white border-b border-slate-800 flex items-center justify-between">
+      <?= h($org['name'] ?? APP_NAME) ?>
+      <button type="button" @click="mobileNavOpen = false" class="md:hidden text-slate-400 hover:text-white text-xl leading-none">✕</button>
+    </div>
     <?php if (($org['business_type'] ?? 'both') === 'both'): ?>
       <div class="px-3 pt-3 pb-1">
         <span class="inline-block text-xs font-medium px-2 py-0.5 rounded <?= $workspace === 'trade' ? 'bg-indigo-500/20 text-indigo-300' : 'bg-emerald-500/20 text-emerald-300' ?>">
@@ -49,8 +56,7 @@ $workspace = match ($org['business_type'] ?? 'both') {
         </span>
       </div>
     <?php endif; ?>
-    <nav class="flex-1 px-2 py-3 space-y-1 text-sm">
-      <?php $base = $org ? '/' . h($org['slug']) : ''; ?>
+    <nav class="flex-1 px-2 py-3 space-y-1 text-sm overflow-y-auto">
       <a href="<?= $base . ($workspace === 'service' ? '/service-dashboard' : '/dashboard') ?>" class="block px-3 py-2 rounded hover:bg-slate-800">Dashboard</a>
       <a href="<?= $base ?>/pos-mobile" class="block px-3 py-2 rounded hover:bg-slate-800">📱 Quick Sale (Mobile)</a>
       <?php if ($workspace === 'trade'): ?>
@@ -87,13 +93,23 @@ $workspace = match ($org['business_type'] ?? 'both') {
       <span class="text-slate-700">·</span>
       <a href="<?= $base ?>/logout" class="text-slate-500 hover:text-slate-300">Logout</a>
     </div>
-  </aside>
+<?php
+$sidebarNav = ob_get_clean();
+?>
+<div class="min-h-screen flex" x-data="{ mobileNavOpen: false }">
+  <aside class="hidden md:flex md:w-56 md:flex-col bg-slate-900 text-slate-200"><?= $sidebarNav ?></aside>
+
+  <!-- Mobile off-canvas nav: same links as the desktop sidebar, just toggled by the hamburger button below -->
+  <div x-show="mobileNavOpen" x-cloak class="md:hidden fixed inset-0 z-40 bg-black/50" @click="mobileNavOpen = false"></div>
+  <aside x-show="mobileNavOpen" x-cloak
+         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0"
+         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full"
+         class="md:hidden fixed inset-y-0 left-0 z-50 w-72 max-w-[80vw] flex flex-col bg-slate-900 text-slate-200"><?= $sidebarNav ?></aside>
+
   <main class="flex-1 min-w-0">
     <header class="md:hidden flex items-center justify-between px-4 py-3 bg-slate-900 text-white">
-      <span class="font-semibold"><?= h($org['name'] ?? APP_NAME) ?></span>
-      <div class="flex items-center gap-3 text-xs text-slate-300">
-        <a href="/">Home</a>
-        <a href="<?= isset($base) ? $base : '' ?>/logout">Logout</a>
-      </div>
+      <button type="button" @click="mobileNavOpen = true" class="text-2xl leading-none px-1" aria-label="Open menu">☰</button>
+      <span class="font-semibold truncate px-2"><?= h($org['name'] ?? APP_NAME) ?></span>
+      <a href="<?= $base ?>/logout" class="text-xs text-slate-300 whitespace-nowrap">Logout</a>
     </header>
     <div class="p-4 md:p-6">
