@@ -107,4 +107,85 @@ class ProductController {
         $this->model->delete($org['id'], (int) $id);
         redirect($org['slug'] . '/products');
     }
+
+    /** A ready-to-fill CSV — the header row IS the contract for bulkImportAction
+     * below, so keep the two in sync if this ever changes. */
+    public function templateAction(): void {
+        $org = Tenant::current();
+        Auth::requireOrgAccess($org['id']);
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="product_import_template.csv"');
+        $out = fopen('php://output', 'w');
+        fputcsv($out, ['name','sku','barcode','category','brand','unit','purchase_price','selling_price','mrp','current_stock','min_stock','gst_percent','hsn']);
+        fputcsv($out, ['Aashirvaad Atta 10kg','KIR-100','8901030850069','Atta & Flours','Aashirvaad','pkt','380','420','445','25','8','0','']);
+        fclose($out);
+    }
+
+    /** Matches each row to an existing product by barcode then SKU (updates it,
+     * merging only the columns the row actually filled in) or creates a new one
+     * (the row's current_stock becomes that new product's opening stock, same
+     * as the single-product form — an update row's current_stock is ignored,
+     * since bulk import isn't the place to silently overwrite live stock levels;
+     * use Purchases or the stock ledger's manual adjustment for that). */
+    public function bulkImportAction(): void {
+        $org = Tenant::current();
+        Auth::requireOrgAccess($org['id']);
+        $error = null;
+        $result = null;
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_FILES['csv_file']['tmp_name'])) {
+            CsrfHelper::validate();
+            $handle = fopen($_FILES['csv_file']['tmp_name'], 'r');
+            if (!$handle) {
+                $error = 'Could not read the uploaded file.';
+            } else {
+                $header = fgetcsv($handle);
+                if (!$header) {
+                    $error = 'File appears to be empty.';
+                } else {
+                    $header = array_map(fn($h) => strtolower(trim($h)), $header);
+                    $created = 0; $updated = 0; $skipped = [];
+                    $rowNum = 1;
+                    while (($rawRow = fgetcsv($handle)) !== false) {
+                        $rowNum++;
+                        if (count(array_filter($rawRow, fn($v) => trim((string)$v) !== '')) === 0) continue; // blank line
+                        $row = [];
+                        foreach ($header as $i => $col) { $row[$col] = trim($rawRow[$i] ?? ''); }
+
+                        $name = $row['name'] ?? '';
+                        if ($name === '') { $skipped[] = "Row {$rowNum}: missing name"; continue; }
+
+                        $data = [
+                            'name' => $name, 'sku' => $row['sku'] ?? null, 'barcode' => $row['barcode'] ?? null,
+                            'category' => $row['category'] ?: 'Other', 'brand' => $row['brand'] ?? null,
+                            'unit' => $row['unit'] ?: 'pcs', 'purchase_price' => (float) ($row['purchase_price'] ?? 0),
+                            'selling_price' => (float) ($row['selling_price'] ?? 0), 'mrp' => (float) ($row['mrp'] ?? 0),
+                            'min_stock' => (float) ($row['min_stock'] ?? 0), 'gst_percent' => (float) ($row['gst_percent'] ?? 0),
+                            'hsn' => $row['hsn'] ?? null,
+                        ];
+
+                        $existing = $this->model->findForImportMatch($org['id'], $data['barcode'] ?: null, $data['sku'] ?: null);
+                        if ($existing) {
+                            $this->model->updateFromImportMerge($org['id'], (int) $existing['id'], $existing, $data);
+                            $updated++;
+                        } else {
+                            $productId = $this->model->create($org['id'], $data);
+                            $openingStock = (float) ($row['current_stock'] ?? 0);
+                            if ($openingStock > 0) {
+                                $this->model->adjustStock($org['id'], $productId, $openingStock);
+                                $this->invModel->record($org['id'], $productId, 'INITIAL_STOCK', $openingStock, null, 'Bulk import opening stock');
+                            }
+                            $created++;
+                        }
+                    }
+                    fclose($handle);
+                    $result = ['created' => $created, 'updated' => $updated, 'skipped' => $skipped];
+                    logActivity($org['id'], 'product_bulk_import', 'product', 0, "created={$created} updated={$updated}");
+                }
+            }
+        }
+
+        $pageTitle = 'Bulk Import Products';
+        require __DIR__ . '/../views/trade/products/bulk-import.php';
+    }
 }

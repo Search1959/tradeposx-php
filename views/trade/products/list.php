@@ -6,6 +6,7 @@
     <input type="text" name="q" value="<?= h($_GET['q'] ?? '') ?>" placeholder="Search name / SKU / barcode"
            class="w-full rounded border border-slate-300 px-3 py-1.5 text-sm">
   </form>
+  <a href="<?= $base ?>/products/bulkImport" class="bg-white border border-slate-300 text-slate-700 text-sm font-medium px-4 py-2 rounded hover:bg-slate-50 whitespace-nowrap">Bulk Import</a>
   <a href="<?= $base ?>/products/new" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700 whitespace-nowrap">+ New Product</a>
 </div>
 

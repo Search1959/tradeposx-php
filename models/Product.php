@@ -90,4 +90,32 @@ class Product extends BaseModel {
     public function adjustStock(int $orgId, int $id, float $qty): bool {
         return $this->execute('UPDATE products SET current_stock = current_stock + ? WHERE org_id = ? AND id = ?', [$qty, $orgId, $id]);
     }
+
+    /** Bulk import match: barcode first (if given), then SKU — either can be
+     * blank in a row. Returns null if neither matches an existing product. */
+    public function findForImportMatch(int $orgId, ?string $barcode, ?string $sku): ?array {
+        if ($barcode) {
+            $row = $this->queryOne("SELECT * FROM products WHERE org_id = ? AND barcode = ? AND barcode != ''", [$orgId, $barcode]);
+            if ($row) return $row;
+        }
+        if ($sku) {
+            $row = $this->queryOne("SELECT * FROM products WHERE org_id = ? AND sku = ? AND sku != ''", [$orgId, $sku]);
+            if ($row) return $row;
+        }
+        return null;
+    }
+
+    /** Merge mode for updating an existing product from an import row — only
+     * overwrites a field when the row actually supplied a value, so a blank
+     * cell doesn't wipe out data the row just didn't happen to include. */
+    public function updateFromImportMerge(int $orgId, int $id, array $existing, array $row): bool {
+        $merged = $existing;
+        foreach (['name','sku','barcode','category','brand','unit','purchase_price','selling_price','mrp',
+                  'min_stock','gst_percent','hsn'] as $field) {
+            if (isset($row[$field]) && $row[$field] !== '' && $row[$field] !== null) {
+                $merged[$field] = $row[$field];
+            }
+        }
+        return $this->update($orgId, $id, $merged);
+    }
 }
