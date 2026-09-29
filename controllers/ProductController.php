@@ -152,6 +152,13 @@ class ProductController {
                 $header = fgetcsv($handle, 0, $delimiter);
                 if (!$header) {
                     $error = 'File appears to be empty.';
+                } elseif (!in_array('name', array_map(fn($h) => strtolower(trim($h)), $header), true)) {
+                    // Catches the far more common mistake of uploading the wrong file
+                    // entirely (a script, a spreadsheet with different columns, etc.)
+                    // with one clear message instead of a wall of per-row errors.
+                    $preview = implode(', ', array_slice(array_map('trim', $header), 0, 5));
+                    $error = "This doesn't look like a product import file — no \"name\" column in its first row (found: {$preview}). "
+                        . 'Make sure you\'re uploading the CSV, not another file, and that its header row matches the "⬇ Download CSV template" above.';
                 } else {
                     $header = array_map(fn($h) => strtolower(trim($h)), $header);
                     $created = 0; $updated = 0; $skipped = [];
