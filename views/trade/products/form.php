@@ -1,7 +1,9 @@
 <?php $org = Tenant::current(); $base = '/' . $org['slug']; require __DIR__ . '/../../layouts/header.php'; $p = $product ?? [];
-$categories = ['Rice & Grains','Atta & Flours','Dals & Pulses','Edible Oils & Ghee','Spices & Masalas','Biscuits & Cookies',
-  'Snacks & Namkeen','Beverages & Tea/Coffee','Dairy & Bakery','Personal Care & Soap','Cleaning & Household',
-  'Chocolates & Sweets','Pooja Essentials','Other'];
+$categories = SectorHelper::categoriesFor($org['trading_sector'] ?? null);
+// keep an existing product's current category selectable even if it predates this sector's list
+if (!empty($p['category']) && !in_array($p['category'], $categories, true)) {
+  array_splice($categories, count($categories) - 1, 0, [$p['category']]);
+}
 $units = ['pcs','kg','g','liter','ml','pkt','box','bottle','pouch','bag','tin','jar'];
 ?>
 

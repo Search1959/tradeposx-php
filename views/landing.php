@@ -61,11 +61,11 @@ $serviceSectors = [
       <span class="text-xs text-slate-500"><?= count($tradeSectors) ?> trades supported</span>
     </div>
     <p class="text-sm text-slate-500 mb-5">Products, stock, purchases, GST billing, and Udhaar — for any kind of trading business.</p>
-    <div class="flex flex-wrap gap-2">
+    <select class="w-full md:w-96 bg-white/5 border border-white/10 text-slate-300 text-sm rounded-lg px-3 py-2.5">
       <?php foreach ($tradeSectors as $s): ?>
-        <span class="pill text-xs px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300"><?= h($s) ?></span>
+        <option class="bg-slate-900"><?= h($s) ?></option>
       <?php endforeach; ?>
-    </div>
+    </select>
   </div>
 
   <!-- ServiceERP sectors -->
@@ -75,11 +75,11 @@ $serviceSectors = [
       <span class="text-xs text-slate-500"><?= count($serviceSectors) ?> services supported</span>
     </div>
     <p class="text-sm text-slate-500 mb-5">Appointments, job cards, staff commissions, quotations, and invoicing — for any kind of service business.</p>
-    <div class="flex flex-wrap gap-2">
+    <select class="w-full md:w-96 bg-white/5 border border-white/10 text-slate-300 text-sm rounded-lg px-3 py-2.5">
       <?php foreach ($serviceSectors as $s): ?>
-        <span class="pill text-xs px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300"><?= h($s) ?></span>
+        <option class="bg-slate-900"><?= h($s) ?></option>
       <?php endforeach; ?>
-    </div>
+    </select>
   </div>
 
   <div class="max-w-5xl mx-auto px-4 py-12 border-t border-white/5 text-center">

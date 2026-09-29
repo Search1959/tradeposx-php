@@ -39,7 +39,20 @@
         </div>
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-1">Trading Sector</label>
-          <input type="text" name="trading_sector" placeholder="e.g. Kirana, Electronics" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+          <select name="trading_sector" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+            <option value="">— Select —</option>
+            <?php $selectedSector = $form['trading_sector'] ?? ''; ?>
+            <optgroup label="Trade">
+              <?php foreach (SectorHelper::tradeSectors() as $code => $label): ?>
+                <option value="<?= h($code) ?>" <?= $selectedSector === $code ? 'selected' : '' ?>><?= h($label) ?></option>
+              <?php endforeach; ?>
+            </optgroup>
+            <optgroup label="Service">
+              <?php foreach (SectorHelper::serviceSectors() as $code => $label): ?>
+                <option value="<?= h($code) ?>" <?= $selectedSector === $code ? 'selected' : '' ?>><?= h($label) ?></option>
+              <?php endforeach; ?>
+            </optgroup>
+          </select>
         </div>
       </div>
 

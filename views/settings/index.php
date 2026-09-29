@@ -45,9 +45,29 @@
         <label class="block text-sm font-medium text-slate-700 mb-1">Business Name</label>
         <input type="text" name="name" required value="<?= h($org['name']) ?>" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
       </div>
+      <?php
+        $currentSector = $org['trading_sector'] ?? '';
+        $knownSector = isset(SectorHelper::tradeSectors()[$currentSector]) || isset(SectorHelper::serviceSectors()[$currentSector]);
+      ?>
       <div>
         <label class="block text-sm font-medium text-slate-700 mb-1">Trading Sector</label>
-        <input type="text" name="trading_sector" value="<?= h($org['trading_sector'] ?? '') ?>" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+        <select name="trading_sector" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+          <option value="">— Select —</option>
+          <?php if ($currentSector !== '' && !$knownSector): ?>
+            <option value="<?= h($currentSector) ?>" selected><?= h($currentSector) ?> (current)</option>
+          <?php endif; ?>
+          <optgroup label="Trade">
+            <?php foreach (SectorHelper::tradeSectors() as $code => $label): ?>
+              <option value="<?= h($code) ?>" <?= $currentSector === $code ? 'selected' : '' ?>><?= h($label) ?></option>
+            <?php endforeach; ?>
+          </optgroup>
+          <optgroup label="Service">
+            <?php foreach (SectorHelper::serviceSectors() as $code => $label): ?>
+              <option value="<?= h($code) ?>" <?= $currentSector === $code ? 'selected' : '' ?>><?= h($label) ?></option>
+            <?php endforeach; ?>
+          </optgroup>
+        </select>
+        <p class="text-xs text-slate-400 mt-1">Drives which product categories are suggested when adding items.</p>
       </div>
       <div class="text-xs text-slate-400">URL: tradeposx.com/<?= h($org['slug']) ?>/ (slug can't be changed here)</div>
       <button type="submit" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">Save</button>
