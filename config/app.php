@@ -53,6 +53,45 @@ function formatDateTime(?string $dt): string {
     return $dt ? date('d M Y, h:i A', strtotime($dt)) : '-';
 }
 
+/** "Rupees X and Y Paise Only" — the amount-in-words line expected on an Indian tax invoice. */
+function amountInWordsINR(float $amount): string {
+    $ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten',
+        'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+    $tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+    $twoDigits = function (int $n) use ($ones, $tens): string {
+        if ($n < 20) return $ones[$n];
+        return trim($tens[intdiv($n, 10)] . ' ' . $ones[$n % 10]);
+    };
+    $threeDigits = function (int $n) use ($twoDigits): string {
+        if ($n < 100) return $twoDigits($n);
+        $rest = $n % 100;
+        return trim($twoDigits(intdiv($n, 100)) . ' Hundred' . ($rest ? ' ' . $twoDigits($rest) : ''));
+    };
+
+    $rupees = (int) floor($amount);
+    $paise = (int) round(($amount - $rupees) * 100);
+
+    if ($rupees === 0) {
+        $words = 'Zero';
+    } else {
+        $parts = [];
+        $crore = intdiv($rupees, 10000000); $rupees %= 10000000;
+        $lakh = intdiv($rupees, 100000); $rupees %= 100000;
+        $thousand = intdiv($rupees, 1000); $rupees %= 1000;
+        $hundred = $rupees;
+        if ($crore) $parts[] = $threeDigits($crore) . ' Crore';
+        if ($lakh) $parts[] = $threeDigits($lakh) . ' Lakh';
+        if ($thousand) $parts[] = $threeDigits($thousand) . ' Thousand';
+        if ($hundred) $parts[] = $threeDigits($hundred);
+        $words = implode(' ', $parts);
+    }
+
+    $result = "Rupees {$words}";
+    if ($paise > 0) $result .= ' and ' . $twoDigits($paise) . ' Paise';
+    return $result . ' Only';
+}
+
 /** Random client-generated reference for idempotent offline-sale sync — see
  * sales.client_ref / service_invoices.client_ref in sql/schema.sql. */
 function generateClientRef(): string {

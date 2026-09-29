@@ -75,6 +75,32 @@
   </div>
 
   <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+    <h2 class="font-semibold text-slate-900 mb-1">Invoice Details</h2>
+    <p class="text-sm text-slate-500 mb-4">Shown on every sale receipt and service invoice — fill these in for a proper GST tax invoice.</p>
+    <form method="POST" class="space-y-3">
+      <?= CsrfHelper::getField() ?>
+      <input type="hidden" name="form" value="tax">
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">GSTIN</label>
+        <input type="text" name="gstin" value="<?= h($org['gstin'] ?? '') ?>" placeholder="e.g. 19ABCDE1234F1Z5" maxlength="15"
+          class="w-full rounded border border-slate-300 px-3 py-2 text-sm font-mono uppercase">
+        <p class="text-xs text-slate-400 mt-1">Leave blank if not GST-registered — receipts will show as a plain Bill of Supply instead of a Tax Invoice.</p>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Business Address</label>
+          <input type="text" name="address" value="<?= h($org['address'] ?? '') ?>" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+          <input type="text" name="phone" value="<?= h($org['phone'] ?? '') ?>" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+        </div>
+      </div>
+      <button type="submit" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">Save</button>
+    </form>
+  </div>
+
+  <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
     <h2 class="font-semibold text-slate-900 mb-1">Backup Your Data</h2>
     <p class="text-sm text-slate-500 mb-4">
       Download every record belonging to your business — products, customers, sales, purchases, appointments,

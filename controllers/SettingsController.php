@@ -42,6 +42,15 @@ class SettingsController {
                     $org = $this->orgModel->find($org['id']); // refresh for the view
                     $success = 'Business details updated.';
                 }
+            } elseif (($_POST['form'] ?? '') === 'tax' && in_array(Auth::role(), ['owner', 'admin'], true)) {
+                $gstin = trim($_POST['gstin'] ?? '') ?: null;
+                if ($gstin !== null && !preg_match('/^[0-9A-Z]{15}$/', $gstin)) {
+                    $error = 'GSTIN should be 15 characters (letters and numbers only), e.g. 19ABCDE1234F1Z5.';
+                } else {
+                    $this->orgModel->updateTaxProfile($org['id'], $gstin, trim($_POST['address'] ?? '') ?: null, trim($_POST['phone'] ?? '') ?: null);
+                    $org = $this->orgModel->find($org['id']);
+                    $success = 'Invoice details updated.';
+                }
             }
         }
 

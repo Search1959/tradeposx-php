@@ -28,6 +28,11 @@ class Organization extends BaseModel {
         return $this->execute('UPDATE organizations SET name = ?, trading_sector = ? WHERE id = ?', [$name, $tradingSector, $id]);
     }
 
+    /** GSTIN/address/phone — the seller details a tax invoice needs in its header. */
+    public function updateTaxProfile(int $id, ?string $gstin, ?string $address, ?string $phone): bool {
+        return $this->execute('UPDATE organizations SET gstin = ?, address = ?, phone = ? WHERE id = ?', [$gstin, $address, $phone, $id]);
+    }
+
     public function updateStatus(int $id, string $status): bool {
         return $this->execute('UPDATE organizations SET status = ? WHERE id = ?', [$status, $id]);
     }

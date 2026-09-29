@@ -25,9 +25,12 @@ class SaleController {
             if (empty($cart)) {
                 $error = 'Cart is empty.';
             } else {
-                [$items, $subtotal, $taxTotal] = $this->buildItemsFromCart($org['id'], $cart);
+                $taxType = in_array($_POST['tax_type'] ?? '', ['EXCLUSIVE', 'INCLUSIVE', 'EXEMPT'], true) ? $_POST['tax_type'] : 'EXCLUSIVE';
+                [$items, $lineTotal, $taxableAmount, $taxTotal] = $this->buildItemsFromCart($org['id'], $cart, $taxType);
                 $discount = (float) ($_POST['discount'] ?? 0);
-                $grandTotal = round($subtotal + $taxTotal - $discount, 2);
+                $grandTotal = round($taxableAmount + $taxTotal - $discount, 2);
+                $cgstAmount = round($taxTotal / 2, 2);
+                $sgstAmount = round($taxTotal - $cgstAmount, 2); // avoids a 1-paisa mismatch from naive halving
                 // Only PARTIAL trusts the client's typed amount — FULL/CREDIT are
                 // derived here, not read from a field the client may not have
                 // touched (it's only ever shown/edited in the PARTIAL case).
@@ -41,8 +44,12 @@ class SaleController {
                     'customer_id'      => $_POST['customer_id'] ?: null,
                     'customer_name'    => $_POST['customer_name'] ?? null,
                     'customer_mobile'  => $_POST['customer_mobile'] ?? null,
-                    'subtotal'         => $subtotal,
+                    'subtotal'         => $lineTotal,
                     'discount'         => $discount,
+                    'tax_type'         => $taxType,
+                    'taxable_amount'   => $taxType === 'EXEMPT' ? null : $taxableAmount,
+                    'cgst_amount'      => $taxType === 'EXEMPT' ? null : $cgstAmount,
+                    'sgst_amount'      => $taxType === 'EXEMPT' ? null : $sgstAmount,
                     'total_tax_amount' => $taxTotal,
                     'grand_total'      => $grandTotal,
                     'payment_method'   => $_POST['payment_method'] ?? 'CASH',
@@ -65,29 +72,42 @@ class SaleController {
         require __DIR__ . '/../views/trade/sales/pos.php';
     }
 
-    /** @return array{0: array, 1: float, 2: float} [line items, subtotal, tax total] */
-    private function buildItemsFromCart(int $orgId, array $cart): array {
+    /** @return array{0: array, 1: float, 2: float, 3: float} [line items, sticker line total, taxable amount, tax total]
+     * EXCLUSIVE: selling_price is the pre-tax base — tax is added on top.
+     * INCLUSIVE: selling_price already has GST baked in — tax is backed out of it.
+     * EXEMPT: no tax charged regardless of the product's own gst_percent. */
+    private function buildItemsFromCart(int $orgId, array $cart, string $taxType): array {
         $items = [];
-        $subtotal = 0.0;
+        $lineTotal = 0.0;
+        $taxableAmount = 0.0;
         $taxTotal = 0.0;
         foreach ($cart as $line) {
             $product = $this->productModel->find($orgId, (int) $line['id']);
             if (!$product) continue;
             $qty = (float) $line['qty'];
             $unitPrice = (float) $product['selling_price'];
-            $lineTotal = round($qty * $unitPrice, 2);
-            $gstRate = (float) $product['gst_percent'];
-            $gstAmount = round($lineTotal * $gstRate / 100, 2);
-            $subtotal += $lineTotal;
+            $lineAmount = round($qty * $unitPrice, 2);
+            $gstRate = $taxType === 'EXEMPT' ? 0.0 : (float) $product['gst_percent'];
+
+            if ($taxType === 'INCLUSIVE' && $gstRate > 0) {
+                $lineTaxable = round($lineAmount / (1 + $gstRate / 100), 2);
+                $gstAmount = round($lineAmount - $lineTaxable, 2);
+            } else {
+                $lineTaxable = $lineAmount;
+                $gstAmount = round($lineAmount * $gstRate / 100, 2);
+            }
+
+            $lineTotal += $lineAmount;
+            $taxableAmount += $lineTaxable;
             $taxTotal += $gstAmount;
             $items[] = [
                 'product_id' => $product['id'], 'product_name' => $product['name'], 'quantity' => $qty,
-                'unit_price' => $unitPrice, 'mrp' => $product['mrp'], 'total_price' => $lineTotal,
+                'unit_price' => $unitPrice, 'mrp' => $product['mrp'], 'total_price' => $lineAmount,
                 'gst_rate' => $gstRate, 'gst_amount' => $gstAmount, 'hsn' => $product['hsn'],
                 'batch_number' => $product['batch_number'], 'expiry_date' => $product['expiry_date'],
             ];
         }
-        return [$items, round($subtotal, 2), round($taxTotal, 2)];
+        return [$items, round($lineTotal, 2), round($taxableAmount, 2), round($taxTotal, 2)];
     }
 
     public function listAction(): void {

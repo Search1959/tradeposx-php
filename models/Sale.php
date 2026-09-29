@@ -69,13 +69,13 @@ class Sale extends BaseModel {
         try {
             $saleId = $this->insert(
                 'INSERT INTO sales (org_id, sale_number, customer_id, customer_name, customer_mobile, customer_gstin,
-                 subtotal, discount, gst_rate, taxable_amount, cgst_amount, sgst_amount, total_tax_amount, grand_total,
+                 subtotal, discount, tax_type, gst_rate, taxable_amount, cgst_amount, sgst_amount, total_tax_amount, grand_total,
                  payment_method, payment_status, received_amount, change_amount, created_by_name, notes, client_ref)
-                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                 [
                     $orgId, $saleNumber, $data['customer_id'] ?: null, $data['customer_name'] ?? null,
                     $data['customer_mobile'] ?? null, $data['customer_gstin'] ?? null,
-                    $data['subtotal'] ?? $grandTotal, $data['discount'] ?? 0, $data['gst_rate'] ?? null,
+                    $data['subtotal'] ?? $grandTotal, $data['discount'] ?? 0, $data['tax_type'] ?? null, $data['gst_rate'] ?? null,
                     $data['taxable_amount'] ?? null, $data['cgst_amount'] ?? null, $data['sgst_amount'] ?? null,
                     $data['total_tax_amount'] ?? null, $grandTotal, $data['payment_method'] ?? 'CASH', $paymentStatus,
                     $receivedAmount, max(0, $receivedAmount - $grandTotal), Auth::user()['name'] ?? null,

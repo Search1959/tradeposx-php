@@ -45,9 +45,23 @@
       <div x-show="cart.length === 0" class="text-sm text-slate-400 text-center py-8">Cart is empty — tap a product to add it.</div>
     </div>
 
+    <div class="pt-2">
+      <label class="block text-xs font-medium text-slate-700 mb-1">GST</label>
+      <select x-model="taxType" class="w-full rounded border border-slate-300 px-2 py-1.5 text-sm">
+        <option value="EXCLUSIVE">Add GST on top (prices exclude tax)</option>
+        <option value="INCLUSIVE">GST included in prices shown</option>
+        <option value="EXEMPT">No GST on this sale</option>
+      </select>
+    </div>
+
     <div class="border-t border-slate-200 mt-2 pt-3 space-y-2 text-sm">
-      <div class="flex justify-between"><span class="text-slate-500">Subtotal</span><span x-text="'₹' + subtotal().toFixed(2)"></span></div>
-      <div class="flex justify-between"><span class="text-slate-500">GST</span><span x-text="'₹' + taxTotal().toFixed(2)"></span></div>
+      <div class="flex justify-between"><span class="text-slate-500">Taxable Amount</span><span x-text="'₹' + taxableAmount().toFixed(2)"></span></div>
+      <template x-if="taxType !== 'EXEMPT'">
+        <div>
+          <div class="flex justify-between"><span class="text-slate-500">CGST</span><span x-text="'₹' + (taxTotal()/2).toFixed(2)"></span></div>
+          <div class="flex justify-between"><span class="text-slate-500">SGST</span><span x-text="'₹' + (taxTotal()/2).toFixed(2)"></span></div>
+        </div>
+      </template>
       <div class="flex justify-between items-center">
         <span class="text-slate-500">Discount</span>
         <input type="number" step="0.01" min="0" x-model.number="discount" class="w-24 rounded border border-slate-300 px-2 py-1 text-right">
@@ -61,6 +75,7 @@
       <?= CsrfHelper::getField() ?>
       <input type="hidden" name="cart_json" :value="JSON.stringify(cart.map(l => ({id: l.id, qty: l.qty})))">
       <input type="hidden" name="discount" :value="discount">
+      <input type="hidden" name="tax_type" :value="taxType">
 
       <select name="customer_id" x-model="customerId" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
         <option value="">Walk-in customer (no Udhaar)</option>
@@ -116,6 +131,7 @@ function posScreen() {
     search: '',
     cart: [],
     discount: 0,
+    taxType: 'EXCLUSIVE',
     customerId: '',
     paymentMethod: 'CASH',
     paymentStatus: 'FULL',
@@ -137,9 +153,19 @@ function posScreen() {
     },
     removeFromCart(idx) { this.cart.splice(idx, 1); },
     clampQty(line) { if (!line.qty || line.qty < 0) line.qty = 0.001; },
-    subtotal() { return this.cart.reduce((s, l) => s + l.qty * l.price, 0); },
-    taxTotal() { return this.cart.reduce((s, l) => s + (l.qty * l.price) * (l.gst/100), 0); },
-    grandTotal() { return Math.max(0, this.subtotal() + this.taxTotal() - (this.discount||0)); },
+    lineTotal() { return this.cart.reduce((s, l) => s + l.qty * l.price, 0); },
+    taxableAmount() {
+      if (this.taxType === 'INCLUSIVE') {
+        return this.cart.reduce((s, l) => s + (l.qty * l.price) / (1 + (l.gst || 0) / 100), 0);
+      }
+      return this.lineTotal(); // EXCLUSIVE: price is already the pre-tax base. EXEMPT: no tax involved either way.
+    },
+    taxTotal() {
+      if (this.taxType === 'EXEMPT') return 0;
+      if (this.taxType === 'INCLUSIVE') return this.lineTotal() - this.taxableAmount();
+      return this.cart.reduce((s, l) => s + (l.qty * l.price) * ((l.gst || 0) / 100), 0);
+    },
+    grandTotal() { return Math.max(0, this.taxableAmount() + this.taxTotal() - (this.discount||0)); },
     owed() {
       if (this.paymentStatus === 'CREDIT') return this.grandTotal();
       if (this.paymentStatus === 'PARTIAL') return Math.max(0, this.grandTotal() - (this.receivedAmount||0));
