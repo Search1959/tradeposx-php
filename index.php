@@ -69,6 +69,7 @@ if ($org['status'] === 'suspended' && !Auth::isSuperAdmin()) {
 
 $tenantRouteMap = [
     'dashboard'          => 'DashboardController',
+    'choose'             => 'DashboardController',
     'login'              => 'AuthController',
     'logout'             => 'AuthController',
     // TradeERP
@@ -95,6 +96,7 @@ $tenantRouteMap = [
 ];
 $moduleDefaultAction = [
     'dashboard'          => 'index',
+    'choose'             => 'choose',
     'login'              => 'index',
     'logout'             => 'logout',
     'products'           => 'list',

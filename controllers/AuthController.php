@@ -49,7 +49,12 @@ class AuthController {
         if (!$org && Auth::orgId()) {
             $org = (new Organization())->find(Auth::orgId());
         }
-        redirect(($org ? $org['slug'] . '/' : '') . 'dashboard');
+        // A "both" business picks TradeERP or ServiceERP right after logging in
+        // (matching how the old app kept them as genuinely separate logins) —
+        // trade-only/service-only orgs have nothing to choose, so they go
+        // straight to the dashboard as before.
+        $landingPage = ($org && $org['business_type'] === 'both') ? 'choose' : 'dashboard';
+        redirect(($org ? $org['slug'] . '/' : '') . $landingPage);
     }
 
     public function logoutAction(): void {
