@@ -21,6 +21,19 @@ $workspace = match ($org['business_type'] ?? 'both') {
     'service' => 'service',
     default => $_SESSION['workspace'] ?? 'trade',
 };
+
+// Which of the 4 primary bottom-tab-bar destinations (mobile only, see
+// footer.php) the current page belongs to, so that tab can be highlighted.
+$mobileTab = match (true) {
+    in_array($currentModule, ['dashboard', 'service-dashboard', 'choose'], true) => 'home',
+    $workspace === 'trade' && in_array($currentModule, ['sales', 'pos'], true) => 'primary',
+    $workspace === 'trade' && $currentModule === 'products' => 'second',
+    $workspace === 'trade' && $currentModule === 'customers' => 'third',
+    $workspace === 'service' && in_array($currentModule, ['service-invoices'], true) => 'primary',
+    $workspace === 'service' && $currentModule === 'job-cards' => 'second',
+    $workspace === 'service' && $currentModule === 'appointments' => 'third',
+    default => '',
+};
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -124,4 +137,4 @@ $sidebarNav = ob_get_clean();
       <span class="font-semibold truncate px-2"><?= h($org['name'] ?? APP_NAME) ?></span>
       <a href="<?= $base ?>/logout" class="text-xs text-slate-300 whitespace-nowrap">Logout</a>
     </header>
-    <div class="p-4 md:p-6">
+    <div class="p-4 md:p-6 pb-20 md:pb-6">

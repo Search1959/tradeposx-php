@@ -34,11 +34,29 @@
   </div>
 </div>
 
-<div class="flex flex-wrap gap-3">
-  <a href="<?= $base ?>/appointments/new" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">+ New Appointment</a>
-  <a href="<?= $base ?>/job-cards/new" class="bg-white border border-slate-200 text-sm font-medium px-4 py-2 rounded hover:bg-slate-50">+ New Job Card</a>
-  <a href="<?= $base ?>/service-invoices/new" class="bg-white border border-slate-200 text-sm font-medium px-4 py-2 rounded hover:bg-slate-50">New Service Invoice</a>
-  <a href="<?= $base ?>/reports" class="bg-white border border-slate-200 text-sm font-medium px-4 py-2 rounded hover:bg-slate-50">View Reports</a>
+<div class="text-xs font-semibold uppercase tracking-wide text-slate-400 mb-3">Quick Access</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+  <?php
+  $quickLinks = [
+      ['href' => '/appointments/new', 'icon' => '📅', 'bg' => 'bg-amber-100', 'title' => 'Appointment', 'sub' => 'Book new'],
+      ['href' => '/job-cards/new', 'icon' => '🛠️', 'bg' => 'bg-blue-100', 'title' => 'Job Card', 'sub' => 'Start new'],
+      ['href' => '/service-invoices/new', 'icon' => '🧾', 'bg' => 'bg-indigo-100', 'title' => 'New Bill', 'sub' => 'Service invoice'],
+      ['href' => '/job-cards', 'icon' => '📋', 'bg' => 'bg-teal-100', 'title' => 'Job Cards', 'sub' => 'All jobs'],
+      ['href' => '/service-customers', 'icon' => '👥', 'bg' => 'bg-purple-100', 'title' => 'Customers', 'sub' => 'Contacts'],
+      ['href' => '/reports', 'icon' => '📊', 'bg' => 'bg-green-100', 'title' => 'Reports', 'sub' => 'Revenue & staff'],
+  ];
+  if (in_array($user['role'] ?? '', ['owner', 'admin'], true)) {
+      $quickLinks[] = ['href' => '/team', 'icon' => '👤', 'bg' => 'bg-pink-100', 'title' => 'Team', 'sub' => 'Manage staff'];
+      $quickLinks[] = ['href' => '/activity-log', 'icon' => '📋', 'bg' => 'bg-slate-200', 'title' => 'Activity Log', 'sub' => 'Audit trail'];
+  }
+  ?>
+  <?php foreach ($quickLinks as $q): ?>
+    <a href="<?= $base . $q['href'] ?>" class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 hover:border-indigo-300 hover:shadow-md transition">
+      <div class="w-10 h-10 rounded-lg <?= $q['bg'] ?> flex items-center justify-center text-xl mb-2"><?= $q['icon'] ?></div>
+      <div class="text-sm font-semibold text-slate-900"><?= h($q['title']) ?></div>
+      <div class="text-xs text-slate-400"><?= h($q['sub']) ?></div>
+    </a>
+  <?php endforeach; ?>
 </div>
 
 <?php require __DIR__ . '/../layouts/footer.php'; ?>
