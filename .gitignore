@@ -2,3 +2,10 @@
 !/uploads/.gitkeep
 .DS_Store
 Thumbs.db
+
+# Real DB credentials never go into this public repo — see config/database.example.php.
+# These stay local, and are manually uploaded to Hostinger like the rest of this
+# user's PHP projects (no git-based deploy for this app).
+/config/database.php
+/config/database.production.php
+/php_server.log

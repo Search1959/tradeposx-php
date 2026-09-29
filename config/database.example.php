@@ -1,14 +1,15 @@
 <?php
+// Copy this to config/database.php and fill in real credentials — that file is
+// gitignored and never committed (this repo is public). For local dev, use
+// host=localhost/dbname=tradeposx_dev/username=root/password=''.
 class Database {
     private static $instance = null;
     private $pdo;
 
-    // Hostinger production DB — create this database + user in hPanel before first deploy,
-    // then fill in the real values here. For local dev, swap to host=localhost/root/''.
     private $host = 'localhost';
-    private $dbname = 'tradeposx_dev';
-    private $username = 'root';
-    private $password = '';
+    private $dbname = 'CHANGE_ME';
+    private $username = 'CHANGE_ME';
+    private $password = 'CHANGE_ME';
     private $charset = 'utf8mb4';
 
     private function __construct() {
