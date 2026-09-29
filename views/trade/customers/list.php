@@ -28,7 +28,11 @@
         <td class="px-4 py-2 text-slate-600"><?= h($c['area'] ?? '') ?></td>
         <td class="px-4 py-2 text-right <?= $bal > 0 ? 'text-amber-600 font-semibold' : 'text-slate-400' ?>"><?= formatCurrency($bal) ?></td>
         <td class="px-4 py-2 text-right whitespace-nowrap">
-          <a href="<?= $base ?>/customers/statement/<?= (int)$c['id'] ?>" class="text-indigo-600 hover:underline text-xs">Udhaar</a>
+          <?php if ($bal > 0 && !empty($c['mobile'])): ?>
+            <a href="<?= h(whatsappLink($c['mobile'], udhaarReminderMessage($org['name'], $c['name'], $bal))) ?>" target="_blank" rel="noopener"
+               class="text-green-600 hover:underline text-xs">Remind</a>
+          <?php endif; ?>
+          <a href="<?= $base ?>/customers/statement/<?= (int)$c['id'] ?>" class="text-indigo-600 hover:underline text-xs ml-2">Udhaar</a>
           <a href="<?= $base ?>/customers/edit/<?= (int)$c['id'] ?>" class="text-indigo-600 hover:underline text-xs ml-2">Edit</a>
         </td>
       </tr>

@@ -10,6 +10,11 @@
     <div class="text-2xl font-semibold <?= (float)$customer['current_balance'] > 0 ? 'text-amber-600' : 'text-slate-900' ?>">
       <?= formatCurrency((float)$customer['current_balance']) ?>
     </div>
+    <?php if ((float)$customer['current_balance'] > 0 && !empty($customer['mobile'])): ?>
+      <a href="<?= h(whatsappLink($customer['mobile'], udhaarReminderMessage($org['name'], $customer['name'], (float)$customer['current_balance']))) ?>"
+         target="_blank" rel="noopener"
+         class="inline-block mt-2 bg-green-600 text-white text-xs font-medium px-3 py-1.5 rounded hover:bg-green-700">💬 Send WhatsApp Reminder</a>
+    <?php endif; ?>
   </div>
 </div>
 

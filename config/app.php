@@ -92,6 +92,25 @@ function amountInWordsINR(float $amount): string {
     return $result . ' Only';
 }
 
+/** A wa.me click-to-chat link — opens WhatsApp with the message pre-filled, no
+ * API/credentials needed (unlike an automated send via Green API/Meta Cloud,
+ * which config/constants.php has placeholders for once that's set up). Assumes
+ * a bare 10-digit Indian mobile number if no country code is already present,
+ * matching how every number in this app is stored (see customers.mobile etc). */
+function whatsappLink(string $mobile, string $message): string {
+    $digits = preg_replace('/\D/', '', $mobile);
+    if (strlen($digits) === 10) {
+        $digits = '91' . $digits;
+    }
+    return 'https://wa.me/' . $digits . '?text=' . rawurlencode($message);
+}
+
+/** The standard Udhaar reminder message text, reused wherever a reminder link is built. */
+function udhaarReminderMessage(string $businessName, string $customerName, float $balance): string {
+    return "Hi {$customerName}, this is a reminder from {$businessName} — you have an outstanding Udhaar (credit) balance of "
+        . formatCurrency($balance) . ". Please clear it at your earliest convenience. Thank you!";
+}
+
 /** Random client-generated reference for idempotent offline-sale sync — see
  * sales.client_ref / service_invoices.client_ref in sql/schema.sql. */
 function generateClientRef(): string {
