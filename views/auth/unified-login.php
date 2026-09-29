@@ -10,6 +10,14 @@ $initialBizType = in_array($form['business_type'] ?? '', ['trade', 'service'], t
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sign in · <?= h(APP_NAME) ?></title>
+<link rel="manifest" href="/assets/manifest.webmanifest">
+<link rel="icon" href="/assets/img/icons/icon-192.png">
+<meta name="theme-color" content="#0b1020">
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {}));
+  }
+</script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
 <style>

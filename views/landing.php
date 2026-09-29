@@ -33,6 +33,9 @@ $serviceSectors = [
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= h(APP_NAME) ?> — POS &amp; Business Management for Every Trade</title>
+<link rel="manifest" href="/assets/manifest.webmanifest">
+<link rel="icon" href="/assets/img/icons/icon-192.png">
+<meta name="theme-color" content="#4f46e5">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   .pill { transition: all 0.15s ease; }

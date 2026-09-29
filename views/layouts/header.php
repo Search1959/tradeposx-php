@@ -29,10 +29,22 @@ $workspace = match ($org['business_type'] ?? 'both') {
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title><?= h($pageTitle ?? 'Dashboard') ?> · <?= h($org['name'] ?? APP_NAME) ?></title>
 <link rel="manifest" href="/assets/manifest.webmanifest">
+<link rel="icon" href="/assets/img/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/assets/img/icons/icon-512.png">
 <meta name="theme-color" content="<?= h($org['theme_color'] ?? '#4f46e5') ?>">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 <script src="https://cdn.tailwindcss.com"></script>
+<script>
+  // Makes the whole app installable as a home-screen app (Android "Install app"
+  // prompt) - see sw.js for why it deliberately caches nothing.
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {}));
+  }
+</script>
 <style>
   [x-cloak] { display: none !important; }
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
