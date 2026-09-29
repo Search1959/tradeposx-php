@@ -28,7 +28,14 @@ class SaleController {
                 [$items, $subtotal, $taxTotal] = $this->buildItemsFromCart($org['id'], $cart);
                 $discount = (float) ($_POST['discount'] ?? 0);
                 $grandTotal = round($subtotal + $taxTotal - $discount, 2);
-                $receivedAmount = $_POST['payment_status'] === 'CREDIT' ? 0 : (float) ($_POST['received_amount'] ?? $grandTotal);
+                // Only PARTIAL trusts the client's typed amount — FULL/CREDIT are
+                // derived here, not read from a field the client may not have
+                // touched (it's only ever shown/edited in the PARTIAL case).
+                $receivedAmount = match ($_POST['payment_status'] ?? 'FULL') {
+                    'CREDIT' => 0.0,
+                    'PARTIAL' => (float) ($_POST['received_amount'] ?? 0),
+                    default => $grandTotal,
+                };
 
                 $result = $this->model->createSale($org['id'], [
                     'customer_id'      => $_POST['customer_id'] ?: null,

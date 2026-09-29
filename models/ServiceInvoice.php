@@ -1,0 +1,111 @@
+<?php
+class ServiceInvoice extends BaseModel {
+    public function allForOrg(int $orgId): array {
+        return $this->query('SELECT * FROM service_invoices WHERE org_id = ? ORDER BY created_at DESC', [$orgId]);
+    }
+
+    public function find(int $orgId, int $id): ?array {
+        $inv = $this->queryOne('SELECT * FROM service_invoices WHERE org_id = ? AND id = ?', [$orgId, $id]);
+        if ($inv) {
+            $inv['items'] = $this->query('SELECT * FROM service_invoice_items WHERE invoice_id = ?', [$id]);
+        }
+        return $inv;
+    }
+
+    public function nextInvoiceNo(int $orgId): string {
+        $count = $this->count('service_invoices', 'org_id = ?', [$orgId]);
+        return 'SVI-' . str_pad((string)($count + 1), 5, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Creates the invoice + line items in one transaction. Balance is tracked per
+     * invoice (Service ERP has no customer-level running Udhaar ledger like
+     * Trading) — the same "derive owed from the actual numbers" rule from the
+     * Sale model still applies: amountOwed = grandTotal - paidAmount, regardless
+     * of the payment_method label. Each line with a staff_id assigned auto-accrues
+     * that staff member's commission_percent on that line's own total.
+     *
+     * @param array $items each: service_id?, name, item_type, price, quantity, total, staff_id?
+     */
+    public function createInvoice(int $orgId, array $data, array $items): array {
+        if (empty($items)) return ['error' => 'At least one item is required.'];
+
+        $staffModel = new ServiceStaff();
+        $customerModel = new ServiceCustomer();
+
+        $itemsTotal = array_reduce($items, fn($sum, $i) => $sum + (float) $i['total'], 0.0);
+        $labourCharges = (float) ($data['labour_charges'] ?? 0);
+        $materialCharges = (float) ($data['material_charges'] ?? 0);
+        $discount = (float) ($data['discount'] ?? 0);
+        $gstAmount = (float) ($data['gst_amount'] ?? 0);
+        $grandTotal = round($itemsTotal + $labourCharges + $materialCharges + $gstAmount - $discount, 2);
+        $paidAmount = (float) ($data['paid_amount'] ?? $grandTotal);
+        $balance = round(max(0, $grandTotal - $paidAmount), 2);
+        $status = $balance <= 0 ? 'PAID' : ($paidAmount > 0 ? 'PARTIAL' : 'UNPAID');
+        $invoiceNo = $this->nextInvoiceNo($orgId);
+
+        $this->db->beginTransaction();
+        try {
+            $invoiceId = $this->insert(
+                'INSERT INTO service_invoices (org_id, invoice_no, customer_id, customer_name, mobile, invoice_date,
+                 labour_charges, material_charges, discount, gst_amount, grand_total, paid_amount, balance_amount,
+                 payment_method, status, job_card_id, appointment_id, notes)
+                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                [
+                    $orgId, $invoiceNo, $data['customer_id'] ?: null, $data['customer_name'] ?? null,
+                    $data['mobile'] ?? null, $data['invoice_date'] ?: date('Y-m-d'), $labourCharges, $materialCharges,
+                    $discount, $gstAmount, $grandTotal, $paidAmount, $balance, $data['payment_method'] ?? 'CASH',
+                    $status, $data['job_card_id'] ?: null, $data['appointment_id'] ?: null, $data['notes'] ?? null,
+                ]
+            );
+
+            foreach ($items as $item) {
+                $this->insert(
+                    'INSERT INTO service_invoice_items (org_id, invoice_id, service_id, name, item_type, price, quantity, total, staff_id)
+                     VALUES (?,?,?,?,?,?,?,?,?)',
+                    [
+                        $orgId, $invoiceId, $item['service_id'] ?? null, $item['name'], $item['item_type'] ?? 'SERVICE',
+                        $item['price'], $item['quantity'], $item['total'], $item['staff_id'] ?: null,
+                    ]
+                );
+                if (!empty($item['staff_id'])) {
+                    $staff = $staffModel->find($orgId, (int) $item['staff_id']);
+                    if ($staff && (float) $staff['commission_percent'] > 0) {
+                        $commission = round((float) $item['total'] * (float) $staff['commission_percent'] / 100, 2);
+                        $staffModel->accrueCommission($orgId, (int) $item['staff_id'], $commission);
+                    }
+                }
+            }
+
+            if (!empty($data['customer_id'])) {
+                $customerModel->addSpent($orgId, (int) $data['customer_id'], $grandTotal);
+            }
+
+            $this->db->commit();
+            return ['id' => $invoiceId, 'invoiceNo' => $invoiceNo, 'balance' => $balance];
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            error_log('ServiceInvoice::createInvoice failed: ' . $e->getMessage());
+            return ['error' => 'Could not save invoice. Please try again.'];
+        }
+    }
+
+    public function recordPayment(int $orgId, int $id, float $amount): bool {
+        $invoice = $this->find($orgId, $id);
+        if (!$invoice) return false;
+        $newBalance = max(0, (float) $invoice['balance_amount'] - $amount);
+        $newPaid = (float) $invoice['paid_amount'] + $amount;
+        $status = $newBalance <= 0 ? 'PAID' : 'PARTIAL';
+        return $this->execute(
+            'UPDATE service_invoices SET paid_amount = ?, balance_amount = ?, status = ? WHERE org_id = ? AND id = ?',
+            [$newPaid, $newBalance, $status, $orgId, $id]
+        );
+    }
+
+    public function cancel(int $orgId, int $id, string $reason): bool {
+        return $this->execute(
+            "UPDATE service_invoices SET status = 'CANCELLED', cancel_reason = ?, cancelled_at = NOW() WHERE org_id = ? AND id = ?",
+            [$reason, $orgId, $id]
+        );
+    }
+}
