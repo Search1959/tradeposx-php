@@ -278,6 +278,12 @@ function showToast(msg, type) {
   t.textContent = msg; t.className = 'toast show ' + type;
   setTimeout(() => t.classList.remove('show'), 3500);
 }
+function showToastWithLink(msg, type, href, linkText) {
+  const t = document.getElementById('toast');
+  t.innerHTML = h(msg) + ' &nbsp; <a href="' + href + '" style="color:inherit;font-weight:700;text-decoration:underline;">' + h(linkText) + '</a>';
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.classList.remove('show'), 6000);
+}
 
 function uuid() { return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random()*16|0; return (c==='x'?r:(r&0x3|0x8)).toString(16); }); }
 
@@ -307,7 +313,13 @@ async function completeSale() {
       const data = await res.json();
       if (data.success) {
         synced = true;
-        showToast('Sale ' + data.saleNumber + ' completed', 'success');
+        // Stays on this screen by default (that's the point of "quick sale" —
+        // a cashier doing many sales in a row shouldn't have to navigate back
+        // each time); the receipt (a receipt only exists once actually synced —
+        // an offline-queued sale gets no id until it drains) is one tap away
+        // only if the customer actually wants a printed copy, reusing the
+        // desktop POS's print-ready receipt view rather than building a second one.
+        showToastWithLink('Sale ' + data.saleNumber + ' completed', 'success', BASE + '/sales/receipt/' + data.id, 'Print Receipt');
       } else {
         showToast(data.error || 'Could not complete sale', 'error');
       }
