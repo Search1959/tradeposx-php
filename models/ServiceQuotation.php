@@ -37,12 +37,12 @@ class ServiceQuotation extends BaseModel {
         try {
             $quoteId = $this->insert(
                 'INSERT INTO service_quotations (org_id, quote_no, customer_id, customer_name, mobile, quote_date,
-                 valid_until, labour_charges, material_charges, discount, gst_amount, grand_total, status, notes)
-                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                 valid_until, labour_charges, material_charges, discount, discount_percent, gst_amount, grand_total, status, notes)
+                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                 [
                     $orgId, $quoteNo, $data['customer_id'] ?: null, $data['customer_name'] ?? null, $data['mobile'] ?? null,
                     $data['quote_date'] ?: date('Y-m-d'), $data['valid_until'] ?: null, $labourCharges, $materialCharges,
-                    $discount, $gstAmount, $grandTotal, 'Draft', $data['notes'] ?? null,
+                    $discount, $data['discount_percent'] ?? null, $gstAmount, $grandTotal, 'Draft', $data['notes'] ?? null,
                 ]
             );
             foreach ($items as $item) {
@@ -81,12 +81,12 @@ class ServiceQuotation extends BaseModel {
         try {
             $this->execute(
                 'UPDATE service_quotations SET customer_id = ?, customer_name = ?, mobile = ?, quote_date = ?,
-                 valid_until = ?, labour_charges = ?, material_charges = ?, discount = ?, gst_amount = ?, grand_total = ?, notes = ?
+                 valid_until = ?, labour_charges = ?, material_charges = ?, discount = ?, discount_percent = ?, gst_amount = ?, grand_total = ?, notes = ?
                  WHERE org_id = ? AND id = ?',
                 [
                     $data['customer_id'] ?: null, $data['customer_name'] ?? null, $data['mobile'] ?? null,
                     $data['quote_date'] ?: date('Y-m-d'), $data['valid_until'] ?: null, $labourCharges, $materialCharges,
-                    $discount, $gstAmount, $grandTotal, $data['notes'] ?? null, $orgId, $id,
+                    $discount, $data['discount_percent'] ?? null, $gstAmount, $grandTotal, $data['notes'] ?? null, $orgId, $id,
                 ]
             );
 
@@ -132,7 +132,7 @@ class ServiceQuotation extends BaseModel {
         $result = $invoiceModel->createInvoice($orgId, [
             'customer_id' => $quote['customer_id'], 'customer_name' => $quote['customer_name'], 'mobile' => $quote['mobile'],
             'labour_charges' => $quote['labour_charges'], 'material_charges' => $quote['material_charges'],
-            'discount' => $quote['discount'], 'gst_amount' => $quote['gst_amount'], 'paid_amount' => 0,
+            'discount' => $quote['discount'], 'discount_percent' => $quote['discount_percent'], 'gst_amount' => $quote['gst_amount'], 'paid_amount' => 0,
             'notes' => 'Converted from quotation ' . $quote['quote_no'],
         ], $items);
 

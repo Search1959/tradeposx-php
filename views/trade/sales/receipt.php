@@ -123,7 +123,10 @@ $gstBreakdown = $isGst ? gstBreakdownByRate($sale['items'], $sale['tax_type'] ==
         <div class="flex justify-between text-slate-600"><span>SGST</span><span><?= formatCurrency($sgstDisplay) ?></span></div>
         <?php endif; ?>
         <?php if ((float)$sale['discount'] > 0): ?>
-        <div class="flex justify-between text-slate-600"><span>Discount</span><span>-<?= formatCurrency((float)$sale['discount']) ?></span></div>
+        <div class="flex justify-between text-slate-600">
+          <span>Discount<?= $sale['discount_percent'] !== null ? ' @ ' . rtrim(rtrim(number_format((float)$sale['discount_percent'], 2), '0'), '.') . '%' : '' ?></span>
+          <span>-<?= formatCurrency((float)$sale['discount']) ?></span>
+        </div>
         <?php endif; ?>
         <div class="flex justify-between font-bold text-base border-t border-slate-800 mt-1.5 pt-1.5">
           <span>Grand Total</span><span><?= formatCurrency((float)$sale['grand_total']) ?></span>

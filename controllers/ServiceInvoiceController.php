@@ -79,6 +79,9 @@ class ServiceInvoiceController {
                 $sgstAmount = round($taxTotal - $cgstAmount, 2);
                 $grandTotal = round($taxableTotal + $taxTotal
                     + (float) ($_POST['labour_charges'] ?? 0) - (float) ($_POST['discount'] ?? 0), 2);
+                // Only set when a 5%/10% preset was actually used — a manually typed
+                // Custom rupee amount has no percent to record.
+                $discountPercent = in_array($_POST['discount_percent'] ?? '', ['5', '10'], true) ? (float) $_POST['discount_percent'] : null;
                 // Only PARTIAL trusts the client's typed amount — see SaleController for why.
                 $paidAmount = match ($_POST['payment_status'] ?? 'FULL') {
                     'CREDIT' => 0.0,
@@ -95,6 +98,7 @@ class ServiceInvoiceController {
                     'staff_commission_amount'       => $staffCommissionAmount,
                     'labour_charges'  => $_POST['labour_charges'] ?? 0,
                     'discount'        => $_POST['discount'] ?? 0,
+                    'discount_percent' => $discountPercent,
                     'tax_type'        => $taxType,
                     'gst_amount'      => $taxTotal,
                     'taxable_amount'  => $taxType === 'EXEMPT' ? null : $taxableTotal,

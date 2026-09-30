@@ -655,3 +655,11 @@ ALTER TABLE service_invoices
   ADD COLUMN staff_commission_percent DECIMAL(5,2) NULL AFTER specialized_staff_id,
   ADD COLUMN staff_commission_amount DECIMAL(12,2) NOT NULL DEFAULT 0 AFTER staff_commission_percent,
   ADD FOREIGN KEY (specialized_staff_id) REFERENCES specialized_staff(id) ON DELETE SET NULL;
+
+-- ── Discount % tracking (Sales, Service Invoices, Service Quotations) ─────
+-- Only set when a 5%/10% preset was picked on the create screen — a manually
+-- typed Custom rupee amount has no percent to record, so this stays NULL for
+-- those (the view/receipt just shows a plain "Discount" line in that case).
+ALTER TABLE sales ADD COLUMN discount_percent DECIMAL(5,2) NULL AFTER discount;
+ALTER TABLE service_invoices ADD COLUMN discount_percent DECIMAL(5,2) NULL AFTER discount;
+ALTER TABLE service_quotations ADD COLUMN discount_percent DECIMAL(5,2) NULL AFTER discount;

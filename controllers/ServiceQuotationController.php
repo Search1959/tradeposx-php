@@ -45,6 +45,9 @@ class ServiceQuotationController {
                 $error = 'Cart is empty.';
             } else {
                 $customer = $_POST['customer_id'] ? $this->customerModel->find($org['id'], (int) $_POST['customer_id']) : null;
+                // Only set when a 5%/10% preset was actually used — a manually typed
+                // Custom rupee amount has no percent to record.
+                $discountPercent = in_array($_POST['discount_percent'] ?? '', ['5', '10'], true) ? (float) $_POST['discount_percent'] : null;
                 $result = $this->model->create($org['id'], [
                     'customer_id'     => $_POST['customer_id'] ?: null,
                     'customer_name'   => $customer['name'] ?? null,
@@ -53,6 +56,7 @@ class ServiceQuotationController {
                     'valid_until'     => $_POST['valid_until'] ?? null,
                     'labour_charges'  => $_POST['labour_charges'] ?? 0,
                     'discount'        => $_POST['discount'] ?? 0,
+                    'discount_percent' => $discountPercent,
                     'notes'           => $_POST['notes'] ?? null,
                 ], $items);
 
@@ -96,6 +100,7 @@ class ServiceQuotationController {
                 $error = 'Cart is empty.';
             } else {
                 $customer = $_POST['customer_id'] ? $this->customerModel->find($org['id'], (int) $_POST['customer_id']) : null;
+                $discountPercent = in_array($_POST['discount_percent'] ?? '', ['5', '10'], true) ? (float) $_POST['discount_percent'] : null;
                 $result = $this->model->update($org['id'], (int) $id, [
                     'customer_id'     => $_POST['customer_id'] ?: null,
                     'customer_name'   => $customer['name'] ?? null,
@@ -104,6 +109,7 @@ class ServiceQuotationController {
                     'valid_until'     => $_POST['valid_until'] ?? null,
                     'labour_charges'  => $_POST['labour_charges'] ?? 0,
                     'discount'        => $_POST['discount'] ?? 0,
+                    'discount_percent' => $discountPercent,
                     'notes'           => $_POST['notes'] ?? null,
                 ], $items);
 

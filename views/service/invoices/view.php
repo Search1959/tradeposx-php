@@ -113,7 +113,10 @@ $gstBreakdown = $isGst ? gstBreakdownByRate($invoice['items'], $invoice['tax_typ
         <div class="flex justify-between text-slate-600"><span>Labour</span><span><?= formatCurrency((float)$invoice['labour_charges']) ?></span></div>
         <?php endif; ?>
         <?php if ((float)$invoice['discount'] > 0): ?>
-        <div class="flex justify-between text-slate-600"><span>Discount</span><span>-<?= formatCurrency((float)$invoice['discount']) ?></span></div>
+        <div class="flex justify-between text-slate-600">
+          <span>Discount<?= $invoice['discount_percent'] !== null ? ' @ ' . rtrim(rtrim(number_format((float)$invoice['discount_percent'], 2), '0'), '.') . '%' : '' ?></span>
+          <span>-<?= formatCurrency((float)$invoice['discount']) ?></span>
+        </div>
         <?php endif; ?>
         <div class="flex justify-between font-bold text-base border-t border-slate-800 mt-1.5 pt-1.5">
           <span>Grand Total</span><span><?= formatCurrency((float)$invoice['grand_total']) ?></span>

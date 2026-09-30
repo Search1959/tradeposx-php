@@ -42,7 +42,10 @@ $converted = in_array($quotation['status'], ['ConvertedToJob', 'ConvertedToInvoi
       <div class="flex justify-between text-slate-600"><span>Labour</span><span><?= formatCurrency((float)$quotation['labour_charges']) ?></span></div>
       <?php endif; ?>
       <?php if ((float)$quotation['discount'] > 0): ?>
-      <div class="flex justify-between text-slate-600"><span>Discount</span><span>-<?= formatCurrency((float)$quotation['discount']) ?></span></div>
+      <div class="flex justify-between text-slate-600">
+        <span>Discount<?= $quotation['discount_percent'] !== null ? ' @ ' . rtrim(rtrim(number_format((float)$quotation['discount_percent'], 2), '0'), '.') . '%' : '' ?></span>
+        <span>-<?= formatCurrency((float)$quotation['discount']) ?></span>
+      </div>
       <?php endif; ?>
       <div class="flex justify-between font-bold text-base border-t border-slate-300 mt-1 pt-1"><span>Grand Total</span><span><?= formatCurrency((float)$quotation['grand_total']) ?></span></div>
     </div>

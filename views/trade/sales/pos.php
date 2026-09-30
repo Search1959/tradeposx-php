@@ -115,6 +115,7 @@
       <?= CsrfHelper::getField() ?>
       <input type="hidden" name="cart_json" :value="JSON.stringify(cart.map(l => ({id: l.id, qty: l.qty})))">
       <input type="hidden" name="discount" :value="discountAmount()">
+      <input type="hidden" name="discount_percent" :value="['5','10'].includes(discountMode) ? discountMode : ''">
       <input type="hidden" name="tax_type" :value="taxType">
       <input type="hidden" name="broker_commission_percent" :value="brokerCommissionPercent()">
 

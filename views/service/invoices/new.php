@@ -111,6 +111,7 @@
       <input type="hidden" name="cart_json" :value="JSON.stringify(cart.map(l => ({id: l.id, qty: l.qty, staff_id: l.staff_id || null})))">
       <input type="hidden" name="labour_charges" :value="labour">
       <input type="hidden" name="discount" :value="discountAmount()">
+      <input type="hidden" name="discount_percent" :value="['5','10'].includes(discountMode) ? discountMode : ''">
       <input type="hidden" name="tax_type" :value="taxType">
       <input type="hidden" name="specialized_staff_commission_percent" :value="specializedStaffCommissionPercent()">
 

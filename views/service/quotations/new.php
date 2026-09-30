@@ -81,6 +81,7 @@ $isEdit = !empty($quotation['id']);
       <input type="hidden" name="cart_json" :value="JSON.stringify(cart.map(l => ({id: l.id, qty: l.qty})))">
       <input type="hidden" name="labour_charges" :value="labour">
       <input type="hidden" name="discount" :value="discountAmount()">
+      <input type="hidden" name="discount_percent" :value="['5','10'].includes(discountMode) ? discountMode : ''">
 
       <select name="customer_id" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
         <option value="">Walk-in customer</option>

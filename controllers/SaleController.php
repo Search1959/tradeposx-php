@@ -30,6 +30,9 @@ class SaleController {
                 $taxType = in_array($_POST['tax_type'] ?? '', ['EXCLUSIVE', 'INCLUSIVE', 'EXEMPT'], true) ? $_POST['tax_type'] : 'EXCLUSIVE';
                 [$items, $lineTotal, $taxableAmount, $taxTotal] = $this->buildItemsFromCart($org['id'], $cart, $taxType);
                 $discount = (float) ($_POST['discount'] ?? 0);
+                // Only set when a 5%/10% preset was actually used — a manually typed
+                // Custom rupee amount has no percent to record, same as before this field existed.
+                $discountPercent = in_array($_POST['discount_percent'] ?? '', ['5', '10'], true) ? (float) $_POST['discount_percent'] : null;
                 $grandTotal = round($taxableAmount + $taxTotal - $discount, 2);
                 $cgstAmount = round($taxTotal / 2, 2);
                 $sgstAmount = round($taxTotal - $cgstAmount, 2); // avoids a 1-paisa mismatch from naive halving
@@ -66,6 +69,7 @@ class SaleController {
                     'broker_commission_amount'  => $brokerCommissionAmount,
                     'subtotal'         => $lineTotal,
                     'discount'         => $discount,
+                    'discount_percent' => $discountPercent,
                     'tax_type'         => $taxType,
                     'taxable_amount'   => $taxType === 'EXEMPT' ? null : $taxableAmount,
                     'cgst_amount'      => $taxType === 'EXEMPT' ? null : $cgstAmount,

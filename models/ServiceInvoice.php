@@ -57,15 +57,15 @@ class ServiceInvoice extends BaseModel {
             $invoiceId = $this->insert(
                 'INSERT INTO service_invoices (org_id, invoice_no, customer_id, customer_name, mobile,
                  specialized_staff_id, staff_commission_percent, staff_commission_amount, invoice_date,
-                 labour_charges, material_charges, discount, tax_type, gst_amount, taxable_amount, cgst_amount, sgst_amount,
+                 labour_charges, material_charges, discount, discount_percent, tax_type, gst_amount, taxable_amount, cgst_amount, sgst_amount,
                  grand_total, paid_amount, balance_amount, payment_method, status, job_card_id, appointment_id, notes)
-                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                 [
                     $orgId, $invoiceNo, $data['customer_id'] ?: null, $data['customer_name'] ?? null,
                     $data['mobile'] ?? null,
                     $data['specialized_staff_id'] ?: null, $data['staff_commission_percent'] ?? null, $data['staff_commission_amount'] ?? 0,
                     $data['invoice_date'] ?: date('Y-m-d'), $labourCharges, $materialCharges,
-                    $discount, $taxType, $gstAmount, $taxableAmount, $cgstAmount, $sgstAmount, $grandTotal, $paidAmount,
+                    $discount, $data['discount_percent'] ?? null, $taxType, $gstAmount, $taxableAmount, $cgstAmount, $sgstAmount, $grandTotal, $paidAmount,
                     $balance, $data['payment_method'] ?? 'CASH', $status, $data['job_card_id'] ?: null,
                     $data['appointment_id'] ?: null, $data['notes'] ?? null,
                 ]
