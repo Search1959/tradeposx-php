@@ -688,3 +688,20 @@ CROSS JOIN (
   UNION ALL SELECT 'Tea & Snacks' UNION ALL SELECT 'Wi-Fi & Telecom' UNION ALL SELECT 'Taxes & Licenses'
   UNION ALL SELECT 'Pest Control & Cleaning' UNION ALL SELECT 'Marketing & Signboard' UNION ALL SELECT 'Other'
 ) h;
+
+-- ── Expense Heads demo price tags ─────
+-- A suggested/typical amount shown on that head's quick-add button (see
+-- views/trade/expenses/list.php) — tapping the button pre-fills Amount, still
+-- freely editable before saving.
+ALTER TABLE expense_heads ADD COLUMN demo_amount DECIMAL(12,2) NOT NULL DEFAULT 0 AFTER name;
+UPDATE expense_heads SET demo_amount = 5000 WHERE name = 'Rent';
+UPDATE expense_heads SET demo_amount = 1500 WHERE name = 'Electricity';
+UPDATE expense_heads SET demo_amount = 300  WHERE name = 'Delivery/Transport';
+UPDATE expense_heads SET demo_amount = 10000 WHERE name = 'Staff Salary';
+UPDATE expense_heads SET demo_amount = 200  WHERE name = 'Packaging';
+UPDATE expense_heads SET demo_amount = 500  WHERE name = 'Maintenance';
+UPDATE expense_heads SET demo_amount = 100  WHERE name = 'Tea & Snacks';
+UPDATE expense_heads SET demo_amount = 800  WHERE name = 'Wi-Fi & Telecom';
+UPDATE expense_heads SET demo_amount = 1000 WHERE name = 'Taxes & Licenses';
+UPDATE expense_heads SET demo_amount = 600  WHERE name = 'Pest Control & Cleaning';
+UPDATE expense_heads SET demo_amount = 1500 WHERE name = 'Marketing & Signboard';

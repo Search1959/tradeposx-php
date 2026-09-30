@@ -34,6 +34,15 @@ class ExpenseController {
         $totalPages = max(1, (int) ceil($totalCount / $perPage));
         $total = $this->model->totalForOrg($org['id']);
         $expenseHeads = $this->headModel->allForOrg($org['id']);
+        // Self-healing: an org created before Expense Heads existed (or on a
+        // server that hadn't run the retroactive seeding migration yet) would
+        // otherwise show a permanently empty, unusable picker — seed it here
+        // the first time anyone actually opens this screen, instead of leaving
+        // it broken until someone remembers to run a one-off SQL script.
+        if (empty($expenseHeads)) {
+            $this->headModel->seedDefaults($org['id']);
+            $expenseHeads = $this->headModel->allForOrg($org['id']);
+        }
         $pageTitle = 'Expenses';
         require __DIR__ . '/../views/trade/expenses/list.php';
     }
@@ -46,8 +55,9 @@ class ExpenseController {
         Auth::requireOrgAccess($org['id']);
         CsrfHelper::validate();
         $name = trim($_POST['name'] ?? '');
+        $demoAmount = (float) ($_POST['demo_amount'] ?? 0);
         if ($name !== '' && !$this->headModel->nameExists($org['id'], $name)) {
-            $this->headModel->create($org['id'], $name);
+            $this->headModel->create($org['id'], $name, $demoAmount);
         }
         redirect($org['slug'] . '/expenses?tab=heads');
     }
@@ -85,6 +95,10 @@ class ExpenseController {
         }
 
         $expenseHeads = $this->headModel->allForOrg($org['id']);
+        if (empty($expenseHeads)) {
+            $this->headModel->seedDefaults($org['id']);
+            $expenseHeads = $this->headModel->allForOrg($org['id']);
+        }
         $pageTitle = 'Edit Expense';
         require __DIR__ . '/../views/trade/expenses/edit.php';
     }
