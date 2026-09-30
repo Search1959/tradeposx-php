@@ -41,6 +41,7 @@ $priorityColors = ['Low'=>'text-slate-400','Medium'=>'text-slate-600','High'=>'t
       <?php endif; ?>
     </tbody>
   </table>
+  <?= renderPagination($page, $totalPages, $base . '/job-cards') ?>
 </div>
 
 <?php require __DIR__ . '/../../layouts/footer.php'; ?>

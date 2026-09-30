@@ -15,7 +15,11 @@ class ServiceInvoiceController {
     public function listAction(): void {
         $org = Tenant::current();
         Auth::requireOrgAccess($org['id']);
-        $invoices = $this->model->allForOrg($org['id']);
+        $page = max(1, (int) ($_GET['page'] ?? 1));
+        $perPage = LIST_PAGE_SIZE;
+        $invoices = $this->model->allForOrg($org['id'], $perPage, ($page - 1) * $perPage);
+        $totalCount = $this->model->countForOrg($org['id']);
+        $totalPages = max(1, (int) ceil($totalCount / $perPage));
         $pageTitle = 'Service Invoices';
         require __DIR__ . '/../views/service/invoices/list.php';
     }

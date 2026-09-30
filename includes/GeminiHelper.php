@@ -43,8 +43,8 @@ class GeminiHelper {
                         'required' => ['name', 'quantity', 'purchasePrice'],
                     ],
                 ],
-                'required' => ['items'],
             ],
+            'required' => ['items'],
         ];
 
         $prompt = 'This is a photo or scan of a supplier purchase bill/invoice, possibly in a regional Indian '

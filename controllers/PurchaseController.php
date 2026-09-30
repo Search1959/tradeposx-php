@@ -14,8 +14,10 @@ class PurchaseController {
         $org = Tenant::current();
         Auth::requireOrgAccess($org['id']);
         $page = max(1, (int) ($_GET['page'] ?? 1));
-        $perPage = 25;
+        $perPage = LIST_PAGE_SIZE;
         $purchases = $this->model->allForOrg($org['id'], $perPage, ($page - 1) * $perPage);
+        $totalCount = $this->model->countForOrg($org['id']);
+        $totalPages = max(1, (int) ceil($totalCount / $perPage));
         $pageTitle = 'Purchases';
         require __DIR__ . '/../views/trade/purchases/list.php';
     }

@@ -12,7 +12,11 @@ class CustomerController {
         $org = Tenant::current();
         Auth::requireOrgAccess($org['id']);
         $search = trim($_GET['q'] ?? '');
-        $customers = $this->model->allForOrg($org['id'], $search ?: null);
+        $page = max(1, (int) ($_GET['page'] ?? 1));
+        $perPage = LIST_PAGE_SIZE;
+        $customers = $this->model->allForOrg($org['id'], $search ?: null, $perPage, ($page - 1) * $perPage);
+        $totalCount = $this->model->countForOrg($org['id'], $search ?: null);
+        $totalPages = max(1, (int) ceil($totalCount / $perPage));
         // Keyed by customer id, only loaded for those actually owing something -
         // feeds the itemized breakdown in the WhatsApp reminder link on this page.
         $recentCredits = [];

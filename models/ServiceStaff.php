@@ -1,7 +1,16 @@
 <?php
 class ServiceStaff extends BaseModel {
-    public function allForOrg(int $orgId): array {
-        return $this->query('SELECT * FROM service_staff WHERE org_id = ? ORDER BY name', [$orgId]);
+    /** $limit stays null (no LIMIT) for every caller needing the full list to
+     * populate a picker (appointment/job-card/invoice staff pickers) — only
+     * ServiceStaffController::listAction's own paginated screen passes a real limit. */
+    public function allForOrg(int $orgId, ?int $limit = null, int $offset = 0): array {
+        $limitSql = $limit !== null ? ' LIMIT ? OFFSET ?' : '';
+        $limitParams = $limit !== null ? [$limit, $offset] : [];
+        return $this->query('SELECT * FROM service_staff WHERE org_id = ? ORDER BY name' . $limitSql, array_merge([$orgId], $limitParams));
+    }
+
+    public function countForOrg(int $orgId): int {
+        return $this->count('service_staff', 'org_id = ?', [$orgId]);
     }
 
     public function find(int $orgId, int $id): ?array {

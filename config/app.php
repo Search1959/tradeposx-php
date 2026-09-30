@@ -92,6 +92,47 @@ function amountInWordsINR(float $amount): string {
     return $result . ' Only';
 }
 
+/** Renders a Prev/Next + numbered-page control, reused by every paginated list
+ * screen across TradeERP + ServiceERP (each capped at LIST_PAGE_SIZE). $extraParams
+ * (e.g. ['q' => $search]) are preserved on every page link so paging doesn't drop
+ * an active search/filter. Returns '' when there's nothing to page through. */
+function renderPagination(int $page, int $totalPages, string $baseUrl, array $extraParams = []): string {
+    if ($totalPages <= 1) return '';
+    $extraParams = array_filter($extraParams, fn($v) => $v !== null && $v !== '');
+    $buildUrl = function (int $p) use ($baseUrl, $extraParams): string {
+        return $baseUrl . '?' . http_build_query(array_merge($extraParams, ['page' => $p]));
+    };
+    $link = fn(int $p, string $label, string $class = '') =>
+        '<a href="' . h($buildUrl($p)) . '" class="px-3 py-1.5 rounded text-sm ' . $class . '">' . $label . '</a>';
+
+    $html = '<div class="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-t border-slate-100 text-sm">';
+    $html .= '<div class="text-slate-500">Page ' . $page . ' of ' . $totalPages . '</div>';
+    $html .= '<div class="flex items-center gap-1">';
+    if ($page > 1) {
+        $html .= $link($page - 1, '&larr; Prev', 'border border-slate-300 text-slate-600 hover:bg-slate-50');
+    }
+    $start = max(1, $page - 2);
+    $end = min($totalPages, $page + 2);
+    if ($start > 1) {
+        $html .= $link(1, '1', 'text-slate-600 hover:bg-slate-100');
+        if ($start > 2) $html .= '<span class="px-1 text-slate-400">&hellip;</span>';
+    }
+    for ($i = $start; $i <= $end; $i++) {
+        $html .= $i === $page
+            ? '<span class="px-3 py-1.5 rounded bg-indigo-600 text-white font-medium text-sm">' . $i . '</span>'
+            : $link($i, (string) $i, 'text-slate-600 hover:bg-slate-100');
+    }
+    if ($end < $totalPages) {
+        if ($end < $totalPages - 1) $html .= '<span class="px-1 text-slate-400">&hellip;</span>';
+        $html .= $link($totalPages, (string) $totalPages, 'text-slate-600 hover:bg-slate-100');
+    }
+    if ($page < $totalPages) {
+        $html .= $link($page + 1, 'Next &rarr;', 'border border-slate-300 text-slate-600 hover:bg-slate-50');
+    }
+    $html .= '</div></div>';
+    return $html;
+}
+
 /** Groups line items by their own GST% so a sale/invoice mixing rates (e.g. 5% and
  * 18% items on one bill) reports each slab's taxable amount and tax separately —
  * a single blended CGST/SGST total hides which rate produced how much tax, which

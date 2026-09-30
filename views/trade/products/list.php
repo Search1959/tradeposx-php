@@ -92,4 +92,8 @@
   </table>
 </div>
 
+<div class="bg-white rounded-lg shadow-sm border border-slate-200 mt-3">
+  <?= renderPagination($page, $totalPages, $base . '/products', ['q' => $_GET['q'] ?? '']) ?>
+</div>
+
 <?php require __DIR__ . '/../../layouts/footer.php'; ?>

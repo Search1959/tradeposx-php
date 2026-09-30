@@ -9,7 +9,11 @@ class SupplierController {
     public function listAction(): void {
         $org = Tenant::current();
         Auth::requireOrgAccess($org['id']);
-        $suppliers = $this->model->allForOrg($org['id']);
+        $page = max(1, (int) ($_GET['page'] ?? 1));
+        $perPage = LIST_PAGE_SIZE;
+        $suppliers = $this->model->allForOrg($org['id'], $perPage, ($page - 1) * $perPage);
+        $totalCount = $this->model->countForOrg($org['id']);
+        $totalPages = max(1, (int) ceil($totalCount / $perPage));
         $pageTitle = 'Suppliers';
         require __DIR__ . '/../views/trade/suppliers/list.php';
     }

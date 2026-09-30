@@ -1,11 +1,24 @@
 <?php
 class Customer extends BaseModel {
-    public function allForOrg(int $orgId, ?string $search = null): array {
+    /** $limit stays null (no LIMIT at all) for every caller needing the full list
+     * to populate a picker (POS, mobile POS) — only CustomerController::listAction's
+     * own paginated screen passes a real limit. */
+    public function allForOrg(int $orgId, ?string $search = null, ?int $limit = null, int $offset = 0): array {
+        $limitSql = $limit !== null ? ' LIMIT ? OFFSET ?' : '';
+        $limitParams = $limit !== null ? [$limit, $offset] : [];
         if ($search) {
             $like = '%' . $search . '%';
-            return $this->query('SELECT * FROM customers WHERE org_id = ? AND (name LIKE ? OR mobile LIKE ?) ORDER BY name', [$orgId, $like, $like]);
+            return $this->query('SELECT * FROM customers WHERE org_id = ? AND (name LIKE ? OR mobile LIKE ?) ORDER BY name' . $limitSql, array_merge([$orgId, $like, $like], $limitParams));
         }
-        return $this->query('SELECT * FROM customers WHERE org_id = ? ORDER BY name', [$orgId]);
+        return $this->query('SELECT * FROM customers WHERE org_id = ? ORDER BY name' . $limitSql, array_merge([$orgId], $limitParams));
+    }
+
+    public function countForOrg(int $orgId, ?string $search = null): int {
+        if ($search) {
+            $like = '%' . $search . '%';
+            return $this->count('customers', 'org_id = ? AND (name LIKE ? OR mobile LIKE ?)', [$orgId, $like, $like]);
+        }
+        return $this->count('customers', 'org_id = ?', [$orgId]);
     }
 
     public function find(int $orgId, int $id): ?array {

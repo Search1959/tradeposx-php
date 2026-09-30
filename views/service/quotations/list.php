@@ -36,6 +36,7 @@ $statusColors = ['Draft'=>'bg-slate-100 text-slate-600','Sent'=>'bg-blue-100 tex
       <?php endif; ?>
     </tbody>
   </table>
+  <?= renderPagination($page, $totalPages, $base . '/service-quotations') ?>
 </div>
 
 <?php require __DIR__ . '/../../layouts/footer.php'; ?>

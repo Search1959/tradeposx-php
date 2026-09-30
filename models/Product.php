@@ -1,14 +1,27 @@
 <?php
 class Product extends BaseModel {
-    public function allForOrg(int $orgId, ?string $search = null): array {
+    /** $limit stays null (no LIMIT at all) for every caller that needs the full
+     * catalog to populate a picker (POS, purchase/sale cart, mobile POS) — only
+     * ProductController::listAction's own paginated screen passes a real limit. */
+    public function allForOrg(int $orgId, ?string $search = null, ?int $limit = null, int $offset = 0): array {
+        $limitSql = $limit !== null ? ' LIMIT ? OFFSET ?' : '';
+        $limitParams = $limit !== null ? [$limit, $offset] : [];
         if ($search) {
             $like = '%' . $search . '%';
             return $this->query(
-                'SELECT * FROM products WHERE org_id = ? AND (name LIKE ? OR sku LIKE ? OR barcode LIKE ?) ORDER BY name',
-                [$orgId, $like, $like, $like]
+                'SELECT * FROM products WHERE org_id = ? AND (name LIKE ? OR sku LIKE ? OR barcode LIKE ?) ORDER BY name' . $limitSql,
+                array_merge([$orgId, $like, $like, $like], $limitParams)
             );
         }
-        return $this->query('SELECT * FROM products WHERE org_id = ? ORDER BY name', [$orgId]);
+        return $this->query('SELECT * FROM products WHERE org_id = ? ORDER BY name' . $limitSql, array_merge([$orgId], $limitParams));
+    }
+
+    public function countForOrg(int $orgId, ?string $search = null): int {
+        if ($search) {
+            $like = '%' . $search . '%';
+            return $this->count('products', 'org_id = ? AND (name LIKE ? OR sku LIKE ? OR barcode LIKE ?)', [$orgId, $like, $like, $like]);
+        }
+        return $this->count('products', 'org_id = ?', [$orgId]);
     }
 
     public function find(int $orgId, int $id): ?array {

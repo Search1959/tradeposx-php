@@ -4,6 +4,10 @@ class Purchase extends BaseModel {
         return $this->query('SELECT * FROM purchases WHERE org_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?', [$orgId, $limit, $offset]);
     }
 
+    public function countForOrg(int $orgId): int {
+        return $this->count('purchases', 'org_id = ?', [$orgId]);
+    }
+
     public function find(int $orgId, int $id): ?array {
         $purchase = $this->queryOne('SELECT * FROM purchases WHERE org_id = ? AND id = ?', [$orgId, $id]);
         if ($purchase) {

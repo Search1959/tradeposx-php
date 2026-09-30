@@ -7,6 +7,10 @@ class Sale extends BaseModel {
         );
     }
 
+    public function countForOrg(int $orgId): int {
+        return $this->count('sales', 'org_id = ?', [$orgId]);
+    }
+
     public function find(int $orgId, int $id): ?array {
         $sale = $this->queryOne('SELECT * FROM sales WHERE org_id = ? AND id = ?', [$orgId, $id]);
         if ($sale) {

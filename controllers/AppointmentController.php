@@ -15,7 +15,11 @@ class AppointmentController {
     public function listAction(): void {
         $org = Tenant::current();
         Auth::requireOrgAccess($org['id']);
-        $appointments = $this->model->allForOrg($org['id']);
+        $page = max(1, (int) ($_GET['page'] ?? 1));
+        $perPage = LIST_PAGE_SIZE;
+        $appointments = $this->model->allForOrg($org['id'], $perPage, ($page - 1) * $perPage);
+        $totalCount = $this->model->countForOrg($org['id']);
+        $totalPages = max(1, (int) ceil($totalCount / $perPage));
         $pageTitle = 'Appointments';
         require __DIR__ . '/../views/service/appointments/list.php';
     }

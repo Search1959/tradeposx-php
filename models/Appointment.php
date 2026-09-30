@@ -1,7 +1,11 @@
 <?php
 class Appointment extends BaseModel {
-    public function allForOrg(int $orgId): array {
-        return $this->query('SELECT * FROM appointments WHERE org_id = ? ORDER BY appt_date DESC, appt_time DESC', [$orgId]);
+    public function allForOrg(int $orgId, int $limit = 20, int $offset = 0): array {
+        return $this->query('SELECT * FROM appointments WHERE org_id = ? ORDER BY appt_date DESC, appt_time DESC LIMIT ? OFFSET ?', [$orgId, $limit, $offset]);
+    }
+
+    public function countForOrg(int $orgId): int {
+        return $this->count('appointments', 'org_id = ?', [$orgId]);
     }
 
     public function todayForOrg(int $orgId): array {

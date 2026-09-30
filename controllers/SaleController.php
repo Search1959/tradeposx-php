@@ -120,8 +120,10 @@ class SaleController {
         $org = Tenant::current();
         Auth::requireOrgAccess($org['id']);
         $page = max(1, (int) ($_GET['page'] ?? 1));
-        $perPage = 25;
+        $perPage = LIST_PAGE_SIZE;
         $sales = $this->model->allForOrg($org['id'], $perPage, ($page - 1) * $perPage);
+        $totalCount = $this->model->countForOrg($org['id']);
+        $totalPages = max(1, (int) ceil($totalCount / $perPage));
         $pageTitle = 'Sales';
         require __DIR__ . '/../views/trade/sales/list.php';
     }

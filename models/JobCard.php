@@ -1,7 +1,11 @@
 <?php
 class JobCard extends BaseModel {
-    public function allForOrg(int $orgId): array {
-        return $this->query('SELECT * FROM job_cards WHERE org_id = ? ORDER BY created_at DESC', [$orgId]);
+    public function allForOrg(int $orgId, int $limit = 20, int $offset = 0): array {
+        return $this->query('SELECT * FROM job_cards WHERE org_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?', [$orgId, $limit, $offset]);
+    }
+
+    public function countForOrg(int $orgId): int {
+        return $this->count('job_cards', 'org_id = ?', [$orgId]);
     }
 
     public function find(int $orgId, int $id): ?array {

@@ -42,6 +42,7 @@ $statusColors = ['Scheduled'=>'bg-slate-100 text-slate-600','In-Progress'=>'bg-b
       <?php endif; ?>
     </tbody>
   </table>
+  <?= renderPagination($page, $totalPages, $base . '/appointments') ?>
 </div>
 
 <?php require __DIR__ . '/../../layouts/footer.php'; ?>

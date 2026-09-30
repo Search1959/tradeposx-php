@@ -57,6 +57,7 @@ $categories = ['Rent','Electricity','Delivery/Transport','Staff Salary','Packagi
       <?php endif; ?>
     </tbody>
   </table>
+  <?= renderPagination($page, $totalPages, $base . '/expenses') ?>
 </div>
 
 <?php require __DIR__ . '/../../layouts/footer.php'; ?>

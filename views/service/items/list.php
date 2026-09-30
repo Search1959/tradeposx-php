@@ -34,6 +34,7 @@
       <?php endif; ?>
     </tbody>
   </table>
+  <?= renderPagination($page, $totalPages, $base . '/service-items') ?>
 </div>
 
 <?php require __DIR__ . '/../../layouts/footer.php'; ?>
