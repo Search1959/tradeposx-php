@@ -13,7 +13,7 @@ class Organization extends BaseModel {
     }
 
     public function create(array $data): int {
-        return $this->insert(
+        $id = $this->insert(
             'INSERT INTO organizations (slug, name, business_type, trading_sector, theme_color, status)
              VALUES (?, ?, ?, ?, ?, ?)',
             [
@@ -22,6 +22,8 @@ class Organization extends BaseModel {
                 $data['status'] ?? 'active',
             ]
         );
+        (new ExpenseHead())->seedDefaults($id);
+        return $id;
     }
 
     /** trading_sector is intentionally not editable here — it's chosen once at

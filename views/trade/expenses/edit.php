@@ -1,6 +1,9 @@
 <?php $org = Tenant::current(); $base = '/' . $org['slug']; require __DIR__ . '/../../layouts/header.php';
-$categories = ['Rent','Electricity','Delivery/Transport','Staff Salary','Packaging','Maintenance','Tea & Snacks',
-  'Wi-Fi & Telecom','Taxes & Licenses','Pest Control & Cleaning','Marketing & Signboard','Other'];
+$categories = array_map(fn($h) => $h['name'], $expenseHeads);
+// Keeps whatever this expense was already filed under selectable even if that
+// head was since renamed/deleted from the managed list, so saving without
+// touching this field never silently changes the category.
+if (!in_array($expense['category'], $categories, true)) { $categories[] = $expense['category']; }
 ?>
 
 <div class="flex items-center justify-between mb-4">

@@ -8,8 +8,12 @@ $user = Auth::user();
 // its own type. A "both" org's active side is whichever module the visitor
 // most recently opened, tracked in session (defaults to trade until they
 // pick, or visit a service-side page, or use "Switch Workspace" below).
-$serviceModules = ['service-dashboard', 'appointments', 'job-cards', 'service-invoices', 'service-quotations', 'service-customers', 'service-staff', 'service-items'];
-$tradeModules = ['dashboard', 'sales', 'pos', 'products', 'customers', 'suppliers', 'purchases', 'reports', 'expenses'];
+// 'reports' and 'expenses' are deliberately excluded from both lists below —
+// they're shared pages reachable from either workspace's nav now, so visiting
+// one shouldn't flip $_SESSION['workspace'] away from whichever side the
+// visitor was already on.
+$serviceModules = ['service-dashboard', 'appointments', 'job-cards', 'service-invoices', 'service-quotations', 'service-customers', 'service-staff', 'service-items', 'specialized-staff'];
+$tradeModules = ['dashboard', 'sales', 'pos', 'products', 'customers', 'suppliers', 'purchases', 'brokers'];
 $currentModule = explode('/', trim($_GET['url'] ?? '', '/'))[1] ?? '';
 if (in_array($currentModule, $serviceModules, true)) {
     $_SESSION['workspace'] = 'service';
@@ -91,6 +95,7 @@ ob_start();
         <a href="<?= $base ?>/purchases" class="block px-3 py-2 rounded hover:bg-slate-800">Purchases</a>
         <a href="<?= $base ?>/suppliers" class="block px-3 py-2 rounded hover:bg-slate-800">Suppliers</a>
         <a href="<?= $base ?>/brokers" class="block px-3 py-2 rounded hover:bg-slate-800">Brokers</a>
+        <a href="<?= $base ?>/expenses" class="block px-3 py-2 rounded hover:bg-slate-800">Expenses</a>
         <a href="<?= $base ?>/reports" class="block px-3 py-2 rounded hover:bg-slate-800">Reports</a>
       <?php else: ?>
         <a href="<?= $base ?>/service-invoices/new" class="block px-3 py-2 rounded hover:bg-slate-800">🧾 New Bill (POS)</a>
@@ -102,6 +107,8 @@ ob_start();
         <a href="<?= $base ?>/service-items" class="block px-3 py-2 rounded hover:bg-slate-800">Service Items</a>
         <a href="<?= $base ?>/service-staff" class="block px-3 py-2 rounded hover:bg-slate-800">Staff</a>
         <a href="<?= $base ?>/specialized-staff" class="block px-3 py-2 rounded hover:bg-slate-800">Specialized Staff</a>
+        <a href="<?= $base ?>/expenses" class="block px-3 py-2 rounded hover:bg-slate-800">Expenses</a>
+        <a href="<?= $base ?>/reports" class="block px-3 py-2 rounded hover:bg-slate-800">Reports</a>
       <?php endif; ?>
       <a href="<?= $base ?>/outreach" class="block px-3 py-2 rounded hover:bg-slate-800">💬 Customer Outreach</a>
       <?php if (($org['business_type'] ?? 'both') === 'both'): ?>

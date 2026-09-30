@@ -48,6 +48,43 @@
   </div>
 </div>
 
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+  <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+    <div class="px-4 py-3 border-b border-slate-100 font-medium text-sm text-slate-900">Income &amp; Expenditure (<?= $days ?> days)</div>
+    <div class="p-4 space-y-1 text-sm">
+      <div class="flex justify-between text-slate-600"><span>Trade Sales Income</span><span><?= formatCurrency($income['trade']) ?></span></div>
+      <div class="flex justify-between text-slate-600"><span>Service Invoice Income</span><span><?= formatCurrency($income['service']) ?></span></div>
+      <div class="flex justify-between font-semibold text-slate-900 border-t border-slate-100 pt-1.5 mt-1"><span>Total Income</span><span><?= formatCurrency($income['total']) ?></span></div>
+      <div class="border-t border-slate-200 my-2"></div>
+      <?php foreach ($expensesByHead as $e): ?>
+      <div class="flex justify-between text-slate-600"><span><?= h($e['category']) ?></span><span><?= formatCurrency((float)$e['total']) ?></span></div>
+      <?php endforeach; ?>
+      <?php if (empty($expensesByHead)): ?>
+      <div class="text-slate-400 text-xs py-1">No expenses logged in this period.</div>
+      <?php endif; ?>
+      <div class="flex justify-between font-semibold text-slate-900 border-t border-slate-100 pt-1.5 mt-1"><span>Total Expenditure</span><span><?= formatCurrency($periodExpenses) ?></span></div>
+      <div class="flex justify-between font-bold text-base border-t border-slate-800 pt-2 mt-2">
+        <span>Net (Income − Expenditure)</span>
+        <span class="<?= ($income['total'] - $periodExpenses) >= 0 ? 'text-green-600' : 'text-red-600' ?>"><?= formatCurrency($income['total'] - $periodExpenses) ?></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+    <div class="px-4 py-3 border-b border-slate-100 font-medium text-sm text-slate-900">Profit Analysis (<?= $days ?> days)</div>
+    <div class="p-4 space-y-1 text-sm">
+      <div class="flex justify-between text-slate-600"><span>Total Income</span><span><?= formatCurrency($income['total']) ?></span></div>
+      <div class="flex justify-between text-slate-600"><span>Cost of Goods Sold (Trade)</span><span>−<?= formatCurrency($cogs) ?></span></div>
+      <div class="flex justify-between text-slate-600"><span>Expenses</span><span>−<?= formatCurrency($periodExpenses) ?></span></div>
+      <div class="flex justify-between font-bold text-base border-t border-slate-800 pt-2 mt-2">
+        <span>Net Profit</span>
+        <span class="<?= $periodNetProfit >= 0 ? 'text-green-600' : 'text-red-600' ?>"><?= formatCurrency($periodNetProfit) ?></span>
+      </div>
+      <div class="text-xs text-slate-400 mt-2">ServiceERP has no separate cost-of-service tracked, so only Trade's product cost is subtracted here.</div>
+    </div>
+  </div>
+</div>
+
 <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
   <div class="px-4 py-3 border-b border-slate-100 font-medium text-sm text-slate-900">Top-Selling Products (<?= $days ?> days)</div>
   <table class="w-full text-sm">

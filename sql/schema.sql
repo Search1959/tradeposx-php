@@ -663,3 +663,28 @@ ALTER TABLE service_invoices
 ALTER TABLE sales ADD COLUMN discount_percent DECIMAL(5,2) NULL AFTER discount;
 ALTER TABLE service_invoices ADD COLUMN discount_percent DECIMAL(5,2) NULL AFTER discount;
 ALTER TABLE service_quotations ADD COLUMN discount_percent DECIMAL(5,2) NULL AFTER discount;
+
+-- ── Expense Heads (custom expense categories, TradeERP + ServiceERP shared) ─────
+-- Replaces what used to be a hardcoded PHP array on the Expenses screen.
+-- expenses.category stays a plain string (not a FK) — deleting a head here
+-- never touches past expense records, only removes it from the picker.
+CREATE TABLE expense_heads (
+  id         INT AUTO_INCREMENT PRIMARY KEY,
+  org_id     INT NOT NULL,
+  name       VARCHAR(80) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (org_id) REFERENCES organizations(id) ON DELETE CASCADE,
+  UNIQUE KEY uq_expense_heads_org_name (org_id, name),
+  INDEX idx_expense_heads_org (org_id)
+) ENGINE=InnoDB;
+
+-- One-time seed for every EXISTING org — new orgs get these automatically via
+-- Organization::create() -> ExpenseHead::seedDefaults().
+INSERT INTO expense_heads (org_id, name)
+SELECT o.id, h.name FROM organizations o
+CROSS JOIN (
+  SELECT 'Rent' AS name UNION ALL SELECT 'Electricity' UNION ALL SELECT 'Delivery/Transport'
+  UNION ALL SELECT 'Staff Salary' UNION ALL SELECT 'Packaging' UNION ALL SELECT 'Maintenance'
+  UNION ALL SELECT 'Tea & Snacks' UNION ALL SELECT 'Wi-Fi & Telecom' UNION ALL SELECT 'Taxes & Licenses'
+  UNION ALL SELECT 'Pest Control & Cleaning' UNION ALL SELECT 'Marketing & Signboard' UNION ALL SELECT 'Other'
+) h;

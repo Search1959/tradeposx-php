@@ -95,4 +95,55 @@ class Report extends BaseModel {
         $jobRow = $this->queryOne("SELECT COALESCE(SUM(balance_amount),0) as total FROM job_cards WHERE org_id = ? AND status != 'Cancelled'", [$orgId]);
         return (float) ($invRow['total'] ?? 0) + (float) ($jobRow['total'] ?? 0);
     }
+
+    /** Combined TradeERP + ServiceERP revenue for the period — an org running
+     * only one module simply has 0 on the other side, so this reads correctly
+     * for every business_type without a separate code path per type. */
+    public function combinedIncome(int $orgId, int $days): array {
+        $trade = $this->queryOne(
+            "SELECT COALESCE(SUM(grand_total),0) as total FROM sales WHERE org_id = ? AND status IS NULL AND created_at >= DATE_SUB(CURDATE(), INTERVAL ? DAY)",
+            [$orgId, $days]
+        );
+        $service = $this->queryOne(
+            "SELECT COALESCE(SUM(grand_total),0) as total FROM service_invoices WHERE org_id = ? AND status != 'CANCELLED' AND created_at >= DATE_SUB(CURDATE(), INTERVAL ? DAY)",
+            [$orgId, $days]
+        );
+        $tradeTotal = (float) ($trade['total'] ?? 0);
+        $serviceTotal = (float) ($service['total'] ?? 0);
+        return ['trade' => $tradeTotal, 'service' => $serviceTotal, 'total' => $tradeTotal + $serviceTotal];
+    }
+
+    /** Expense breakdown by head for the period — the summary cards' own
+     * expensesTotal is deliberately all-time, but a period report needs a
+     * window that matches its own revenue figures. */
+    public function expensesByHead(int $orgId, int $days): array {
+        return $this->query(
+            "SELECT category, COALESCE(SUM(amount),0) as total FROM expenses
+             WHERE org_id = ? AND created_at >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+             GROUP BY category ORDER BY total DESC",
+            [$orgId, $days]
+        );
+    }
+
+    public function expensesTotalForPeriod(int $orgId, int $days): float {
+        $row = $this->queryOne(
+            "SELECT COALESCE(SUM(amount),0) as total FROM expenses WHERE org_id = ? AND created_at >= DATE_SUB(CURDATE(), INTERVAL ? DAY)",
+            [$orgId, $days]
+        );
+        return (float) ($row['total'] ?? 0);
+    }
+
+    /** TradeERP's own cost of goods sold for the period — ServiceERP has no
+     * equivalent per-item cost tracked (see marginSummary's own note), so
+     * Profit Analysis only ever subtracts this side. */
+    public function cogsForPeriod(int $orgId, int $days): float {
+        $row = $this->queryOne(
+            "SELECT COALESCE(SUM(p.purchase_price * si.quantity),0) as cost
+             FROM sale_items si JOIN sales s ON s.id = si.sale_id
+             LEFT JOIN products p ON p.id = si.product_id
+             WHERE si.org_id = ? AND s.status IS NULL AND s.created_at >= DATE_SUB(CURDATE(), INTERVAL ? DAY)",
+            [$orgId, $days]
+        );
+        return (float) ($row['cost'] ?? 0);
+    }
 }

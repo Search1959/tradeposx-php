@@ -21,6 +21,15 @@ class ReportController {
         $serviceOutstanding = $this->report->serviceOutstanding($org['id']);
         $netProfit = $margin['margin'] - $expensesTotal;
 
+        // Income & Expenditure / Profit Analysis — both scoped to the same $days
+        // window (unlike the summary cards above, which mix a period margin with
+        // an all-time expense total), so these two read as one consistent period.
+        $income = $this->report->combinedIncome($org['id'], $days);
+        $expensesByHead = $this->report->expensesByHead($org['id'], $days);
+        $periodExpenses = $this->report->expensesTotalForPeriod($org['id'], $days);
+        $cogs = $this->report->cogsForPeriod($org['id'], $days);
+        $periodNetProfit = $income['total'] - $cogs - $periodExpenses;
+
         $pageTitle = 'Reports';
         require __DIR__ . '/../views/trade/reports/index.php';
     }

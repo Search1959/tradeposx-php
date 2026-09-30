@@ -1,15 +1,18 @@
 <?php
 class ExpenseController {
     private Expense $model;
+    private ExpenseHead $headModel;
 
     public function __construct() {
         $this->model = new Expense();
+        $this->headModel = new ExpenseHead();
     }
 
     public function listAction(): void {
         $org = Tenant::current();
         Auth::requireOrgAccess($org['id']);
         $error = null;
+        $tab = ($_GET['tab'] ?? '') === 'heads' ? 'heads' : 'expenses';
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             CsrfHelper::validate();
@@ -30,8 +33,34 @@ class ExpenseController {
         $totalCount = $this->model->countForOrg($org['id']);
         $totalPages = max(1, (int) ceil($totalCount / $perPage));
         $total = $this->model->totalForOrg($org['id']);
+        $expenseHeads = $this->headModel->allForOrg($org['id']);
         $pageTitle = 'Expenses';
         require __DIR__ . '/../views/trade/expenses/list.php';
+    }
+
+    /** Adds a new expense head (category) — deliberately not a modal/full page,
+     * the "Expense Heads" tab on this same screen is simple enough to be a
+     * single add-form + delete-able list. */
+    public function addHeadAction(): void {
+        $org = Tenant::current();
+        Auth::requireOrgAccess($org['id']);
+        CsrfHelper::validate();
+        $name = trim($_POST['name'] ?? '');
+        if ($name !== '' && !$this->headModel->nameExists($org['id'], $name)) {
+            $this->headModel->create($org['id'], $name);
+        }
+        redirect($org['slug'] . '/expenses?tab=heads');
+    }
+
+    /** Only removes the head from the picker — expenses.category is a plain
+     * string, not a foreign key, so past expenses already logged under this
+     * head are completely unaffected. */
+    public function deleteHeadAction(?string $id = null): void {
+        $org = Tenant::current();
+        Auth::requireOrgAccess($org['id']);
+        CsrfHelper::validate();
+        $this->headModel->delete($org['id'], (int) $id);
+        redirect($org['slug'] . '/expenses?tab=heads');
     }
 
     public function editAction(?string $id = null): void {
@@ -55,6 +84,7 @@ class ExpenseController {
             }
         }
 
+        $expenseHeads = $this->headModel->allForOrg($org['id']);
         $pageTitle = 'Edit Expense';
         require __DIR__ . '/../views/trade/expenses/edit.php';
     }
