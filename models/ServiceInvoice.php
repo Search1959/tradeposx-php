@@ -58,8 +58,8 @@ class ServiceInvoice extends BaseModel {
                 'INSERT INTO service_invoices (org_id, invoice_no, customer_id, customer_name, mobile,
                  specialized_staff_id, staff_commission_percent, staff_commission_amount, invoice_date,
                  labour_charges, material_charges, discount, discount_percent, tax_type, gst_amount, taxable_amount, cgst_amount, sgst_amount,
-                 grand_total, paid_amount, balance_amount, payment_method, status, job_card_id, appointment_id, notes)
-                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                 grand_total, paid_amount, balance_amount, payment_method, status, job_card_id, appointment_id, notes, client_ref)
+                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                 [
                     $orgId, $invoiceNo, $data['customer_id'] ?: null, $data['customer_name'] ?? null,
                     $data['mobile'] ?? null,
@@ -67,7 +67,7 @@ class ServiceInvoice extends BaseModel {
                     $data['invoice_date'] ?: date('Y-m-d'), $labourCharges, $materialCharges,
                     $discount, $data['discount_percent'] ?? null, $taxType, $gstAmount, $taxableAmount, $cgstAmount, $sgstAmount, $grandTotal, $paidAmount,
                     $balance, $data['payment_method'] ?? 'CASH', $status, $data['job_card_id'] ?: null,
-                    $data['appointment_id'] ?: null, $data['notes'] ?? null,
+                    $data['appointment_id'] ?: null, $data['notes'] ?? null, $data['client_ref'] ?? null,
                 ]
             );
 

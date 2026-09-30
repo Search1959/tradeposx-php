@@ -72,7 +72,7 @@ $base = '/' . $org['slug'];
   <span><span id="queueBadge"></span> <a href="<?= $base ?>/dashboard">Exit</a></span>
 </div>
 <div class="search-wrap">
-  <input type="text" id="searchBox" placeholder="Search or scan barcode…" autofocus>
+  <input type="text" id="searchBox" placeholder="<?= $workspace === 'service' ? 'Search services…' : 'Search or scan barcode…' ?>" autofocus>
 </div>
 <div id="toast" class="toast"></div>
 
@@ -93,13 +93,14 @@ $base = '/' . $org['slug'];
   <div class="pill-row">
     <button class="pill-btn active" data-method="CASH" onclick="selectMethod('CASH')">Cash</button>
     <button class="pill-btn" data-method="UPI" onclick="selectMethod('UPI')">UPI</button>
-    <button class="pill-btn" data-method="CREDIT" onclick="selectMethod('CREDIT')">Udhaar</button>
+    <button class="pill-btn" data-method="CREDIT" onclick="selectMethod('CREDIT')"><?= $workspace === 'service' ? 'Credit' : 'Udhaar' ?></button>
   </div>
   <button class="checkout-btn" id="checkoutBtn" onclick="completeSale()" disabled>Complete Sale</button>
 </div>
 
 <script>
 const BASE = <?= json_encode($base) ?>;
+const WORKSPACE = <?= json_encode($workspace) ?>;
 const DB_NAME = 'tradeposx_offline';
 const STORE = 'pending_sales';
 let products = [];
@@ -203,10 +204,13 @@ function renderProducts(filter) {
     p.name.toLowerCase().includes(q) || (p.sku||'').toLowerCase().includes(q) || (p.barcode||'') === q
   ).slice(0, 40);
   const grid = document.getElementById('productGrid');
-  if (list.length === 0) { grid.innerHTML = '<div class="empty">No products found</div>'; return; }
+  if (list.length === 0) { grid.innerHTML = `<div class="empty">No ${WORKSPACE === 'service' ? 'services' : 'products'} found</div>`; return; }
+  // current_stock is null for a service item (no stock concept) — the /data
+  // endpoint's dataAction() sets it that way specifically so this line knows
+  // to skip rendering a fake "0 pcs" instead of a real quantity.
   grid.innerHTML = list.map(p => `
     <button class="card" onclick="addToCart(${p.id})" style="border:none;cursor:pointer;">
-      <div class="stock ${Number(p.current_stock) <= 0 ? 'low' : ''}">${Number(p.current_stock)} ${h(p.unit)}</div>
+      ${p.current_stock !== null ? `<div class="stock ${Number(p.current_stock) <= 0 ? 'low' : ''}">${Number(p.current_stock)} ${h(p.unit)}</div>` : ''}
       <div class="name">${h(p.name)}</div>
       <div class="cat">${h(p.category||'')}</div>
       <div class="price">₹${Number(p.selling_price).toFixed(2)}</div>
@@ -318,8 +322,10 @@ async function completeSale() {
         // each time); the receipt (a receipt only exists once actually synced —
         // an offline-queued sale gets no id until it drains) is one tap away
         // only if the customer actually wants a printed copy, reusing the
-        // desktop POS's print-ready receipt view rather than building a second one.
-        showToastWithLink('Sale ' + data.saleNumber + ' completed', 'success', BASE + '/sales/receipt/' + data.id, 'Print Receipt');
+        // desktop POS's / Service Invoice's print-ready view rather than
+        // building a second one — which one depends on which workspace synced.
+        const receiptUrl = BASE + (WORKSPACE === 'service' ? '/service-invoices/view/' : '/sales/receipt/') + data.id;
+        showToastWithLink((WORKSPACE === 'service' ? 'Invoice ' : 'Sale ') + data.saleNumber + ' completed', 'success', receiptUrl, 'Print Receipt');
       } else {
         showToast(data.error || 'Could not complete sale', 'error');
       }
