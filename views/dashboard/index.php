@@ -39,6 +39,7 @@
       ['href' => '/customers', 'icon' => '👥', 'bg' => 'bg-amber-100', 'title' => 'Customers', 'sub' => 'Udhaar & reminders'],
       ['href' => '/purchases', 'icon' => '🧾', 'bg' => 'bg-purple-100', 'title' => 'Purchases', 'sub' => 'Suppliers & bills'],
       ['href' => '/reports', 'icon' => '📊', 'bg' => 'bg-green-100', 'title' => 'Reports', 'sub' => 'Sales & margins'],
+      ['href' => '/outreach', 'icon' => '💬', 'bg' => 'bg-emerald-100', 'title' => 'Outreach', 'sub' => 'Reviews & promos'],
   ];
   if (in_array($user['role'] ?? '', ['owner', 'admin'], true)) {
       $quickLinks[] = ['href' => '/team', 'icon' => '👤', 'bg' => 'bg-pink-100', 'title' => 'Team', 'sub' => 'Manage staff'];

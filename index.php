@@ -92,6 +92,8 @@ $tenantRouteMap = [
     'service-quotations' => 'ServiceQuotationController',
     // Mobile card POS (both modules share the same fast-tap shell)
     'pos-mobile'         => 'MobilePosController',
+    // Shared across both modules — review/promotion WhatsApp campaigns
+    'outreach'           => 'OutreachController',
     // Platform-within-tenant
     'settings'           => 'SettingsController',
     // System Admin (owner/admin only — team accounts, audit trail)
@@ -120,6 +122,7 @@ $moduleDefaultAction = [
     'service-invoices'   => 'list',
     'service-quotations' => 'list',
     'pos-mobile'         => 'index',
+    'outreach'           => 'list',
     'settings'           => 'index',
     'team'               => 'list',
     'activity-log'       => 'list',

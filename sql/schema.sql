@@ -572,3 +572,41 @@ ALTER TABLE service_invoices ADD COLUMN client_ref VARCHAR(64) NULL, ADD UNIQUE 
 -- Lets a purchase be cancelled (reversing its stock-in and supplier balance), matching
 -- how sales/service_invoices are voided/cancelled rather than hard-deleted.
 ALTER TABLE purchases ADD COLUMN status ENUM('CANCELLED') NULL, ADD COLUMN cancel_reason VARCHAR(255) NULL, ADD COLUMN cancelled_at TIMESTAMP NULL;
+
+-- ── Customer Outreach (review requests / promotions over WhatsApp) ─────
+-- No WhatsApp Business API is configured anywhere in this app (see
+-- config/constants.php's WHATSAPP_PROVIDER) — every WhatsApp send in TradePOSX,
+-- including this one, is a wa.me click-to-chat link the owner clicks themselves.
+-- "Recurring" therefore means the UI surfaces who's due again on the chosen
+-- cadence, not a background job that sends unattended.
+CREATE TABLE outreach_campaigns (
+  id            INT AUTO_INCREMENT PRIMARY KEY,
+  org_id        INT NOT NULL,
+  name          VARCHAR(150) NOT NULL,
+  campaign_type ENUM('REVIEW','PROMOTION','CUSTOM') NOT NULL DEFAULT 'CUSTOM',
+  message       TEXT NOT NULL,
+  recurrence    ENUM('ONE_TIME','WEEKLY','EVERY_15_DAYS','MONTHLY') NOT NULL DEFAULT 'MONTHLY',
+  -- Which customer list this campaign draws from — a "both"-type org can run
+  -- separate campaigns against its trade customers and its service customers.
+  audience      ENUM('TRADE','SERVICE') NOT NULL DEFAULT 'TRADE',
+  status        ENUM('ACTIVE','PAUSED') NOT NULL DEFAULT 'ACTIVE',
+  created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (org_id) REFERENCES organizations(id) ON DELETE CASCADE,
+  INDEX idx_outreach_campaigns_org (org_id)
+) ENGINE=InnoDB;
+
+-- One row per WhatsApp click, so the Run screen can compute "due again" per
+-- customer per campaign. customer_id points at customers.id (audience=TRADE)
+-- or service_customers.id (audience=SERVICE) — no FK, same polymorphic-reference
+-- pattern as activity_log.entity_id, since it targets two different tables.
+CREATE TABLE outreach_sends (
+  id          INT AUTO_INCREMENT PRIMARY KEY,
+  org_id      INT NOT NULL,
+  campaign_id INT NOT NULL,
+  customer_id INT NOT NULL,
+  sent_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (org_id) REFERENCES organizations(id) ON DELETE CASCADE,
+  FOREIGN KEY (campaign_id) REFERENCES outreach_campaigns(id) ON DELETE CASCADE,
+  INDEX idx_outreach_sends_campaign_customer (campaign_id, customer_id),
+  INDEX idx_outreach_sends_org (org_id)
+) ENGINE=InnoDB;

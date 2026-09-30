@@ -101,6 +101,7 @@ ob_start();
         <a href="<?= $base ?>/service-items" class="block px-3 py-2 rounded hover:bg-slate-800">Service Items</a>
         <a href="<?= $base ?>/service-staff" class="block px-3 py-2 rounded hover:bg-slate-800">Staff</a>
       <?php endif; ?>
+      <a href="<?= $base ?>/outreach" class="block px-3 py-2 rounded hover:bg-slate-800">💬 Customer Outreach</a>
       <?php if (($org['business_type'] ?? 'both') === 'both'): ?>
         <a href="<?= $base ?>/choose" class="block px-3 py-2 mt-2 rounded border border-slate-800 text-slate-400 hover:bg-slate-800 hover:text-slate-200">⇄ Switch Workspace</a>
       <?php endif; ?>
