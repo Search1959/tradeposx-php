@@ -24,13 +24,17 @@ class Organization extends BaseModel {
         );
     }
 
-    public function updateProfile(int $id, string $name, ?string $tradingSector): bool {
-        return $this->execute('UPDATE organizations SET name = ?, trading_sector = ? WHERE id = ?', [$name, $tradingSector, $id]);
+    /** trading_sector is intentionally not editable here — it's chosen once at
+     * account creation (AuthController's signup flow / SuperAdminController's
+     * new-org form), never changed afterward. */
+    public function updateProfile(int $id, string $name, ?string $address): bool {
+        return $this->execute('UPDATE organizations SET name = ?, address = ? WHERE id = ?', [$name, $address, $id]);
     }
 
-    /** GSTIN/address/phone — the seller details a tax invoice needs in its header. */
-    public function updateTaxProfile(int $id, ?string $gstin, ?string $address, ?string $phone): bool {
-        return $this->execute('UPDATE organizations SET gstin = ?, address = ?, phone = ? WHERE id = ?', [$gstin, $address, $phone, $id]);
+    /** GSTIN/phone — the remaining seller details a tax invoice needs in its header
+     * (address lives on the Business Details form instead, see updateProfile()). */
+    public function updateTaxProfile(int $id, ?string $gstin, ?string $phone): bool {
+        return $this->execute('UPDATE organizations SET gstin = ?, phone = ? WHERE id = ?', [$gstin, $phone, $id]);
     }
 
     public function updateStatus(int $id, string $status): bool {

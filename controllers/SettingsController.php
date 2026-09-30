@@ -38,7 +38,7 @@ class SettingsController {
                 if ($name === '') {
                     $error = 'Business name is required.';
                 } else {
-                    $this->orgModel->updateProfile($org['id'], $name, $_POST['trading_sector'] ?? null);
+                    $this->orgModel->updateProfile($org['id'], $name, trim($_POST['address'] ?? '') ?: null);
                     $org = $this->orgModel->find($org['id']); // refresh for the view
                     $success = 'Business details updated.';
                 }
@@ -47,7 +47,7 @@ class SettingsController {
                 if ($gstin !== null && !preg_match('/^[0-9A-Z]{15}$/', $gstin)) {
                     $error = 'GSTIN should be 15 characters (letters and numbers only), e.g. 19ABCDE1234F1Z5.';
                 } else {
-                    $this->orgModel->updateTaxProfile($org['id'], $gstin, trim($_POST['address'] ?? '') ?: null, trim($_POST['phone'] ?? '') ?: null);
+                    $this->orgModel->updateTaxProfile($org['id'], $gstin, trim($_POST['phone'] ?? '') ?: null);
                     $org = $this->orgModel->find($org['id']);
                     $success = 'Invoice details updated.';
                 }

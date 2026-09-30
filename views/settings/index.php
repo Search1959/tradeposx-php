@@ -45,29 +45,9 @@
         <label class="block text-sm font-medium text-slate-700 mb-1">Business Name</label>
         <input type="text" name="name" required value="<?= h($org['name']) ?>" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
       </div>
-      <?php
-        $currentSector = $org['trading_sector'] ?? '';
-        $knownSector = isset(SectorHelper::tradeSectors()[$currentSector]) || isset(SectorHelper::serviceSectors()[$currentSector]);
-      ?>
       <div>
-        <label class="block text-sm font-medium text-slate-700 mb-1">Trading Sector</label>
-        <select name="trading_sector" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
-          <option value="">— Select —</option>
-          <?php if ($currentSector !== '' && !$knownSector): ?>
-            <option value="<?= h($currentSector) ?>" selected><?= h($currentSector) ?> (current)</option>
-          <?php endif; ?>
-          <optgroup label="Trade">
-            <?php foreach (SectorHelper::tradeSectors() as $code => $label): ?>
-              <option value="<?= h($code) ?>" <?= $currentSector === $code ? 'selected' : '' ?>><?= h($label) ?></option>
-            <?php endforeach; ?>
-          </optgroup>
-          <optgroup label="Service">
-            <?php foreach (SectorHelper::serviceSectors() as $code => $label): ?>
-              <option value="<?= h($code) ?>" <?= $currentSector === $code ? 'selected' : '' ?>><?= h($label) ?></option>
-            <?php endforeach; ?>
-          </optgroup>
-        </select>
-        <p class="text-xs text-slate-400 mt-1">Drives which product categories are suggested when adding items.</p>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Business Address</label>
+        <input type="text" name="address" value="<?= h($org['address'] ?? '') ?>" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
       </div>
       <div class="text-xs text-slate-400">URL: tradeposx.com/<?= h($org['slug']) ?>/ (slug can't be changed here)</div>
       <button type="submit" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">Save</button>
@@ -86,15 +66,9 @@
           class="w-full rounded border border-slate-300 px-3 py-2 text-sm font-mono uppercase">
         <p class="text-xs text-slate-400 mt-1">Leave blank if not GST-registered — receipts will show as a plain Bill of Supply instead of a Tax Invoice.</p>
       </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Business Address</label>
-          <input type="text" name="address" value="<?= h($org['address'] ?? '') ?>" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Phone</label>
-          <input type="text" name="phone" value="<?= h($org['phone'] ?? '') ?>" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
-        </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+        <input type="text" name="phone" value="<?= h($org['phone'] ?? '') ?>" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
       </div>
       <button type="submit" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">Save</button>
     </form>
