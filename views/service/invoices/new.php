@@ -87,7 +87,22 @@
         </template>
       </template>
       <div class="flex justify-between items-center"><span class="text-slate-500">Labour Charges</span><input type="number" step="0.01" x-model.number="labour" class="w-24 rounded border border-slate-300 px-2 py-1 text-right"></div>
-      <div class="flex justify-between items-center"><span class="text-slate-500">Discount</span><input type="number" step="0.01" x-model.number="discount" class="w-24 rounded border border-slate-300 px-2 py-1 text-right"></div>
+      <div class="flex justify-between items-center gap-2">
+        <span class="text-slate-500 shrink-0">Discount</span>
+        <div class="flex items-center gap-1.5">
+          <template x-if="discountMode !== 'custom'">
+            <span class="text-xs text-slate-400" x-text="discountAmount() > 0 ? '−₹' + discountAmount().toFixed(2) : ''"></span>
+          </template>
+          <input type="number" step="0.01" min="0" x-show="discountMode === 'custom'" x-model.number="customDiscount" @blur="if (!customDiscount || customDiscount < 0) customDiscount = 0"
+                 class="w-20 rounded border border-slate-300 px-2 py-1 text-sm text-right">
+          <select x-model="discountMode" class="rounded border border-slate-300 px-2 py-1 text-sm">
+            <option value="0">None</option>
+            <option value="5">5%</option>
+            <option value="10">10%</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+      </div>
       <div class="flex justify-between font-semibold text-base pt-1 border-t border-slate-100"><span>Grand Total</span><span x-text="'₹' + grandTotal().toFixed(2)"></span></div>
     </div>
 
@@ -95,7 +110,7 @@
       <?= CsrfHelper::getField() ?>
       <input type="hidden" name="cart_json" :value="JSON.stringify(cart.map(l => ({id: l.id, qty: l.qty, staff_id: l.staff_id || null})))">
       <input type="hidden" name="labour_charges" :value="labour">
-      <input type="hidden" name="discount" :value="discount">
+      <input type="hidden" name="discount" :value="discountAmount()">
       <input type="hidden" name="tax_type" :value="taxType">
 
       <select name="customer_id" x-model="customerId" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
@@ -130,7 +145,7 @@
 function invoiceScreen() {
   return {
     services: <?= json_encode(array_map(fn($s) => ['id'=>(int)$s['id'],'name'=>$s['name'],'category'=>$s['category'],'price'=>(float)$s['price'],'gst'=>(float)$s['gst_percent']], $services)) ?>,
-    search: '', category: '', activeTab: 'services', cart: [], labour: 0, discount: 0, taxType: 'EXCLUSIVE', customerId: '', paymentStatus: 'FULL', paidAmount: 0,
+    search: '', category: '', activeTab: 'services', cart: [], labour: 0, discountMode: '0', customDiscount: 0, taxType: 'EXCLUSIVE', customerId: '', paymentStatus: 'FULL', paidAmount: 0,
     categories() {
       return [...new Set(this.services.map(s => s.category).filter(c => c))].sort();
     },
@@ -175,7 +190,14 @@ function invoiceScreen() {
       return Object.values(groups).sort((a, b) => a.rate - b.rate);
     },
     halfRate(rate) { return (Math.round(rate * 50) / 100).toString().replace(/\.0$/, ''); },
-    grandTotal() { return Math.max(0, this.taxableAmount() + this.taxTotal() + (this.labour||0) - (this.discount||0)); },
+    discountAmount() {
+      const base = this.taxableAmount();
+      if (this.discountMode === '5') return +(base * 0.05).toFixed(2);
+      if (this.discountMode === '10') return +(base * 0.10).toFixed(2);
+      if (this.discountMode === 'custom') return +(this.customDiscount || 0);
+      return 0;
+    },
+    grandTotal() { return Math.max(0, this.taxableAmount() + this.taxTotal() + (this.labour||0) - this.discountAmount()); },
     onSubmit(e) {
       if (this.cart.length === 0) { e.preventDefault(); return; }
       this.cart.forEach(line => this.clampQty(line));

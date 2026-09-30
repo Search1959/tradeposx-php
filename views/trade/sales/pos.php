@@ -90,9 +90,21 @@
           </div>
         </template>
       </template>
-      <div class="flex justify-between items-center">
-        <span class="text-slate-500">Discount</span>
-        <input type="number" step="0.01" min="0" x-model.number="discount" class="w-24 rounded border border-slate-300 px-2 py-1 text-right">
+      <div class="flex justify-between items-center gap-2">
+        <span class="text-slate-500 shrink-0">Discount</span>
+        <div class="flex items-center gap-1.5">
+          <template x-if="discountMode !== 'custom'">
+            <span class="text-xs text-slate-400" x-text="discountAmount() > 0 ? '−₹' + discountAmount().toFixed(2) : ''"></span>
+          </template>
+          <input type="number" step="0.01" min="0" x-show="discountMode === 'custom'" x-model.number="customDiscount" @blur="if (!customDiscount || customDiscount < 0) customDiscount = 0"
+                 class="w-20 rounded border border-slate-300 px-2 py-1 text-sm text-right">
+          <select x-model="discountMode" class="rounded border border-slate-300 px-2 py-1 text-sm">
+            <option value="0">None</option>
+            <option value="5">5%</option>
+            <option value="10">10%</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
       </div>
       <div class="flex justify-between font-semibold text-base pt-1 border-t border-slate-100">
         <span>Grand Total</span><span x-text="'₹' + grandTotal().toFixed(2)"></span>
@@ -102,7 +114,7 @@
     <form method="POST" class="mt-3 space-y-2" @submit="onSubmit">
       <?= CsrfHelper::getField() ?>
       <input type="hidden" name="cart_json" :value="JSON.stringify(cart.map(l => ({id: l.id, qty: l.qty})))">
-      <input type="hidden" name="discount" :value="discount">
+      <input type="hidden" name="discount" :value="discountAmount()">
       <input type="hidden" name="tax_type" :value="taxType">
 
       <select name="customer_id" x-model="customerId" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
@@ -164,7 +176,8 @@ function posScreen() {
     // on every single product tap.
     isTouchDevice: window.matchMedia('(pointer: coarse)').matches,
     cart: [],
-    discount: 0,
+    discountMode: '0', // '0' | '5' | '10' | 'custom'
+    customDiscount: 0,
     taxType: 'EXCLUSIVE',
     customerId: '',
     paymentMethod: 'CASH',
@@ -226,7 +239,17 @@ function posScreen() {
       return Object.values(groups).sort((a, b) => a.rate - b.rate);
     },
     halfRate(rate) { return (Math.round(rate * 50) / 100).toString().replace(/\.0$/, ''); },
-    grandTotal() { return Math.max(0, this.taxableAmount() + this.taxTotal() - (this.discount||0)); },
+    // 5%/10% are computed off the taxable (pre-tax) amount and stay reactive to
+    // the cart — a preset picked before the cart is finished still tracks it as
+    // items are added/removed, instead of freezing a stale rupee figure.
+    discountAmount() {
+      const base = this.taxableAmount();
+      if (this.discountMode === '5') return +(base * 0.05).toFixed(2);
+      if (this.discountMode === '10') return +(base * 0.10).toFixed(2);
+      if (this.discountMode === 'custom') return +(this.customDiscount || 0);
+      return 0;
+    },
+    grandTotal() { return Math.max(0, this.taxableAmount() + this.taxTotal() - this.discountAmount()); },
     owed() {
       if (this.paymentStatus === 'CREDIT') return this.grandTotal();
       if (this.paymentStatus === 'PARTIAL') return Math.max(0, this.grandTotal() - (this.receivedAmount||0));
