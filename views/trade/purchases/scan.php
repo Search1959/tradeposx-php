@@ -17,7 +17,7 @@
 <?php endif; ?>
 
 <?php if (!$scanned): ?>
-  <form method="POST" enctype="multipart/form-data" class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 max-w-lg space-y-4" x-data="scanUpload()">
+  <form method="POST" enctype="multipart/form-data" class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 max-w-lg space-y-4" x-data="scanUpload()" @submit="submitting = true">
     <?= CsrfHelper::getField() ?>
     <div>
       <label class="block text-sm font-medium text-slate-700 mb-1">Photo or PDF of the bill</label>
@@ -37,12 +37,19 @@
         </label>
       </div>
       <div class="text-xs mt-2" :class="fileName ? 'text-slate-700 font-medium' : 'text-slate-400'" x-text="fileName || 'No file chosen'"></div>
-      <input type="file" name="bill_file" x-ref="realInput" required class="hidden">
+      <!-- No `required` here — a hidden required file input can make some mobile
+           browsers (notably Chrome on Android) silently refuse to submit the form
+           at all, with no error and no console warning, since a display:none
+           element can never show the native "please fill this field" bubble.
+           The submit button below is already disabled until fileName is set, so
+           HTML5 required validation on this hidden proxy is redundant anyway. -->
+      <input type="file" name="bill_file" x-ref="realInput" class="hidden">
       <p class="text-xs text-slate-400 mt-1">Take Photo opens your camera directly. Choose File also accepts a PDF invoice or a photo already in your gallery, including handwritten or regional-language bills.</p>
     </div>
-    <button type="submit" :disabled="!fileName || <?= GeminiHelper::isConfigured() ? 'false' : 'true' ?>"
+    <button type="submit" :disabled="!fileName || submitting || <?= GeminiHelper::isConfigured() ? 'false' : 'true' ?>"
             class="bg-indigo-600 disabled:bg-slate-300 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">
-      Scan Bill
+      <span x-show="!submitting">Scan Bill</span>
+      <span x-show="submitting" x-cloak>Scanning&hellip; this can take up to 15 seconds</span>
     </button>
   </form>
 
@@ -50,6 +57,7 @@
   function scanUpload() {
     return {
       fileName: '',
+      submitting: false,
       pick(e) {
         const file = e.target.files[0];
         if (!file) return;
