@@ -1,14 +1,51 @@
 name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
-Deep Groove Ball Bearing 6204,BB-001,8902000000011,Ball Bearings,SKF,pcs,85,120,135,150,30,18,8482
-Deep Groove Ball Bearing 6205,BB-002,8902000000028,Ball Bearings,SKF,pcs,95,135,150,140,30,18,8482
-Deep Groove Ball Bearing 6206,BB-003,8902000000035,Ball Bearings,FAG,pcs,110,155,170,120,25,18,8482
-Tapered Roller Bearing 30205,BB-004,8902000000042,Roller Bearings,NBC,pcs,150,210,230,90,20,18,8482
-Cylindrical Roller Bearing NU205,BB-005,8902000000059,Roller Bearings,NBC,pcs,175,245,265,80,15,18,8482
-Thrust Ball Bearing 51205,BB-006,8902000000066,Thrust Bearings,SKF,pcs,130,180,195,60,12,18,8482
-Bronze Bush 20x25x30,BB-007,8902000000073,Bushes & Bushings,Timken,pcs,40,60,70,200,40,18,8483
-Oil Seal 25x40x7,BB-008,8902000000080,Oil Seals,NOK,pcs,25,40,48,250,50,18,4016
-Oil Seal 30x47x7,BB-009,8902000000097,Oil Seals,NOK,pcs,30,45,52,220,45,18,4016
-Lithium Grease 500g,BB-010,8902000000103,Lubricants & Grease,Servo,tin,110,150,165,80,15,18,2710
-Rigid Coupling 25mm,BB-011,8902000000110,Couplings,Fenner,pcs,210,290,315,40,8,18,8483
-V-Belt A-52,BB-012,8902000000127,Belts & Pulleys,Fenner,pcs,85,120,130,100,20,18,4010
-Pillow Block Bearing UCP205,BB-013,8902000000134,Ball Bearings,NBC,pcs,260,360,390,50,10,18,8483
+Deep Groove Ball Bearing 6200,BB-001,8902100000001,Ball Bearings,SKF,pcs,70,98,110,180,35,18,8482
+Deep Groove Ball Bearing 6201,BB-002,8902100000002,Ball Bearings,SKF,pcs,75,105,118,170,35,18,8482
+Deep Groove Ball Bearing 6202,BB-003,8902100000003,Ball Bearings,FAG,pcs,78,110,122,160,30,18,8482
+Deep Groove Ball Bearing 6203,BB-004,8902100000004,Ball Bearings,FAG,pcs,82,115,128,150,30,18,8482
+Deep Groove Ball Bearing 6204,BB-005,8902100000005,Ball Bearings,SKF,pcs,85,120,135,150,30,18,8482
+Deep Groove Ball Bearing 6205,BB-006,8902100000006,Ball Bearings,SKF,pcs,95,135,150,140,30,18,8482
+Deep Groove Ball Bearing 6206,BB-007,8902100000007,Ball Bearings,FAG,pcs,110,155,170,120,25,18,8482
+Deep Groove Ball Bearing 6207,BB-008,8902100000008,Ball Bearings,NBC,pcs,140,195,215,100,20,18,8482
+Deep Groove Ball Bearing 6208,BB-009,8902100000009,Ball Bearings,NBC,pcs,165,230,255,85,18,18,8482
+Deep Groove Ball Bearing 6209,BB-010,8902100000010,Ball Bearings,NTN,pcs,190,265,295,70,15,18,8482
+Deep Groove Ball Bearing 6210,BB-011,8902100000011,Ball Bearings,NTN,pcs,215,300,335,60,12,18,8482
+Pillow Block Bearing UCP205,BB-012,8902100000012,Ball Bearings,NBC,pcs,260,360,390,50,10,18,8482
+Tapered Roller Bearing 30204,BB-013,8902100000013,Roller Bearings,NBC,pcs,130,180,200,95,20,18,8482
+Tapered Roller Bearing 30205,BB-014,8902100000014,Roller Bearings,NBC,pcs,150,210,230,90,20,18,8482
+Tapered Roller Bearing 30206,BB-015,8902100000015,Roller Bearings,Timken,pcs,175,245,270,75,15,18,8482
+Tapered Roller Bearing 30207,BB-016,8902100000016,Roller Bearings,Timken,pcs,210,290,320,60,12,18,8482
+Cylindrical Roller Bearing NU204,BB-017,8902100000017,Roller Bearings,NBC,pcs,155,215,240,85,18,18,8482
+Cylindrical Roller Bearing NU205,BB-018,8902100000018,Roller Bearings,NBC,pcs,175,245,265,80,15,18,8482
+Cylindrical Roller Bearing NU206,BB-019,8902100000019,Roller Bearings,ZKL,pcs,205,285,315,55,12,18,8482
+Needle Roller Bearing NK20/16,BB-020,8902100000020,Roller Bearings,INA,pcs,95,135,150,90,18,18,8482
+Needle Roller Bearing NK25/20,BB-021,8902100000021,Roller Bearings,INA,pcs,110,155,170,75,15,18,8482
+Thrust Ball Bearing 51204,BB-022,8902100000022,Thrust Bearings,SKF,pcs,115,160,175,70,15,18,8482
+Thrust Ball Bearing 51205,BB-023,8902100000023,Thrust Bearings,SKF,pcs,130,180,195,60,12,18,8482
+Thrust Ball Bearing 51206,BB-024,8902100000024,Thrust Bearings,FAG,pcs,150,210,230,50,10,18,8482
+Thrust Ball Bearing 51305,BB-025,8902100000025,Thrust Bearings,FAG,pcs,180,250,275,40,8,18,8482
+Bronze Bush 15x20x20,BB-026,8902100000026,Bushes & Bushings,Timken,pcs,30,48,55,220,45,18,8483
+Bronze Bush 20x25x30,BB-027,8902100000027,Bushes & Bushings,Timken,pcs,40,60,70,200,40,18,8483
+Bronze Bush 25x30x30,BB-028,8902100000028,Bushes & Bushings,Timken,pcs,48,72,82,180,35,18,8483
+Bronze Bush 30x35x40,BB-029,8902100000029,Bushes & Bushings,HCH,pcs,58,88,100,150,30,18,8483
+Oil Seal 20x35x7,BB-030,8902100000030,Oil Seals,NOK,pcs,22,35,42,260,50,18,4016
+Oil Seal 25x40x7,BB-031,8902100000031,Oil Seals,NOK,pcs,25,40,48,250,50,18,4016
+Oil Seal 30x47x7,BB-032,8902100000032,Oil Seals,NOK,pcs,30,45,52,220,45,18,4016
+Oil Seal 35x52x8,BB-033,8902100000033,Oil Seals,NOK,pcs,35,52,60,200,40,18,4016
+Oil Seal 40x62x8,BB-034,8902100000034,Oil Seals,NOK,pcs,42,62,70,180,35,18,4016
+Oil Seal 45x65x8,BB-035,8902100000035,Oil Seals,NOK,pcs,48,70,80,150,30,18,4016
+Lithium Grease 500g,BB-036,8902100000036,Lubricants & Grease,Servo,tin,110,150,165,80,15,18,2710
+Lithium Grease 1kg,BB-037,8902100000037,Lubricants & Grease,Servo,tin,195,265,290,55,12,18,2710
+Moly EP Grease 500g,BB-038,8902100000038,Lubricants & Grease,Elgi,tin,140,190,210,60,12,18,2710
+High Temp Grease Cartridge 400g,BB-039,8902100000039,Lubricants & Grease,Servo,pcs,160,220,240,45,10,18,2710
+Rigid Coupling 20mm,BB-040,8902100000040,Couplings,Fenner,pcs,180,250,270,50,10,18,8483
+Rigid Coupling 25mm,BB-041,8902100000041,Couplings,Fenner,pcs,210,290,315,40,8,18,8483
+Rigid Coupling 32mm,BB-042,8902100000042,Couplings,Fenner,pcs,260,360,390,32,6,18,8483
+Flexible Jaw Coupling 25mm,BB-043,8902100000043,Couplings,Fenner,pcs,320,440,475,25,5,18,8483
+Pin Bush Coupling 30mm,BB-044,8902100000044,Couplings,Fenner,pcs,380,525,565,20,4,18,8483
+V-Belt A-40,BB-045,8902100000045,Belts & Pulleys,Fenner,pcs,65,95,105,120,25,18,4010
+V-Belt A-52,BB-046,8902100000046,Belts & Pulleys,Fenner,pcs,85,120,130,100,20,18,4010
+V-Belt B-65,BB-047,8902100000047,Belts & Pulleys,Gates,pcs,130,180,195,70,15,18,4010
+Timing Belt 5M-450,BB-048,8902100000048,Belts & Pulleys,Gates,pcs,220,305,330,35,8,18,4010
+Cast Iron Pulley 4 inch,BB-049,8902100000049,Belts & Pulleys,Local,pcs,150,210,230,40,8,18,8483
+Cast Iron Pulley 6 inch,BB-050,8902100000050,Belts & Pulleys,Local,pcs,240,335,365,25,6,18,8483
