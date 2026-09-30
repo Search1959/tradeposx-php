@@ -6,10 +6,25 @@
 
 <div x-data="posScreen()" x-cloak class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
+  <!-- Mobile-only tab switcher — on lg+ both panels already sit side by side,
+       so this whole bar disappears there. Solves having to scroll past the
+       whole product grid just to see whether the cart picked something up. -->
+  <div class="lg:hidden flex gap-2">
+    <button type="button" @click="activeTab = 'products'"
+            :class="activeTab === 'products' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'"
+            class="flex-1 text-sm font-medium py-2.5 rounded-lg transition">Products</button>
+    <button type="button" @click="activeTab = 'cart'"
+            :class="activeTab === 'cart' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'"
+            class="flex-1 text-sm font-medium py-2.5 rounded-lg transition">
+      Cart<template x-if="cart.length > 0"><span x-text="' (' + cart.length + ')'"></span></template>
+    </button>
+  </div>
+
   <!-- Product picker -->
-  <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border border-slate-200 p-4">
+  <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border border-slate-200 p-4"
+       :class="activeTab === 'products' ? '' : 'hidden lg:block'">
     <input type="text" x-model="search" placeholder="Search products by name, SKU, barcode…"
-           class="w-full rounded border border-slate-300 px-3 py-2 text-sm mb-3" x-ref="searchBox" autofocus>
+           class="w-full rounded border border-slate-300 px-3 py-2 text-sm mb-3" x-ref="searchBox">
     <div class="flex flex-wrap gap-1.5 mb-3">
       <button type="button" @click="category = ''"
               :class="category === '' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
@@ -37,7 +52,8 @@
   </div>
 
   <!-- Cart + checkout -->
-  <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-4 flex flex-col">
+  <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-4 flex flex-col"
+       :class="activeTab === 'cart' ? '' : 'hidden lg:flex'">
     <h2 class="font-semibold text-slate-900 mb-2">Cart</h2>
     <div class="flex-1 overflow-y-auto max-h-[38vh] divide-y divide-slate-100">
       <template x-for="(line, idx) in cart" :key="line.id">
@@ -140,6 +156,13 @@ function posScreen() {
     ], $products)) ?>,
     search: '',
     category: '',
+    activeTab: 'products',
+    // A physical-keyboard + barcode-scanner desktop setup wants the search box
+    // refocused after every add so scanning can continue uninterrupted; a
+    // touchscreen phone doesn't have that workflow, and refocusing there just
+    // pops the on-screen keyboard back up and yanks the page scroll position
+    // on every single product tap.
+    isTouchDevice: window.matchMedia('(pointer: coarse)').matches,
     cart: [],
     discount: 0,
     taxType: 'EXCLUSIVE',
@@ -148,6 +171,9 @@ function posScreen() {
     paymentStatus: 'FULL',
     receivedAmount: 0,
 
+    init() {
+      if (!this.isTouchDevice) this.$refs.searchBox.focus();
+    },
     categories() {
       return [...new Set(this.products.map(p => p.category).filter(c => c))].sort();
     },
@@ -165,7 +191,7 @@ function posScreen() {
       if (existing) { existing.qty += 1; }
       else { this.cart.push({ id: p.id, name: p.name, price: p.selling_price, gst: p.gst_percent, qty: 1 }); }
       this.search = '';
-      this.$refs.searchBox.focus();
+      if (!this.isTouchDevice) this.$refs.searchBox.focus();
     },
     removeFromCart(idx) { this.cart.splice(idx, 1); },
     clampQty(line) { if (!line.qty || line.qty < 0) line.qty = 0.001; },
