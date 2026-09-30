@@ -14,7 +14,20 @@ $isEdit = !empty($quotation['id']);
   'discount' => (float)($quotation['discount'] ?? 0),
 ])) ?>)" x-cloak class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-  <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border border-slate-200 p-4">
+  <!-- Mobile-only tab switcher — see views/trade/sales/pos.php for the original fix. -->
+  <div class="lg:hidden flex gap-2">
+    <button type="button" @click="activeTab = 'services'"
+            :class="activeTab === 'services' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'"
+            class="flex-1 text-sm font-medium py-2.5 rounded-lg transition">Services</button>
+    <button type="button" @click="activeTab = 'quote'"
+            :class="activeTab === 'quote' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'"
+            class="flex-1 text-sm font-medium py-2.5 rounded-lg transition">
+      Quotation<template x-if="cart.length > 0"><span x-text="' (' + cart.length + ')'"></span></template>
+    </button>
+  </div>
+
+  <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border border-slate-200 p-4"
+       :class="activeTab === 'services' ? '' : 'hidden lg:block'">
     <input type="text" x-model="search" placeholder="Search services…" class="w-full rounded border border-slate-300 px-3 py-2 text-sm mb-3">
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[65vh] overflow-y-auto">
       <template x-for="s in filteredServices()" :key="s.id">
@@ -27,13 +40,14 @@ $isEdit = !empty($quotation['id']);
     </div>
   </div>
 
-  <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-4 flex flex-col">
+  <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-4 flex flex-col"
+       :class="activeTab === 'quote' ? '' : 'hidden lg:flex'">
     <h2 class="font-semibold text-slate-900 mb-2">Quotation Items</h2>
     <div class="flex-1 overflow-y-auto max-h-[38vh] divide-y divide-slate-100">
       <template x-for="(line, idx) in cart" :key="line.id">
         <div class="py-2 flex items-center gap-2">
           <div class="flex-1 min-w-0 text-sm font-medium text-slate-900 truncate" x-text="line.name"></div>
-          <input type="number" step="1" min="1" x-model.number="line.qty" class="w-14 rounded border border-slate-300 px-2 py-1 text-sm text-right">
+          <input type="number" step="1" min="1" x-model.number="line.qty" @blur="clampQty(line)" class="w-14 rounded border border-slate-300 px-2 py-1 text-sm text-right">
           <span class="text-sm font-semibold w-20 text-right" x-text="'₹' + (line.qty * line.price).toFixed(2)"></span>
           <button type="button" @click="cart.splice(idx,1)" class="text-red-500 text-xs">✕</button>
         </div>
@@ -47,7 +61,7 @@ $isEdit = !empty($quotation['id']);
       <div class="flex justify-between font-semibold text-base pt-1 border-t border-slate-100"><span>Grand Total</span><span x-text="'₹' + grandTotal().toFixed(2)"></span></div>
     </div>
 
-    <form method="POST" class="mt-3 space-y-2">
+    <form method="POST" class="mt-3 space-y-2" @submit="onSubmit">
       <?= CsrfHelper::getField() ?>
       <input type="hidden" name="cart_json" :value="JSON.stringify(cart.map(l => ({id: l.id, qty: l.qty})))">
       <input type="hidden" name="labour_charges" :value="labour">
@@ -81,7 +95,7 @@ function quoteScreen(initial) {
   initial = initial || {};
   return {
     services: <?= json_encode(array_map(fn($s) => ['id'=>(int)$s['id'],'name'=>$s['name'],'category'=>$s['category'],'price'=>(float)$s['price']], $services)) ?>,
-    search: '', cart: initial.cart || [], labour: initial.labour || 0, discount: initial.discount || 0,
+    search: '', activeTab: 'services', cart: initial.cart || [], labour: initial.labour || 0, discount: initial.discount || 0,
     filteredServices() {
       const q = this.search.trim().toLowerCase();
       if (!q) return this.services.slice(0, 60);
@@ -92,8 +106,13 @@ function quoteScreen(initial) {
       if (existing) existing.qty += 1;
       else this.cart.push({ id: s.id, name: s.name, price: s.price, qty: 1 });
     },
+    clampQty(line) { if (!line.qty || line.qty < 1) line.qty = 1; },
     subtotal() { return this.cart.reduce((s,l) => s + l.qty*l.price, 0); },
     grandTotal() { return Math.max(0, this.subtotal() + (this.labour||0) - (this.discount||0)); },
+    onSubmit(e) {
+      if (this.cart.length === 0) { e.preventDefault(); return; }
+      this.cart.forEach(line => this.clampQty(line));
+    },
   };
 }
 </script>

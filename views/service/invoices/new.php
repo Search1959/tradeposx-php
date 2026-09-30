@@ -6,7 +6,22 @@
 
 <div x-data="invoiceScreen()" x-cloak class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-  <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border border-slate-200 p-4">
+  <!-- Mobile-only tab switcher — on lg+ both panels already sit side by side.
+       Matches the same split done on the TradeERP POS screen (views/trade/sales/pos.php)
+       so adding a service doesn't mean scrolling past the whole grid to check the invoice. -->
+  <div class="lg:hidden flex gap-2">
+    <button type="button" @click="activeTab = 'services'"
+            :class="activeTab === 'services' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'"
+            class="flex-1 text-sm font-medium py-2.5 rounded-lg transition">Services</button>
+    <button type="button" @click="activeTab = 'invoice'"
+            :class="activeTab === 'invoice' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'"
+            class="flex-1 text-sm font-medium py-2.5 rounded-lg transition">
+      Invoice<template x-if="cart.length > 0"><span x-text="' (' + cart.length + ')'"></span></template>
+    </button>
+  </div>
+
+  <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border border-slate-200 p-4"
+       :class="activeTab === 'services' ? '' : 'hidden lg:block'">
     <input type="text" x-model="search" placeholder="Search services…" class="w-full rounded border border-slate-300 px-3 py-2 text-sm mb-3">
     <div class="flex flex-wrap gap-1.5 mb-3">
       <button type="button" @click="category = ''"
@@ -29,14 +44,15 @@
     </div>
   </div>
 
-  <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-4 flex flex-col">
+  <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-4 flex flex-col"
+       :class="activeTab === 'invoice' ? '' : 'hidden lg:flex'">
     <h2 class="font-semibold text-slate-900 mb-2">Invoice</h2>
     <div class="flex-1 overflow-y-auto max-h-[38vh] divide-y divide-slate-100">
       <template x-for="(line, idx) in cart" :key="line.id">
         <div class="py-2">
           <div class="flex items-center gap-2">
             <div class="flex-1 min-w-0 text-sm font-medium text-slate-900 truncate" x-text="line.name"></div>
-            <input type="number" step="1" min="1" x-model.number="line.qty" class="w-14 rounded border border-slate-300 px-2 py-1 text-sm text-right">
+            <input type="number" step="1" min="1" x-model.number="line.qty" @blur="clampQty(line)" class="w-14 rounded border border-slate-300 px-2 py-1 text-sm text-right">
             <span class="text-sm font-semibold w-20 text-right" x-text="'₹' + (line.qty * line.price).toFixed(2)"></span>
             <button type="button" @click="cart.splice(idx,1)" class="text-red-500 text-xs">✕</button>
           </div>
@@ -114,7 +130,7 @@
 function invoiceScreen() {
   return {
     services: <?= json_encode(array_map(fn($s) => ['id'=>(int)$s['id'],'name'=>$s['name'],'category'=>$s['category'],'price'=>(float)$s['price'],'gst'=>(float)$s['gst_percent']], $services)) ?>,
-    search: '', category: '', cart: [], labour: 0, discount: 0, taxType: 'EXCLUSIVE', customerId: '', paymentStatus: 'FULL', paidAmount: 0,
+    search: '', category: '', activeTab: 'services', cart: [], labour: 0, discount: 0, taxType: 'EXCLUSIVE', customerId: '', paymentStatus: 'FULL', paidAmount: 0,
     categories() {
       return [...new Set(this.services.map(s => s.category).filter(c => c))].sort();
     },
@@ -130,6 +146,7 @@ function invoiceScreen() {
       if (existing) existing.qty += 1;
       else this.cart.push({ id: s.id, name: s.name, price: s.price, gst: s.gst, qty: 1, staff_id: 0 });
     },
+    clampQty(line) { if (!line.qty || line.qty < 1) line.qty = 1; },
     lineTotal() { return this.cart.reduce((s,l) => s + l.qty*l.price, 0); },
     taxableAmount() {
       if (this.taxType === 'INCLUSIVE') {
@@ -161,6 +178,7 @@ function invoiceScreen() {
     grandTotal() { return Math.max(0, this.taxableAmount() + this.taxTotal() + (this.labour||0) - (this.discount||0)); },
     onSubmit(e) {
       if (this.cart.length === 0) { e.preventDefault(); return; }
+      this.cart.forEach(line => this.clampQty(line));
       if (this.paymentStatus === 'FULL') this.paidAmount = this.grandTotal();
       if (this.paymentStatus === 'CREDIT') this.paidAmount = 0;
     },
