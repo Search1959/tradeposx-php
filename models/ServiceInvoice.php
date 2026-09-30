@@ -55,18 +55,25 @@ class ServiceInvoice extends BaseModel {
         $this->db->beginTransaction();
         try {
             $invoiceId = $this->insert(
-                'INSERT INTO service_invoices (org_id, invoice_no, customer_id, customer_name, mobile, invoice_date,
+                'INSERT INTO service_invoices (org_id, invoice_no, customer_id, customer_name, mobile,
+                 specialized_staff_id, staff_commission_percent, staff_commission_amount, invoice_date,
                  labour_charges, material_charges, discount, tax_type, gst_amount, taxable_amount, cgst_amount, sgst_amount,
                  grand_total, paid_amount, balance_amount, payment_method, status, job_card_id, appointment_id, notes)
-                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                 [
                     $orgId, $invoiceNo, $data['customer_id'] ?: null, $data['customer_name'] ?? null,
-                    $data['mobile'] ?? null, $data['invoice_date'] ?: date('Y-m-d'), $labourCharges, $materialCharges,
+                    $data['mobile'] ?? null,
+                    $data['specialized_staff_id'] ?: null, $data['staff_commission_percent'] ?? null, $data['staff_commission_amount'] ?? 0,
+                    $data['invoice_date'] ?: date('Y-m-d'), $labourCharges, $materialCharges,
                     $discount, $taxType, $gstAmount, $taxableAmount, $cgstAmount, $sgstAmount, $grandTotal, $paidAmount,
                     $balance, $data['payment_method'] ?? 'CASH', $status, $data['job_card_id'] ?: null,
                     $data['appointment_id'] ?: null, $data['notes'] ?? null,
                 ]
             );
+
+            if (!empty($data['specialized_staff_id']) && (float) ($data['staff_commission_amount'] ?? 0) > 0) {
+                (new SpecializedStaff())->accrueCommission($orgId, (int) $data['specialized_staff_id'], (float) $data['staff_commission_amount']);
+            }
 
             foreach ($items as $item) {
                 $this->insert(
@@ -113,9 +120,14 @@ class ServiceInvoice extends BaseModel {
     }
 
     public function cancel(int $orgId, int $id, string $reason): bool {
-        return $this->execute(
+        $invoice = $this->find($orgId, $id);
+        $ok = $this->execute(
             "UPDATE service_invoices SET status = 'CANCELLED', cancel_reason = ?, cancelled_at = NOW() WHERE org_id = ? AND id = ?",
             [$reason, $orgId, $id]
         );
+        if ($ok && $invoice && !empty($invoice['specialized_staff_id']) && (float) $invoice['staff_commission_amount'] > 0) {
+            (new SpecializedStaff())->payCommission($orgId, (int) $invoice['specialized_staff_id'], (float) $invoice['staff_commission_amount']);
+        }
+        return $ok;
     }
 }

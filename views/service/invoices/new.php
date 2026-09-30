@@ -112,6 +112,7 @@
       <input type="hidden" name="labour_charges" :value="labour">
       <input type="hidden" name="discount" :value="discountAmount()">
       <input type="hidden" name="tax_type" :value="taxType">
+      <input type="hidden" name="specialized_staff_commission_percent" :value="specializedStaffCommissionPercent()">
 
       <select name="customer_id" x-model="customerId" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
         <option value="">Walk-in customer</option>
@@ -119,6 +120,27 @@
           <option value="<?= (int)$c['id'] ?>"><?= h($c['name']) ?> · <?= h($c['mobile']) ?></option>
         <?php endforeach; ?>
       </select>
+
+      <div class="grid grid-cols-2 gap-2">
+        <select name="specialized_staff_id" x-model="specializedStaffId" @change="specializedStaffCommissionMode = 'default'" class="rounded border border-slate-300 px-3 py-2 text-sm">
+          <option value="">No specialized staff</option>
+          <?php foreach ($specializedStaff as $sp): ?>
+            <option value="<?= (int)$sp['id'] ?>"><?= h($sp['name']) ?></option>
+          <?php endforeach; ?>
+        </select>
+        <div class="flex items-center gap-1.5" x-show="specializedStaffId">
+          <input type="number" step="0.01" min="0" x-show="specializedStaffCommissionMode === 'custom'" x-model.number="specializedStaffCustomCommission"
+                 @blur="if (!specializedStaffCustomCommission || specializedStaffCustomCommission < 0) specializedStaffCustomCommission = 0"
+                 class="w-14 rounded border border-slate-300 px-2 py-1 text-sm text-right">
+          <select x-model="specializedStaffCommissionMode" class="flex-1 rounded border border-slate-300 px-2 py-1 text-sm">
+            <option value="default" x-text="specializedStaffDefaultCommissionPercent() + '%'"></option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+      </div>
+      <!-- Recorded on the invoice for payout tracking only — never subtracted
+           from the customer's total, unlike Discount above. -->
+      <div class="text-xs text-slate-400 text-right" x-show="specializedStaffId" x-text="'Staff earns ₹' + specializedStaffCommissionAmount().toFixed(2) + ' (not deducted from total)'"></div>
 
       <div class="grid grid-cols-2 gap-2">
         <select name="payment_method" class="rounded border border-slate-300 px-3 py-2 text-sm">
@@ -145,7 +167,9 @@
 function invoiceScreen() {
   return {
     services: <?= json_encode(array_map(fn($s) => ['id'=>(int)$s['id'],'name'=>$s['name'],'category'=>$s['category'],'price'=>(float)$s['price'],'gst'=>(float)$s['gst_percent']], $services)) ?>,
+    specializedStaff: <?= json_encode(array_map(fn($sp) => ['id'=>(int)$sp['id'],'name'=>$sp['name'],'default_commission_percent'=>(float)$sp['default_commission_percent']], $specializedStaff)) ?>,
     search: '', category: '', activeTab: 'services', cart: [], labour: 0, discountMode: '0', customDiscount: 0, taxType: 'EXCLUSIVE', customerId: '', paymentStatus: 'FULL', paidAmount: 0,
+    specializedStaffId: '', specializedStaffCommissionMode: 'default', specializedStaffCustomCommission: 0,
     categories() {
       return [...new Set(this.services.map(s => s.category).filter(c => c))].sort();
     },
@@ -198,6 +222,15 @@ function invoiceScreen() {
       return 0;
     },
     grandTotal() { return Math.max(0, this.taxableAmount() + this.taxTotal() + (this.labour||0) - this.discountAmount()); },
+    specializedStaffDefaultCommissionPercent() {
+      const s = this.specializedStaff.find(x => x.id === Number(this.specializedStaffId));
+      return s ? s.default_commission_percent : 0;
+    },
+    specializedStaffCommissionPercent() {
+      if (!this.specializedStaffId) return 0;
+      return this.specializedStaffCommissionMode === 'custom' ? +(this.specializedStaffCustomCommission || 0) : this.specializedStaffDefaultCommissionPercent();
+    },
+    specializedStaffCommissionAmount() { return +(this.taxableAmount() * this.specializedStaffCommissionPercent() / 100).toFixed(2); },
     onSubmit(e) {
       if (this.cart.length === 0) { e.preventDefault(); return; }
       this.cart.forEach(line => this.clampQty(line));

@@ -3,11 +3,13 @@ class SaleController {
     private Sale $model;
     private Product $productModel;
     private Customer $customerModel;
+    private Broker $brokerModel;
 
     public function __construct() {
         $this->model = new Sale();
         $this->productModel = new Product();
         $this->customerModel = new Customer();
+        $this->brokerModel = new Broker();
     }
 
     /** The desktop POS screen. Cart state lives client-side (Alpine.js); on submit
@@ -46,10 +48,22 @@ class SaleController {
                 $customerId = $_POST['customer_id'] ?: null;
                 $selectedCustomer = $customerId ? $this->customerModel->find($org['id'], (int) $customerId) : null;
 
+                // Broker commission is computed from the server's own taxable amount, not
+                // trusted as a rupee figure from the client — only the percent (0-100,
+                // either the broker's stored default or a manually typed override) crosses
+                // the wire, same trust boundary as gst_rate/taxable_amount above.
+                $brokerId = $_POST['broker_id'] ?: null;
+                $selectedBroker = $brokerId ? $this->brokerModel->find($org['id'], (int) $brokerId) : null;
+                $brokerCommissionPercent = $selectedBroker ? max(0, min(100, (float) ($_POST['broker_commission_percent'] ?? 0))) : null;
+                $brokerCommissionAmount = $selectedBroker ? round($taxableAmount * $brokerCommissionPercent / 100, 2) : 0.0;
+
                 $result = $this->model->createSale($org['id'], [
                     'customer_id'      => $customerId,
                     'customer_name'    => $selectedCustomer['name'] ?? null,
                     'customer_mobile'  => $selectedCustomer['mobile'] ?? null,
+                    'broker_id'                 => $brokerId,
+                    'broker_commission_percent' => $brokerCommissionPercent,
+                    'broker_commission_amount'  => $brokerCommissionAmount,
                     'subtotal'         => $lineTotal,
                     'discount'         => $discount,
                     'tax_type'         => $taxType,
@@ -74,6 +88,7 @@ class SaleController {
 
         $products = $this->productModel->allForOrg($org['id']);
         $customers = $this->customerModel->allForOrg($org['id']);
+        $brokers = $this->brokerModel->allForOrg($org['id']);
         $pageTitle = 'New Sale';
         require __DIR__ . '/../views/trade/sales/pos.php';
     }

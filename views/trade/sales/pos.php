@@ -116,6 +116,7 @@
       <input type="hidden" name="cart_json" :value="JSON.stringify(cart.map(l => ({id: l.id, qty: l.qty})))">
       <input type="hidden" name="discount" :value="discountAmount()">
       <input type="hidden" name="tax_type" :value="taxType">
+      <input type="hidden" name="broker_commission_percent" :value="brokerCommissionPercent()">
 
       <select name="customer_id" x-model="customerId" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
         <option value="">Walk-in customer (no Udhaar)</option>
@@ -125,6 +126,27 @@
           </option>
         <?php endforeach; ?>
       </select>
+
+      <div class="grid grid-cols-2 gap-2">
+        <select name="broker_id" x-model="brokerId" @change="brokerCommissionMode = 'default'" class="rounded border border-slate-300 px-3 py-2 text-sm">
+          <option value="">No broker</option>
+          <?php foreach ($brokers as $br): ?>
+            <option value="<?= (int)$br['id'] ?>"><?= h($br['name']) ?></option>
+          <?php endforeach; ?>
+        </select>
+        <div class="flex items-center gap-1.5" x-show="brokerId">
+          <input type="number" step="0.01" min="0" x-show="brokerCommissionMode === 'custom'" x-model.number="brokerCustomCommission"
+                 @blur="if (!brokerCustomCommission || brokerCustomCommission < 0) brokerCustomCommission = 0"
+                 class="w-14 rounded border border-slate-300 px-2 py-1 text-sm text-right">
+          <select x-model="brokerCommissionMode" class="flex-1 rounded border border-slate-300 px-2 py-1 text-sm">
+            <option value="default" x-text="brokerDefaultCommissionPercent() + '%'"></option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+      </div>
+      <!-- Recorded on the sale for payout tracking only — never subtracted from
+           what the customer pays, unlike Discount above. -->
+      <div class="text-xs text-slate-400 text-right" x-show="brokerId" x-text="'Broker earns ₹' + brokerCommissionAmount().toFixed(2) + ' (not deducted from total)'"></div>
 
       <div class="grid grid-cols-2 gap-2">
         <select name="payment_method" x-model="paymentMethod" class="rounded border border-slate-300 px-3 py-2 text-sm">
@@ -166,6 +188,9 @@ function posScreen() {
         'current_stock' => (float)$p['current_stock'], 'unit' => $p['unit'],
         'sku' => $p['sku'], 'barcode' => $p['barcode'],
     ], $products)) ?>,
+    brokers: <?= json_encode(array_map(fn($br) => [
+        'id' => (int)$br['id'], 'name' => $br['name'], 'default_commission_percent' => (float)$br['default_commission_percent'],
+    ], $brokers)) ?>,
     search: '',
     category: '',
     activeTab: 'products',
@@ -180,6 +205,9 @@ function posScreen() {
     customDiscount: 0,
     taxType: 'EXCLUSIVE',
     customerId: '',
+    brokerId: '',
+    brokerCommissionMode: 'default', // 'default' | 'custom' — reset to 'default' whenever the broker changes
+    brokerCustomCommission: 0,
     paymentMethod: 'CASH',
     paymentStatus: 'FULL',
     receivedAmount: 0,
@@ -250,6 +278,18 @@ function posScreen() {
       return 0;
     },
     grandTotal() { return Math.max(0, this.taxableAmount() + this.taxTotal() - this.discountAmount()); },
+    // Broker commission is a payout the shop owes out of its own margin — it's
+    // recorded on the sale for the Brokers report, but unlike Discount it never
+    // touches grandTotal(); the customer's bill is unaffected either way.
+    brokerDefaultCommissionPercent() {
+      const b = this.brokers.find(x => x.id === Number(this.brokerId));
+      return b ? b.default_commission_percent : 0;
+    },
+    brokerCommissionPercent() {
+      if (!this.brokerId) return 0;
+      return this.brokerCommissionMode === 'custom' ? +(this.brokerCustomCommission || 0) : this.brokerDefaultCommissionPercent();
+    },
+    brokerCommissionAmount() { return +(this.taxableAmount() * this.brokerCommissionPercent() / 100).toFixed(2); },
     owed() {
       if (this.paymentStatus === 'CREDIT') return this.grandTotal();
       if (this.paymentStatus === 'PARTIAL') return Math.max(0, this.grandTotal() - (this.receivedAmount||0));

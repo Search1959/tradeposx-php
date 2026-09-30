@@ -73,12 +73,14 @@ class Sale extends BaseModel {
         try {
             $saleId = $this->insert(
                 'INSERT INTO sales (org_id, sale_number, customer_id, customer_name, customer_mobile, customer_gstin,
+                 broker_id, broker_commission_percent, broker_commission_amount,
                  subtotal, discount, tax_type, gst_rate, taxable_amount, cgst_amount, sgst_amount, total_tax_amount, grand_total,
                  payment_method, payment_status, received_amount, change_amount, created_by_name, notes, client_ref)
-                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                 [
                     $orgId, $saleNumber, $data['customer_id'] ?: null, $data['customer_name'] ?? null,
                     $data['customer_mobile'] ?? null, $data['customer_gstin'] ?? null,
+                    $data['broker_id'] ?: null, $data['broker_commission_percent'] ?? null, $data['broker_commission_amount'] ?? 0,
                     $data['subtotal'] ?? $grandTotal, $data['discount'] ?? 0, $data['tax_type'] ?? null, $data['gst_rate'] ?? null,
                     $data['taxable_amount'] ?? null, $data['cgst_amount'] ?? null, $data['sgst_amount'] ?? null,
                     $data['total_tax_amount'] ?? null, $grandTotal, $data['payment_method'] ?? 'CASH', $paymentStatus,
@@ -86,6 +88,10 @@ class Sale extends BaseModel {
                     $data['notes'] ?? null, $data['client_ref'] ?? null,
                 ]
             );
+
+            if (!empty($data['broker_id']) && (float) ($data['broker_commission_amount'] ?? 0) > 0) {
+                (new Broker())->accrueCommission($orgId, (int) $data['broker_id'], (float) $data['broker_commission_amount']);
+            }
 
             foreach ($items as $item) {
                 $this->insert(
@@ -142,6 +148,10 @@ class Sale extends BaseModel {
                 $balanceAfter = $customerModel->adjustBalance($orgId, (int) $sale['customer_id'], -$amountOwed);
                 $txnModel->record($orgId, (int) $sale['customer_id'], 'RETURN_CREDIT', $amountOwed, $balanceAfter,
                     null, $sale['sale_number'], 'Voided: ' . $reason);
+            }
+
+            if (!empty($sale['broker_id']) && (float) $sale['broker_commission_amount'] > 0) {
+                (new Broker())->payCommission($orgId, (int) $sale['broker_id'], (float) $sale['broker_commission_amount']);
             }
 
             $this->execute(

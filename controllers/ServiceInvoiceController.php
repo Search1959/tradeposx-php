@@ -4,12 +4,14 @@ class ServiceInvoiceController {
     private ServiceItem $itemModel;
     private ServiceCustomer $customerModel;
     private ServiceStaff $staffModel;
+    private SpecializedStaff $specializedStaffModel;
 
     public function __construct() {
         $this->model = new ServiceInvoice();
         $this->itemModel = new ServiceItem();
         $this->customerModel = new ServiceCustomer();
         $this->staffModel = new ServiceStaff();
+        $this->specializedStaffModel = new SpecializedStaff();
     }
 
     public function listAction(): void {
@@ -64,6 +66,15 @@ class ServiceInvoiceController {
                 $error = 'Cart is empty.';
             } else {
                 $customer = $_POST['customer_id'] ? $this->customerModel->find($org['id'], (int) $_POST['customer_id']) : null;
+
+                // Same trust boundary as SaleController's broker commission — only the
+                // percent crosses the wire, the rupee amount is computed here from the
+                // server's own taxable total.
+                $specializedStaffId = $_POST['specialized_staff_id'] ?: null;
+                $selectedSpecializedStaff = $specializedStaffId ? $this->specializedStaffModel->find($org['id'], (int) $specializedStaffId) : null;
+                $staffCommissionPercent = $selectedSpecializedStaff ? max(0, min(100, (float) ($_POST['specialized_staff_commission_percent'] ?? 0))) : null;
+                $staffCommissionAmount = $selectedSpecializedStaff ? round($taxableTotal * $staffCommissionPercent / 100, 2) : 0.0;
+
                 $cgstAmount = round($taxTotal / 2, 2);
                 $sgstAmount = round($taxTotal - $cgstAmount, 2);
                 $grandTotal = round($taxableTotal + $taxTotal
@@ -79,6 +90,9 @@ class ServiceInvoiceController {
                     'customer_id'     => $_POST['customer_id'] ?: null,
                     'customer_name'   => $customer['name'] ?? null,
                     'mobile'          => $customer['mobile'] ?? null,
+                    'specialized_staff_id'          => $specializedStaffId,
+                    'staff_commission_percent'      => $staffCommissionPercent,
+                    'staff_commission_amount'       => $staffCommissionAmount,
                     'labour_charges'  => $_POST['labour_charges'] ?? 0,
                     'discount'        => $_POST['discount'] ?? 0,
                     'tax_type'        => $taxType,
@@ -103,6 +117,7 @@ class ServiceInvoiceController {
         $services = $this->itemModel->allForOrg($org['id']);
         $customers = $this->customerModel->allForOrg($org['id']);
         $staff = $this->staffModel->allForOrg($org['id']);
+        $specializedStaff = $this->specializedStaffModel->allForOrg($org['id']);
         $pageTitle = 'New Service Invoice';
         require __DIR__ . '/../views/service/invoices/new.php';
     }

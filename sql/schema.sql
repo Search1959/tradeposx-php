@@ -610,3 +610,48 @@ CREATE TABLE outreach_sends (
   INDEX idx_outreach_sends_campaign_customer (campaign_id, customer_id),
   INDEX idx_outreach_sends_org (org_id)
 ) ENGINE=InnoDB;
+
+-- ── Brokers (TradeERP) & Specialized Staff (ServiceERP) commission tracking ─────
+-- Both mirror service_staff's own commission_payable pattern: a running total
+-- accrued when a sale/invoice records them, reduced by a manual "Pay" action
+-- (not tied to any specific transaction) when the owner actually settles up.
+-- The commission itself is a payout the business owes out of its own margin —
+-- it is NEVER subtracted from what the customer is billed (that's what the
+-- separate Discount field is for).
+CREATE TABLE brokers (
+  id                          INT AUTO_INCREMENT PRIMARY KEY,
+  org_id                      INT NOT NULL,
+  name                        VARCHAR(150) NOT NULL,
+  mobile                      VARCHAR(20) NULL,
+  default_commission_percent DECIMAL(5,2) NOT NULL DEFAULT 5,
+  commission_payable          DECIMAL(12,2) NOT NULL DEFAULT 0,
+  notes                       TEXT NULL,
+  created_at                  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (org_id) REFERENCES organizations(id) ON DELETE CASCADE,
+  INDEX idx_brokers_org (org_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE specialized_staff (
+  id                          INT AUTO_INCREMENT PRIMARY KEY,
+  org_id                      INT NOT NULL,
+  name                        VARCHAR(150) NOT NULL,
+  mobile                      VARCHAR(20) NULL,
+  default_commission_percent DECIMAL(5,2) NOT NULL DEFAULT 10,
+  commission_payable          DECIMAL(12,2) NOT NULL DEFAULT 0,
+  notes                       TEXT NULL,
+  created_at                  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (org_id) REFERENCES organizations(id) ON DELETE CASCADE,
+  INDEX idx_spstaff_org (org_id)
+) ENGINE=InnoDB;
+
+ALTER TABLE sales
+  ADD COLUMN broker_id INT NULL AFTER customer_gstin,
+  ADD COLUMN broker_commission_percent DECIMAL(5,2) NULL AFTER broker_id,
+  ADD COLUMN broker_commission_amount DECIMAL(12,2) NOT NULL DEFAULT 0 AFTER broker_commission_percent,
+  ADD FOREIGN KEY (broker_id) REFERENCES brokers(id) ON DELETE SET NULL;
+
+ALTER TABLE service_invoices
+  ADD COLUMN specialized_staff_id INT NULL AFTER mobile,
+  ADD COLUMN staff_commission_percent DECIMAL(5,2) NULL AFTER specialized_staff_id,
+  ADD COLUMN staff_commission_amount DECIMAL(12,2) NOT NULL DEFAULT 0 AFTER staff_commission_percent,
+  ADD FOREIGN KEY (specialized_staff_id) REFERENCES specialized_staff(id) ON DELETE SET NULL;

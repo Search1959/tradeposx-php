@@ -90,6 +90,7 @@ ob_start();
         <a href="<?= $base ?>/customers" class="block px-3 py-2 rounded hover:bg-slate-800">Customers / Udhaar</a>
         <a href="<?= $base ?>/purchases" class="block px-3 py-2 rounded hover:bg-slate-800">Purchases</a>
         <a href="<?= $base ?>/suppliers" class="block px-3 py-2 rounded hover:bg-slate-800">Suppliers</a>
+        <a href="<?= $base ?>/brokers" class="block px-3 py-2 rounded hover:bg-slate-800">Brokers</a>
         <a href="<?= $base ?>/reports" class="block px-3 py-2 rounded hover:bg-slate-800">Reports</a>
       <?php else: ?>
         <a href="<?= $base ?>/service-invoices/new" class="block px-3 py-2 rounded hover:bg-slate-800">🧾 New Bill (POS)</a>
@@ -100,6 +101,7 @@ ob_start();
         <a href="<?= $base ?>/service-customers" class="block px-3 py-2 rounded hover:bg-slate-800">Service Customers</a>
         <a href="<?= $base ?>/service-items" class="block px-3 py-2 rounded hover:bg-slate-800">Service Items</a>
         <a href="<?= $base ?>/service-staff" class="block px-3 py-2 rounded hover:bg-slate-800">Staff</a>
+        <a href="<?= $base ?>/specialized-staff" class="block px-3 py-2 rounded hover:bg-slate-800">Specialized Staff</a>
       <?php endif; ?>
       <a href="<?= $base ?>/outreach" class="block px-3 py-2 rounded hover:bg-slate-800">💬 Customer Outreach</a>
       <?php if (($org['business_type'] ?? 'both') === 'both'): ?>
