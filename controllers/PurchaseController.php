@@ -98,7 +98,7 @@ class PurchaseController {
                     $error = 'Unsupported file type — upload a JPG, PNG, WEBP, or PDF.';
                 } else {
                     $content = file_get_contents($_FILES['bill_file']['tmp_name']);
-                    $result = GeminiHelper::scanPurchaseBill($content, $mimeType);
+                    $result = BillScanHelper::scanPurchaseBill($content, $mimeType);
                     if (isset($result['error'])) {
                         $error = $result['error'];
                     } else {

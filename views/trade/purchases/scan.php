@@ -9,9 +9,9 @@
   <div class="mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2"><?= h($error) ?></div>
 <?php endif; ?>
 
-<?php if (!GeminiHelper::isConfigured()): ?>
+<?php if (!BillScanHelper::isConfigured()): ?>
   <div class="mb-4 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded px-3 py-2">
-    AI bill scanning isn't set up yet — add a Gemini API key to <code>config/constants.php</code> (<code>GEMINI_API_KEY</code>) to enable it.
+    AI bill scanning isn't set up yet — add <code>OCR_SPACE_API_KEY</code> and <code>GROQ_API_KEY</code> in <code>config/constants.php</code> to enable it.
     You can still <a href="<?= $base ?>/purchases/new" class="underline">enter a purchase manually</a>.
   </div>
 <?php endif; ?>
@@ -47,7 +47,7 @@
       <input type="file" name="bill_file" x-ref="realInput" class="hidden">
       <p class="text-xs text-slate-400 mt-1">Take Photo opens your camera directly. Choose File also accepts a PDF invoice or a photo already in your gallery, including handwritten or regional-language bills.</p>
     </div>
-    <button type="submit" :disabled="!fileName || submitting || compressing || <?= GeminiHelper::isConfigured() ? 'false' : 'true' ?>"
+    <button type="submit" :disabled="!fileName || submitting || compressing || <?= BillScanHelper::isConfigured() ? 'false' : 'true' ?>"
             class="bg-indigo-600 disabled:bg-slate-300 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">
       <span x-show="!submitting">Scan Bill</span>
       <span x-show="submitting" x-cloak>Scanning&hellip; this can take up to 15 seconds</span>

@@ -122,10 +122,10 @@ class JobCardController {
         require __DIR__ . '/../views/service/jobcards/form.php';
     }
 
-    /** Reuses the same Gemini scanning pipeline built for Purchases (config/constants.php's
-     * GEMINI_API_KEY, includes/GeminiHelper.php) but for a parts/materials receipt instead
-     * of a stock purchase — ServiceERP has no stock ledger to post to, so this just fills
-     * in the New/Edit Job Card parts cart in place and returns JSON, not a full page. */
+    /** Reuses the same bill-scanning pipeline built for Purchases (includes/BillScanHelper.php)
+     * but for a parts/materials receipt instead of a stock purchase — ServiceERP has no stock
+     * ledger to post to, so this just fills in the New/Edit Job Card parts cart in place and
+     * returns JSON, not a full page. */
     public function scanPartsAction(): void {
         $org = Tenant::current();
         Auth::requireOrgAccess($org['id']);
@@ -147,7 +147,7 @@ class JobCardController {
         }
 
         $content = file_get_contents($_FILES['bill_file']['tmp_name']);
-        $result = GeminiHelper::scanPurchaseBill($content, $mimeType);
+        $result = BillScanHelper::scanPurchaseBill($content, $mimeType);
         if (isset($result['error'])) {
             echo json_encode(['error' => $result['error'], 'csrf_token' => $freshToken]);
             return;
