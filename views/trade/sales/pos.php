@@ -62,7 +62,7 @@
             <div class="text-sm font-medium text-slate-900 truncate" x-text="line.name"></div>
             <div class="text-xs text-slate-500" x-text="'₹' + Number(line.price).toFixed(2) + ' each'"></div>
           </div>
-          <input type="number" step="0.001" min="0.001" x-model.number="line.qty" @input="clampQty(line)"
+          <input type="number" step="0.001" min="0.001" x-model.number="line.qty" @blur="clampQty(line)"
                  class="w-16 rounded border border-slate-300 px-2 py-1 text-sm text-right">
           <span class="text-sm font-semibold w-20 text-right" x-text="'₹' + (line.qty * line.price).toFixed(2)"></span>
           <button type="button" @click="removeFromCart(idx)" class="text-red-500 text-xs">✕</button>
@@ -234,6 +234,10 @@ function posScreen() {
     },
     onSubmit(e) {
       if (this.cart.length === 0) { e.preventDefault(); return; }
+      // A tap straight from the qty field to "Complete Sale" can beat that
+      // field's own blur handler to the submit — clamp every line here too so
+      // a still-empty/zero quantity never reaches the server.
+      this.cart.forEach(line => this.clampQty(line));
       if (this.owed() > 0 && !this.customerId) {
         e.preventDefault();
         alert('Select a customer before recording a part-paid or Udhaar sale.');
