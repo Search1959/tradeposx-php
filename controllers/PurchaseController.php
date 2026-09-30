@@ -90,20 +90,15 @@ class PurchaseController {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             CsrfHelper::validate();
-            if (empty($_FILES['bill_file']['tmp_name']) || $_FILES['bill_file']['error'] !== UPLOAD_ERR_OK) {
-                $error = 'Please choose a photo or PDF of the bill.';
+            $upload = BillScanHelper::readUploadedBill($_FILES['bill_file'] ?? []);
+            if (isset($upload['error'])) {
+                $error = $upload['error'];
             } else {
-                $mimeType = mime_content_type($_FILES['bill_file']['tmp_name']);
-                if (!in_array($mimeType, ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'], true)) {
-                    $error = 'Unsupported file type — upload a JPG, PNG, WEBP, or PDF.';
+                $result = BillScanHelper::scanPurchaseBill($upload['content'], $upload['mimeType']);
+                if (isset($result['error'])) {
+                    $error = $result['error'];
                 } else {
-                    $content = file_get_contents($_FILES['bill_file']['tmp_name']);
-                    $result = BillScanHelper::scanPurchaseBill($content, $mimeType);
-                    if (isset($result['error'])) {
-                        $error = $result['error'];
-                    } else {
-                        $scanned = $result;
-                    }
+                    $scanned = $result;
                 }
             }
         }

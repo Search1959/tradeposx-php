@@ -136,18 +136,13 @@ class JobCardController {
         // token back in every response path so the client can keep it in sync.
         $freshToken = CsrfHelper::generateToken();
 
-        if (empty($_FILES['bill_file']['tmp_name']) || $_FILES['bill_file']['error'] !== UPLOAD_ERR_OK) {
-            echo json_encode(['error' => 'Please choose a photo or PDF of the bill.', 'csrf_token' => $freshToken]);
-            return;
-        }
-        $mimeType = mime_content_type($_FILES['bill_file']['tmp_name']);
-        if (!in_array($mimeType, ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'], true)) {
-            echo json_encode(['error' => 'Unsupported file type — upload a JPG, PNG, WEBP, or PDF.', 'csrf_token' => $freshToken]);
+        $upload = BillScanHelper::readUploadedBill($_FILES['bill_file'] ?? []);
+        if (isset($upload['error'])) {
+            echo json_encode(['error' => $upload['error'], 'csrf_token' => $freshToken]);
             return;
         }
 
-        $content = file_get_contents($_FILES['bill_file']['tmp_name']);
-        $result = BillScanHelper::scanPurchaseBill($content, $mimeType);
+        $result = BillScanHelper::scanPurchaseBill($upload['content'], $upload['mimeType']);
         if (isset($result['error'])) {
             echo json_encode(['error' => $result['error'], 'csrf_token' => $freshToken]);
             return;

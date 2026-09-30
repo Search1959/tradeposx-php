@@ -15,6 +15,50 @@ class BillScanHelper {
         return (OCR_SPACE_API_KEY !== '' && GROQ_API_KEY !== '') || CLAUDE_API_KEY !== '';
     }
 
+    /** Validates an uploaded bill file and normalizes it to a (content, mimeType)
+     * pair neither OCR.space nor Claude's vision API will reject. The one real
+     * format gap: iPhones save photos as HEIC by default, which neither service
+     * accepts, and the browser-side canvas compression (resizeImageIfNeeded in
+     * the scan views) can silently pass a HEIC file straight through unconverted
+     * when the browser itself can't decode it into a canvas — so this has to be
+     * caught server-side too, with an actionable fix instead of a bare
+     * "unsupported file type" that gives the user nothing to act on.
+     * @return array{content:string,mimeType:string}|array{error:string} */
+    public static function readUploadedBill(array $file): array {
+        if (empty($file['tmp_name']) || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+            return ['error' => 'Please choose a photo or PDF of the bill.'];
+        }
+        $mimeType = mime_content_type($file['tmp_name']);
+        $ext = strtolower(pathinfo($file['name'] ?? '', PATHINFO_EXTENSION));
+        // Some Android browsers report an empty/generic type for HEIC and some
+        // PHP/libmagic builds misidentify it as a QuickTime/MP4 container (HEIC
+        // shares ISOBMFF framing with both) — the file extension catches those.
+        $isHeic = in_array($mimeType, ['image/heic', 'image/heif'], true) || in_array($ext, ['heic', 'heif'], true);
+
+        if (in_array($mimeType, ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'], true)) {
+            return ['content' => file_get_contents($file['tmp_name']), 'mimeType' => $mimeType];
+        }
+
+        if ($isHeic) {
+            if (extension_loaded('imagick')) {
+                try {
+                    $image = new Imagick($file['tmp_name']);
+                    $image->setImageFormat('jpeg');
+                    $image->setImageCompressionQuality(85);
+                    return ['content' => $image->getImageBlob(), 'mimeType' => 'image/jpeg'];
+                } catch (Throwable $e) {
+                    error_log('BillScanHelper: HEIC conversion via Imagick failed: ' . $e->getMessage());
+                    // fall through to the actionable HEIC error below
+                }
+            }
+            return ['error' => 'That\'s an iPhone HEIC photo, which this server can\'t read yet. Either open your '
+                . 'phone\'s Settings → Camera → Formats and switch to "Most Compatible" (new photos save as JPEG), '
+                . 'or share/export this photo as JPG before uploading.'];
+        }
+
+        return ['error' => 'Unsupported file type — upload a JPG, PNG, WEBP, or PDF.'];
+    }
+
     /** @return array{supplierName?:string,invoiceNumber?:string,invoiceDate?:string,items:array}|array{error:string} */
     public static function scanPurchaseBill(string $fileContent, string $mimeType): array {
         $result = self::scanFree($fileContent, $mimeType);
