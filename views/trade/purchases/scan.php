@@ -17,18 +17,50 @@
 <?php endif; ?>
 
 <?php if (!$scanned): ?>
-  <form method="POST" enctype="multipart/form-data" class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 max-w-lg space-y-4">
+  <form method="POST" enctype="multipart/form-data" class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 max-w-lg space-y-4" x-data="scanUpload()">
     <?= CsrfHelper::getField() ?>
     <div>
       <label class="block text-sm font-medium text-slate-700 mb-1">Photo or PDF of the bill</label>
-      <input type="file" name="bill_file" accept="image/*,.pdf" capture="environment" required class="w-full text-sm border border-slate-300 rounded px-3 py-2">
-      <p class="text-xs text-slate-400 mt-1">On a phone, this opens the camera directly. Also works with a PDF invoice or a photo picked from your gallery, including handwritten or regional-language bills.</p>
+      <!-- Two separate pickers, not one input with a mixed accept list — combining
+           accept="image/*,.pdf" with capture makes many mobile browsers silently
+           drop the camera shortcut and fall back to a plain file chooser, since a
+           camera obviously can't produce a PDF. A pure accept="image/*" input is
+           what actually guarantees the camera opens. -->
+      <div class="flex gap-2">
+        <label class="flex-1 text-center cursor-pointer bg-white border border-slate-300 text-slate-700 text-sm font-medium px-3 py-2 rounded hover:bg-slate-50">
+          📷 Take Photo
+          <input type="file" accept="image/*" capture="environment" class="hidden" @change="pick($event)">
+        </label>
+        <label class="flex-1 text-center cursor-pointer bg-white border border-slate-300 text-slate-700 text-sm font-medium px-3 py-2 rounded hover:bg-slate-50">
+          📁 Choose File
+          <input type="file" accept="image/*,.pdf" class="hidden" @change="pick($event)">
+        </label>
+      </div>
+      <div class="text-xs mt-2" :class="fileName ? 'text-slate-700 font-medium' : 'text-slate-400'" x-text="fileName || 'No file chosen'"></div>
+      <input type="file" name="bill_file" x-ref="realInput" required class="hidden">
+      <p class="text-xs text-slate-400 mt-1">Take Photo opens your camera directly. Choose File also accepts a PDF invoice or a photo already in your gallery, including handwritten or regional-language bills.</p>
     </div>
-    <button type="submit" <?= GeminiHelper::isConfigured() ? '' : 'disabled' ?>
+    <button type="submit" :disabled="!fileName || <?= GeminiHelper::isConfigured() ? 'false' : 'true' ?>"
             class="bg-indigo-600 disabled:bg-slate-300 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">
       Scan Bill
     </button>
   </form>
+
+  <script>
+  function scanUpload() {
+    return {
+      fileName: '',
+      pick(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        this.$refs.realInput.files = dt.files;
+        this.fileName = file.name;
+      },
+    };
+  }
+  </script>
 <?php else: ?>
   <div x-data="scanReview()" x-cloak>
     <div class="bg-blue-50 border border-blue-200 rounded px-4 py-2 text-sm text-blue-800 mb-4">

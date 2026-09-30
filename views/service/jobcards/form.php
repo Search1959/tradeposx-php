@@ -76,13 +76,25 @@ $isEdit = !empty($job['id']);
         AI bill scanning isn't set up yet — add a Gemini API key to <code>config/constants.php</code> (<code>GEMINI_API_KEY</code>) to enable "Scan Parts Bill" below.
       </div>
     <?php endif; ?>
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between flex-wrap gap-2">
       <label class="block text-sm font-medium text-slate-700">Parts / Materials</label>
-      <label class="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded border cursor-pointer <?= GeminiHelper::isConfigured() ? 'border-slate-300 text-slate-700 hover:bg-slate-50' : 'border-slate-200 text-slate-300 cursor-not-allowed' ?>">
-        <span x-show="!scanning">📷 Scan Parts Bill (AI)</span>
-        <span x-show="scanning" x-cloak>Scanning&hellip;</span>
-        <input type="file" accept="image/*,.pdf" capture="environment" class="hidden" @change="scanPartsBill($event)" <?= GeminiHelper::isConfigured() ? '' : 'disabled' ?>>
-      </label>
+      <!-- Two separate pickers, not one input with a mixed accept list — combining
+           accept="image/*,.pdf" with capture makes many mobile browsers silently
+           drop the camera shortcut and fall back to a plain file chooser, since a
+           camera obviously can't produce a PDF. A pure accept="image/*" input is
+           what actually guarantees the camera opens. -->
+      <div class="flex gap-2">
+        <label class="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded border cursor-pointer <?= GeminiHelper::isConfigured() ? 'border-slate-300 text-slate-700 hover:bg-slate-50' : 'border-slate-200 text-slate-300 cursor-not-allowed' ?>">
+          <span x-show="!scanning">📷 Take Photo</span>
+          <span x-show="scanning" x-cloak>Scanning&hellip;</span>
+          <input type="file" accept="image/*" capture="environment" class="hidden" @change="scanPartsBill($event)" <?= GeminiHelper::isConfigured() ? '' : 'disabled' ?>>
+        </label>
+        <label class="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded border cursor-pointer <?= GeminiHelper::isConfigured() ? 'border-slate-300 text-slate-700 hover:bg-slate-50' : 'border-slate-200 text-slate-300 cursor-not-allowed' ?>">
+          <span x-show="!scanning">📁 Scan a File (AI)</span>
+          <span x-show="scanning" x-cloak>Scanning&hellip;</span>
+          <input type="file" accept="image/*,.pdf" class="hidden" @change="scanPartsBill($event)" <?= GeminiHelper::isConfigured() ? '' : 'disabled' ?>>
+        </label>
+      </div>
     </div>
     <div x-show="scanError" x-cloak class="text-xs text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2" x-text="scanError"></div>
     <div class="border border-slate-200 rounded-lg overflow-x-auto">
