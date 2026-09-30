@@ -36,7 +36,8 @@
           <input type="file" accept="image/*,.pdf" class="hidden" @change="pick($event)">
         </label>
       </div>
-      <div class="text-xs mt-2" :class="fileName ? 'text-slate-700 font-medium' : 'text-slate-400'" x-text="fileName || 'No file chosen'"></div>
+      <div class="text-xs mt-2 text-slate-500" x-show="compressing" x-cloak>Preparing photo&hellip;</div>
+      <div class="text-xs mt-2" x-show="!compressing" :class="fileName ? 'text-slate-700 font-medium' : 'text-slate-400'" x-text="fileName || 'No file chosen'"></div>
       <!-- No `required` here — a hidden required file input can make some mobile
            browsers (notably Chrome on Android) silently refuse to submit the form
            at all, with no error and no console warning, since a display:none
@@ -46,7 +47,7 @@
       <input type="file" name="bill_file" x-ref="realInput" class="hidden">
       <p class="text-xs text-slate-400 mt-1">Take Photo opens your camera directly. Choose File also accepts a PDF invoice or a photo already in your gallery, including handwritten or regional-language bills.</p>
     </div>
-    <button type="submit" :disabled="!fileName || submitting || <?= GeminiHelper::isConfigured() ? 'false' : 'true' ?>"
+    <button type="submit" :disabled="!fileName || submitting || compressing || <?= GeminiHelper::isConfigured() ? 'false' : 'true' ?>"
             class="bg-indigo-600 disabled:bg-slate-300 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">
       <span x-show="!submitting">Scan Bill</span>
       <span x-show="submitting" x-cloak>Scanning&hellip; this can take up to 15 seconds</span>
@@ -58,15 +59,46 @@
     return {
       fileName: '',
       submitting: false,
-      pick(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        const dt = new DataTransfer();
-        dt.items.add(file);
-        this.$refs.realInput.files = dt.files;
-        this.fileName = file.name;
+      compressing: false,
+      async pick(e) {
+        const raw = e.target.files[0];
+        if (!raw) return;
+        this.compressing = true;
+        try {
+          const file = await resizeImageIfNeeded(raw);
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          this.$refs.realInput.files = dt.files;
+          this.fileName = file.name;
+        } finally {
+          this.compressing = false;
+        }
       },
     };
+  }
+
+  /** A real phone-camera photo is often 3-8MB at full resolution — plenty for a
+   * human to read but far more than Gemini needs for OCR, and slow/unreliable to
+   * upload from a shop's mobile connection. Downscaling to a readable-but-modest
+   * width before sending cuts the payload by ~85-90% and made a real-world blurry
+   * photo bill that was timing out on every attempt scan successfully instead.
+   * PDFs pass through untouched — this only applies to actual photos. */
+  async function resizeImageIfNeeded(file, maxDim = 1600, quality = 0.85) {
+    if (!file.type.startsWith('image/')) return file;
+    try {
+      const bitmap = await createImageBitmap(file);
+      const { width, height } = bitmap;
+      if (Math.max(width, height) <= maxDim && file.size <= 1.5 * 1024 * 1024) return file;
+      const scale = Math.min(1, maxDim / Math.max(width, height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(width * scale);
+      canvas.height = Math.round(height * scale);
+      canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', quality));
+      return blob ? new File([blob], file.name.replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' }) : file;
+    } catch (e) {
+      return file; // if compression fails for any reason, fall back to the original rather than blocking the scan
+    }
   }
   </script>
 <?php else: ?>

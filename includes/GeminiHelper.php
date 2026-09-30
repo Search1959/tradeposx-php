@@ -67,7 +67,7 @@ class GeminiHelper {
 
         $lastError = 'AI scan failed. Please try again.';
         foreach (GEMINI_SCAN_MODELS as $model) {
-            for ($attempt = 1; $attempt <= 2; $attempt++) {
+            for ($attempt = 1; $attempt <= 3; $attempt++) {
                 $result = self::callModel($model, $body);
                 if (!isset($result['error'])) {
                     return $result;

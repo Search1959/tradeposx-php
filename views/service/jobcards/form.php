@@ -147,11 +147,12 @@ function jobCardForm(initial) {
     partsTotal() { return this.parts.reduce((s,p) => s + (p.quantity||0)*(p.unit_price||0), 0); },
     total() { return this.partsTotal() + (this.labour||0); },
     async scanPartsBill(e) {
-      const file = e.target.files[0];
-      if (!file) return;
+      const raw = e.target.files[0];
+      if (!raw) return;
       this.scanning = true;
       this.scanError = '';
       try {
+        const file = await resizeImageIfNeeded(raw);
         const formData = new FormData();
         formData.append('bill_file', file);
         formData.append('csrf_token', document.querySelector('input[name=csrf_token]').value);
@@ -177,6 +178,28 @@ function jobCardForm(initial) {
       }
     },
   };
+}
+
+/** A real phone-camera photo is often 3-8MB at full resolution — plenty for a
+ * human to read but far more than Gemini needs for OCR, and slow/unreliable to
+ * upload from a shop's mobile connection. Downscaling to a readable-but-modest
+ * width before sending cuts the payload by ~85-90%. PDFs pass through untouched. */
+async function resizeImageIfNeeded(file, maxDim = 1600, quality = 0.85) {
+  if (!file.type.startsWith('image/')) return file;
+  try {
+    const bitmap = await createImageBitmap(file);
+    const { width, height } = bitmap;
+    if (Math.max(width, height) <= maxDim && file.size <= 1.5 * 1024 * 1024) return file;
+    const scale = Math.min(1, maxDim / Math.max(width, height));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(width * scale);
+    canvas.height = Math.round(height * scale);
+    canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', quality));
+    return blob ? new File([blob], file.name.replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' }) : file;
+  } catch (e) {
+    return file;
+  }
 }
 </script>
 
