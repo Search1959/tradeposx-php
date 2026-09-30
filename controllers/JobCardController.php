@@ -122,6 +122,45 @@ class JobCardController {
         require __DIR__ . '/../views/service/jobcards/form.php';
     }
 
+    /** Reuses the same Gemini scanning pipeline built for Purchases (config/constants.php's
+     * GEMINI_API_KEY, includes/GeminiHelper.php) but for a parts/materials receipt instead
+     * of a stock purchase — ServiceERP has no stock ledger to post to, so this just fills
+     * in the New/Edit Job Card parts cart in place and returns JSON, not a full page. */
+    public function scanPartsAction(): void {
+        $org = Tenant::current();
+        Auth::requireOrgAccess($org['id']);
+        header('Content-Type: application/json');
+        CsrfHelper::validate(); // dies with a plain-text 403 on failure, same as every other POST in this app
+        // validate() just rotated the session token, which would strand the main
+        // Save form's still-on-page hidden field with the old one — hand the new
+        // token back in every response path so the client can keep it in sync.
+        $freshToken = CsrfHelper::generateToken();
+
+        if (empty($_FILES['bill_file']['tmp_name']) || $_FILES['bill_file']['error'] !== UPLOAD_ERR_OK) {
+            echo json_encode(['error' => 'Please choose a photo or PDF of the bill.', 'csrf_token' => $freshToken]);
+            return;
+        }
+        $mimeType = mime_content_type($_FILES['bill_file']['tmp_name']);
+        if (!in_array($mimeType, ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'], true)) {
+            echo json_encode(['error' => 'Unsupported file type — upload a JPG, PNG, WEBP, or PDF.', 'csrf_token' => $freshToken]);
+            return;
+        }
+
+        $content = file_get_contents($_FILES['bill_file']['tmp_name']);
+        $result = GeminiHelper::scanPurchaseBill($content, $mimeType);
+        if (isset($result['error'])) {
+            echo json_encode(['error' => $result['error'], 'csrf_token' => $freshToken]);
+            return;
+        }
+
+        $parts = array_map(fn($i) => [
+            'name' => $i['name'] ?? '',
+            'quantity' => (float) ($i['quantity'] ?? 1),
+            'unit_price' => (float) ($i['purchasePrice'] ?? 0),
+        ], $result['items'] ?? []);
+        echo json_encode(['parts' => $parts, 'csrf_token' => $freshToken]);
+    }
+
     public function viewAction(?string $id = null): void {
         $org = Tenant::current();
         Auth::requireOrgAccess($org['id']);

@@ -14,6 +14,7 @@ $isEdit = !empty($job['id']);
   'parts' => array_map(fn($p) => ['name' => $p['name'], 'quantity' => (float)$p['quantity'], 'unit_price' => (float)$p['unit_price']], $job['parts'] ?? []),
   'labour' => (float)($job['labour_charges'] ?? 0),
   'warrantyStatus' => $job['warranty_status'] ?? 'None',
+  'scanUrl' => $base . '/job-cards/scanParts',
 ])) ?>)" x-cloak>
   <form method="POST" class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 max-w-2xl space-y-4">
     <?= CsrfHelper::getField() ?>
@@ -70,6 +71,20 @@ $isEdit = !empty($job['id']);
       </div>
     </div>
 
+    <?php if (!GeminiHelper::isConfigured()): ?>
+      <div class="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded px-3 py-2">
+        AI bill scanning isn't set up yet — add a Gemini API key to <code>config/constants.php</code> (<code>GEMINI_API_KEY</code>) to enable "Scan Parts Bill" below.
+      </div>
+    <?php endif; ?>
+    <div class="flex items-center justify-between">
+      <label class="block text-sm font-medium text-slate-700">Parts / Materials</label>
+      <label class="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded border cursor-pointer <?= GeminiHelper::isConfigured() ? 'border-slate-300 text-slate-700 hover:bg-slate-50' : 'border-slate-200 text-slate-300 cursor-not-allowed' ?>">
+        <span x-show="!scanning">📷 Scan Parts Bill (AI)</span>
+        <span x-show="scanning" x-cloak>Scanning&hellip;</span>
+        <input type="file" accept="image/*,.pdf" capture="environment" class="hidden" @change="scanPartsBill($event)" <?= GeminiHelper::isConfigured() ? '' : 'disabled' ?>>
+      </label>
+    </div>
+    <div x-show="scanError" x-cloak class="text-xs text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2" x-text="scanError"></div>
     <div class="border border-slate-200 rounded-lg overflow-x-auto">
       <table class="w-full text-sm">
         <thead class="bg-slate-50 text-slate-500 text-xs uppercase"><tr><th class="text-left px-3 py-2">Part / Material</th><th class="text-right px-3 py-2 w-20">Qty</th><th class="text-right px-3 py-2 w-28">Unit Price</th><th class="text-right px-3 py-2 w-24">Total</th><th class="w-8"></th></tr></thead>
@@ -114,8 +129,41 @@ function jobCardForm(initial) {
     parts: initial.parts && initial.parts.length ? initial.parts : [],
     labour: initial.labour || 0,
     warrantyStatus: initial.warrantyStatus || 'None',
+    scanUrl: initial.scanUrl || '',
+    scanning: false,
+    scanError: '',
     partsTotal() { return this.parts.reduce((s,p) => s + (p.quantity||0)*(p.unit_price||0), 0); },
     total() { return this.partsTotal() + (this.labour||0); },
+    async scanPartsBill(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      this.scanning = true;
+      this.scanError = '';
+      try {
+        const formData = new FormData();
+        formData.append('bill_file', file);
+        formData.append('csrf_token', document.querySelector('input[name=csrf_token]').value);
+        const res = await fetch(this.scanUrl, { method: 'POST', body: formData });
+        const data = await res.json();
+        // The scan request itself rotates the session's CSRF token server-side —
+        // keep the page's own Save form in sync or its submit will fail next.
+        if (data.csrf_token) document.querySelector('input[name=csrf_token]').value = data.csrf_token;
+        if (data.error) {
+          this.scanError = data.error;
+        } else if (data.parts && data.parts.length) {
+          // Drop any still-empty starter rows so a scan on a fresh job card
+          // doesn't leave a stray blank line above the scanned items.
+          this.parts = this.parts.filter(p => p.name.trim() !== '').concat(data.parts);
+        } else {
+          this.scanError = 'No line items found in the scanned bill — try a clearer photo.';
+        }
+      } catch (err) {
+        this.scanError = 'Could not reach the server — please try again.';
+      } finally {
+        this.scanning = false;
+        e.target.value = '';
+      }
+    },
   };
 }
 </script>

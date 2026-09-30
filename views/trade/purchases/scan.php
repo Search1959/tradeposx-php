@@ -21,8 +21,8 @@
     <?= CsrfHelper::getField() ?>
     <div>
       <label class="block text-sm font-medium text-slate-700 mb-1">Photo or PDF of the bill</label>
-      <input type="file" name="bill_file" accept="image/*,.pdf" required class="w-full text-sm border border-slate-300 rounded px-3 py-2">
-      <p class="text-xs text-slate-400 mt-1">Works with photos of paper bills or a PDF invoice, including handwritten or regional-language bills.</p>
+      <input type="file" name="bill_file" accept="image/*,.pdf" capture="environment" required class="w-full text-sm border border-slate-300 rounded px-3 py-2">
+      <p class="text-xs text-slate-400 mt-1">On a phone, this opens the camera directly. Also works with a PDF invoice or a photo picked from your gallery, including handwritten or regional-language bills.</p>
     </div>
     <button type="submit" <?= GeminiHelper::isConfigured() ? '' : 'disabled' ?>
             class="bg-indigo-600 disabled:bg-slate-300 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">
