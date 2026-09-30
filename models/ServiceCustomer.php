@@ -26,6 +26,10 @@ class ServiceCustomer extends BaseModel {
         return $this->queryOne('SELECT * FROM service_customers WHERE org_id = ? AND id = ?', [$orgId, $id]);
     }
 
+    public function findByMobile(int $orgId, string $mobile): ?array {
+        return $this->queryOne('SELECT * FROM service_customers WHERE org_id = ? AND mobile = ?', [$orgId, $mobile]);
+    }
+
     public function create(int $orgId, array $d): int {
         return $this->insert(
             'INSERT INTO service_customers (org_id, name, mobile, email, address, sector, notes) VALUES (?,?,?,?,?,?,?)',

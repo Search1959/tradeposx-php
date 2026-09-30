@@ -128,6 +128,12 @@
         <?php endforeach; ?>
       </select>
 
+      <div x-show="!customerId">
+        <input type="tel" name="walkin_mobile" x-model="walkinMobile" placeholder="Walk-in customer's WhatsApp no. (optional)"
+               class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+        <p class="text-xs text-slate-400 mt-1">Saved as a customer so they show up under Customer Outreach for review/promo messages.</p>
+      </div>
+
       <div class="grid grid-cols-2 gap-2">
         <select name="broker_id" x-model="brokerId" @change="brokerCommissionMode = 'default'" class="rounded border border-slate-300 px-3 py-2 text-sm">
           <option value="">No broker</option>
@@ -206,6 +212,7 @@ function posScreen() {
     customDiscount: 0,
     taxType: 'EXCLUSIVE',
     customerId: '',
+    walkinMobile: '',
     brokerId: '',
     brokerCommissionMode: 'default', // 'default' | 'custom' — reset to 'default' whenever the broker changes
     brokerCustomCommission: 0,

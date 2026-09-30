@@ -122,6 +122,12 @@
         <?php endforeach; ?>
       </select>
 
+      <div x-show="!customerId">
+        <input type="tel" name="walkin_mobile" x-model="walkinMobile" placeholder="Walk-in customer's WhatsApp no. (optional)"
+               class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+        <p class="text-xs text-slate-400 mt-1">Saved as a customer so they show up under Customer Outreach for review/promo messages.</p>
+      </div>
+
       <div class="grid grid-cols-2 gap-2">
         <select name="specialized_staff_id" x-model="specializedStaffId" @change="specializedStaffCommissionMode = 'default'" class="rounded border border-slate-300 px-3 py-2 text-sm">
           <option value="">No specialized staff</option>
@@ -169,7 +175,7 @@ function invoiceScreen() {
   return {
     services: <?= json_encode(array_map(fn($s) => ['id'=>(int)$s['id'],'name'=>$s['name'],'category'=>$s['category'],'price'=>(float)$s['price'],'gst'=>(float)$s['gst_percent']], $services)) ?>,
     specializedStaff: <?= json_encode(array_map(fn($sp) => ['id'=>(int)$sp['id'],'name'=>$sp['name'],'default_commission_percent'=>(float)$sp['default_commission_percent']], $specializedStaff)) ?>,
-    search: '', category: '', activeTab: 'services', cart: [], labour: 0, discountMode: '0', customDiscount: 0, taxType: 'EXCLUSIVE', customerId: '', paymentStatus: 'FULL', paidAmount: 0,
+    search: '', category: '', activeTab: 'services', cart: [], labour: 0, discountMode: '0', customDiscount: 0, taxType: 'EXCLUSIVE', customerId: '', walkinMobile: '', paymentStatus: 'FULL', paidAmount: 0,
     specializedStaffId: '', specializedStaffCommissionMode: 'default', specializedStaffCustomCommission: 0,
     categories() {
       return [...new Set(this.services.map(s => s.category).filter(c => c))].sort();

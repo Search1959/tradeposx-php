@@ -51,6 +51,23 @@ class SaleController {
                 $customerId = $_POST['customer_id'] ?: null;
                 $selectedCustomer = $customerId ? $this->customerModel->find($org['id'], (int) $customerId) : null;
 
+                // A WhatsApp number typed for a walk-in (no customer selected) turns
+                // them into a real customer record — reusing one that already has this
+                // mobile number instead of creating a duplicate if they've given it
+                // before. This is also the entire mechanism that gets them into Customer
+                // Outreach: that screen just lists everyone in the customers table, no
+                // separate opt-in flag, so existing as a customer row is enough.
+                $walkinMobile = trim($_POST['walkin_mobile'] ?? '');
+                if (!$customerId && $walkinMobile !== '') {
+                    $selectedCustomer = $this->customerModel->findByMobile($org['id'], $walkinMobile);
+                    if ($selectedCustomer) {
+                        $customerId = $selectedCustomer['id'];
+                    } else {
+                        $customerId = $this->customerModel->create($org['id'], ['name' => 'Walk-in Customer', 'mobile' => $walkinMobile]);
+                        $selectedCustomer = ['name' => 'Walk-in Customer', 'mobile' => $walkinMobile];
+                    }
+                }
+
                 // Broker commission is computed from the server's own taxable amount, not
                 // trusted as a rupee figure from the client — only the percent (0-100,
                 // either the broker's stored default or a manually typed override) crosses

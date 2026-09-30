@@ -65,7 +65,25 @@ class ServiceInvoiceController {
             if (empty($items)) {
                 $error = 'Cart is empty.';
             } else {
-                $customer = $_POST['customer_id'] ? $this->customerModel->find($org['id'], (int) $_POST['customer_id']) : null;
+                $customerId = $_POST['customer_id'] ?: null;
+                $customer = $customerId ? $this->customerModel->find($org['id'], (int) $customerId) : null;
+
+                // A WhatsApp number typed for a walk-in (no customer selected) turns
+                // them into a real customer record — reusing one that already has this
+                // mobile number instead of creating a duplicate. This is also the
+                // entire mechanism that gets them into Customer Outreach: that screen
+                // just lists everyone in the service_customers table, no separate
+                // opt-in flag, so existing as a customer row is enough.
+                $walkinMobile = trim($_POST['walkin_mobile'] ?? '');
+                if (!$customerId && $walkinMobile !== '') {
+                    $customer = $this->customerModel->findByMobile($org['id'], $walkinMobile);
+                    if ($customer) {
+                        $customerId = $customer['id'];
+                    } else {
+                        $customerId = $this->customerModel->create($org['id'], ['name' => 'Walk-in Customer', 'mobile' => $walkinMobile]);
+                        $customer = ['name' => 'Walk-in Customer', 'mobile' => $walkinMobile];
+                    }
+                }
 
                 // Same trust boundary as SaleController's broker commission — only the
                 // percent crosses the wire, the rupee amount is computed here from the
@@ -90,7 +108,7 @@ class ServiceInvoiceController {
                 };
 
                 $result = $this->model->createInvoice($org['id'], [
-                    'customer_id'     => $_POST['customer_id'] ?: null,
+                    'customer_id'     => $customerId,
                     'customer_name'   => $customer['name'] ?? null,
                     'mobile'          => $customer['mobile'] ?? null,
                     'specialized_staff_id'          => $specializedStaffId,
