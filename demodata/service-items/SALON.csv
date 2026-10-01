@@ -1,17 +1,53 @@
 name,category,sector,price,duration_minutes,gst_percent,warranty_days,description
 Haircut (Men),Hair,SALON,200,30,18,0,Standard men's haircut
 Haircut (Women),Hair,SALON,500,45,18,0,Standard women's haircut
+Haircut (Kids),Hair,SALON,150,20,18,0,
 Hair Wash & Blow Dry,Hair,SALON,300,30,18,0,
 Hair Color (Global),Hair,SALON,1500,90,18,0,Full head color
+Hair Color (Roots Touch-up),Hair,SALON,800,45,18,0,
+Highlights / Streaks,Hair,SALON,2000,90,18,0,
 Hair Spa Treatment,Hair,SALON,1200,60,18,0,Deep conditioning treatment
 Keratin Treatment,Hair,SALON,3500,120,18,0,Smoothening treatment
+Hair Smoothening,Hair,SALON,3000,120,18,0,
+Hair Straightening,Hair,SALON,2800,120,18,0,
+Hair Botox Treatment,Hair,SALON,4500,120,18,0,
+Anti-Dandruff Treatment,Hair,SALON,900,45,18,0,
+Scalp Massage (Oil),Hair,SALON,300,30,18,0,
+Hair Trim (Split End),Hair,SALON,250,20,18,0,
 Facial (Classic),Skin,SALON,800,45,18,0,
+Facial (Fruit/Herbal),Skin,SALON,1000,45,18,0,
 Facial (Gold/Diamond),Skin,SALON,2000,60,18,0,Premium facial
+Facial (Anti-Aging),Skin,SALON,2500,60,18,0,
+Cleanup (De-Tan),Skin,SALON,500,30,18,0,
 Threading (Eyebrows),Skin,SALON,50,10,18,0,
+Threading (Upper Lip),Skin,SALON,30,5,18,0,
+Threading (Full Face),Skin,SALON,150,20,18,0,
 Waxing (Full Arms),Skin,SALON,300,20,18,0,
 Waxing (Full Legs),Skin,SALON,500,30,18,0,
+Waxing (Underarms),Skin,SALON,150,10,18,0,
+Waxing (Full Body),Skin,SALON,1500,60,18,0,
+Bleach (Face),Skin,SALON,400,30,18,0,
+Bleach (Full Body),Skin,SALON,1200,60,18,0,
+D-Tan Pack (Back/Shoulder),Skin,SALON,600,30,18,0,
 Manicure,Nails,SALON,400,30,18,0,
 Pedicure,Nails,SALON,600,45,18,0,
+Manicure + Pedicure Combo,Nails,SALON,900,75,18,0,
 Nail Art (per hand),Nails,SALON,300,20,18,0,
+Nail Extension (Full Set),Nails,SALON,1500,90,18,0,
+Gel Polish,Nails,SALON,500,30,18,0,
 Bridal Makeup,Bridal,SALON,8000,180,18,0,Full bridal package
+Bridal Package (Hair + Makeup + Draping),Bridal,SALON,15000,240,18,0,
 Party Makeup,Bridal,SALON,2500,90,18,0,
+Engagement Makeup,Bridal,SALON,4000,120,18,0,
+HD Makeup,Bridal,SALON,3500,90,18,0,
+Saree Draping,Bridal,SALON,500,30,18,0,
+Men's Shave (Classic),Men's Grooming,SALON,100,15,18,0,
+Beard Trim & Shape,Men's Grooming,SALON,150,20,18,0,
+Beard Color,Men's Grooming,SALON,300,30,18,0,
+Head Massage (Men),Men's Grooming,SALON,250,30,18,0,
+Men's Facial,Men's Grooming,SALON,700,40,18,0,
+Men's Grooming Package,Men's Grooming,SALON,1200,90,18,0,Haircut + Beard + Facial
+Body Massage (Relaxing),Spa Addon,SALON,1500,60,18,0,
+Head & Shoulder Massage,Spa Addon,SALON,500,30,18,0,
+Monthly Grooming Membership,Other,SALON,2500,0,18,30,Unlimited haircuts/trims
+Gift Voucher (₹1000),Other,SALON,1000,0,18,180,
