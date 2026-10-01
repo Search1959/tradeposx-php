@@ -106,8 +106,16 @@ $gstBreakdown = $isGst ? gstBreakdownByRate($invoice['items'], $invoice['tax_typ
           <div class="flex justify-between text-slate-600"><span>SGST @ <?= halfGstRate($g['rate']) ?>%</span><span><?= formatCurrency($g['tax'] / 2) ?></span></div>
           <?php endforeach; ?>
         <?php elseif ($isGst): ?>
-        <div class="flex justify-between text-slate-600"><span>CGST</span><span><?= formatCurrency((float)($invoice['cgst_amount'] ?? $invoice['gst_amount'] / 2)) ?></span></div>
-        <div class="flex justify-between text-slate-600"><span>SGST</span><span><?= formatCurrency((float)($invoice['sgst_amount'] ?? $invoice['gst_amount'] / 2)) ?></span></div>
+        <?php
+          // No per-item gst_rate to group by here (an older invoice, or one
+          // created through a path that didn't record it per line) — back-derive
+          // one effective rate from the invoice's own totals so CGST/SGST still
+          // show a percentage instead of a bare, unexplained label.
+          $effTaxable = (float) ($invoice['taxable_amount'] ?? 0);
+          $effRate = $effTaxable > 0 ? round((float) $invoice['gst_amount'] / $effTaxable * 100, 2) : 0;
+        ?>
+        <div class="flex justify-between text-slate-600"><span>CGST @ <?= halfGstRate($effRate) ?>%</span><span><?= formatCurrency((float)($invoice['cgst_amount'] ?? $invoice['gst_amount'] / 2)) ?></span></div>
+        <div class="flex justify-between text-slate-600"><span>SGST @ <?= halfGstRate($effRate) ?>%</span><span><?= formatCurrency((float)($invoice['sgst_amount'] ?? $invoice['gst_amount'] / 2)) ?></span></div>
         <?php endif; ?>
         <?php if ((float)$invoice['labour_charges'] > 0): ?>
         <div class="flex justify-between text-slate-600"><span>Labour</span><span><?= formatCurrency((float)$invoice['labour_charges']) ?></span></div>
