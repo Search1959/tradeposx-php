@@ -1,0 +1,51 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+RO Water Purifier (7L - 5-stage),WR-001,8903000000001,RO Systems,Kent,pcs,6500,7800,8200,20,4,18,8421
+RO Water Purifier (8L - 6-stage + UV),WR-002,8903000000002,RO Systems,Aquaguard,pcs,8500,10200,10700,15,3,18,8421
+RO Water Purifier (10L - 7-stage + Alkaline),WR-003,8903000000003,RO Systems,Pureit,pcs,11500,13800,14500,12,3,18,8421
+Commercial RO Plant (50 LPH),WR-004,8903000000004,RO Systems,Kent,pcs,28000,32500,34000,5,1,18,8421
+Commercial RO Plant (100 LPH),WR-005,8903000000005,RO Systems,Ion Exchange,pcs,48000,54500,57000,3,1,18,8421
+UV Water Purifier (Non-RO),WR-006,8903000000006,RO Systems,Eureka Forbes,pcs,4500,5400,5700,20,4,18,8421
+Gravity Based Water Purifier (23L),WR-007,8903000000007,RO Systems,Pureit,pcs,2200,2700,2900,25,5,18,8421
+Water Softener System,WR-008,8903000000008,RO Systems,Ion Exchange,pcs,18000,21000,22000,6,2,18,8421
+Industrial RO Plant (250 LPH),WR-009,8903000000009,RO Systems,Ion Exchange,pcs,95000,108000,113000,2,1,18,8421
+RO Pump (Booster Pump),WR-010,8903000000010,Water Purifier Parts,Aquafresh,pcs,850,1020,1080,30,6,18,8413
+RO Membrane Housing,WR-011,8903000000011,Water Purifier Parts,Local,pcs,350,430,460,40,8,18,8421
+Solenoid Valve (RO),WR-012,8903000000012,Water Purifier Parts,Local,pcs,220,280,310,50,10,18,8481
+Float Valve (RO Tank),WR-013,8903000000013,Water Purifier Parts,Local,pcs,120,155,170,60,12,18,8481
+UV Lamp (Replacement),WR-014,8903000000014,Water Purifier Parts,Kent,pcs,450,560,600,45,9,18,8539
+SMPS Adapter (RO),WR-015,8903000000015,Water Purifier Parts,Local,pcs,280,350,380,35,7,18,8504
+RO Tank (Storage - 8L),WR-016,8903000000016,Water Purifier Parts,Local,pcs,650,790,840,25,5,18,3925
+TDS Controller Valve,WR-017,8903000000017,Water Purifier Parts,Local,pcs,180,230,250,40,8,18,8481
+Auto Flush Valve (RO),WR-018,8903000000018,Water Purifier Parts,Local,pcs,250,310,340,35,7,18,8481
+Sediment Filter (10 inch),WR-019,8903000000019,Filters & Membranes,Pentair,pcs,120,155,170,100,20,18,8421
+Carbon Filter (10 inch),WR-020,8903000000020,Filters & Membranes,Pentair,pcs,150,190,210,90,18,18,8421
+RO Membrane 80 GPD,WR-021,8903000000021,Filters & Membranes,Dow Filmtec,pcs,850,1020,1080,40,8,18,8421
+RO Membrane 100 GPD,WR-022,8903000000022,Filters & Membranes,Dow Filmtec,pcs,950,1130,1200,35,7,18,8421
+Post Carbon Filter,WR-023,8903000000023,Filters & Membranes,Local,pcs,180,230,250,60,12,18,8421
+Alkaline Filter Cartridge,WR-024,8903000000024,Filters & Membranes,Kent,pcs,450,550,590,40,8,18,8421
+Mineral Cartridge (RO),WR-025,8903000000025,Filters & Membranes,Kent,pcs,380,460,490,45,9,18,8421
+Pre-Filter Spun Cartridge,WR-026,8903000000026,Filters & Membranes,Local,pcs,90,120,135,120,25,18,8421
+Iron Removal Filter Cartridge,WR-027,8903000000027,Filters & Membranes,Ion Exchange,pcs,550,660,700,30,6,18,8421
+Water Can 20L (Reusable),WR-028,8903000000028,Water Cans / Jars,Bisleri,pcs,220,280,310,80,16,18,3923
+Water Jar 20L with Tap,WR-029,8903000000029,Water Cans / Jars,Local,pcs,250,310,340,60,12,18,3923
+Water Bottle 1L (Food Grade),WR-030,8903000000030,Water Cans / Jars,Milton,pcs,80,105,115,100,20,18,3923
+Water Dispenser Stand,WR-031,8903000000031,Water Cans / Jars,Local,pcs,450,560,600,30,6,18,3925
+Insulated Water Jug 5L,WR-032,8903000000032,Water Cans / Jars,Milton,pcs,650,790,840,25,5,18,9617
+Can Cap/Lid (pack of 10),WR-033,8903000000033,Water Cans / Jars,Local,pkt,80,105,115,70,15,18,3923
+Water Can Trolley,WR-034,8903000000034,Water Cans / Jars,Local,pcs,1200,1450,1550,10,2,18,8716
+Water Can Rack (4-can),WR-035,8903000000035,Water Cans / Jars,Local,pcs,850,1020,1080,15,3,18,9403
+RO Installation Pipe (per meter),WR-036,8903000000036,Installation Accessories,Local,m,20,28,32,300,60,18,3917
+RO Fittings Kit,WR-037,8903000000037,Installation Accessories,Local,set,350,430,460,40,8,18,8481
+Wall Mounting Bracket (RO),WR-038,8903000000038,Installation Accessories,Local,pcs,180,230,250,50,10,18,8302
+Tap/Faucet (RO Output),WR-039,8903000000039,Installation Accessories,Local,pcs,220,280,310,60,12,18,8481
+Inlet Connector Kit,WR-040,8903000000040,Installation Accessories,Local,set,150,190,210,50,10,18,8481
+Drain Saddle Valve,WR-041,8903000000041,Installation Accessories,Local,pcs,90,120,135,70,15,18,8481
+Pipe Clips (pack of 20),WR-042,8903000000042,Installation Accessories,Local,pkt,60,80,90,100,20,18,7616
+Teflon Tape (pack of 5),WR-043,8903000000043,Installation Accessories,Local,pkt,40,55,62,80,16,18,3917
+Pressure Gauge (RO),WR-044,8903000000044,Installation Accessories,Local,pcs,280,350,380,30,6,18,9026
+TDS Meter (Digital),WR-045,8903000000045,Other,Hm Digital,pcs,250,320,350,50,10,18,9027
+Water Testing Kit,WR-046,8903000000046,Other,Local,pcs,450,560,600,25,5,18,9027
+AMC Service Kit (Annual Maintenance),WR-047,8903000000047,Other,Kent,set,850,1050,1120,20,4,18,8421
+Service Tool Kit (RO Technician),WR-048,8903000000048,Other,Local,set,1200,1450,1550,10,2,18,8206
+Pre-Filter Housing Spanner,WR-049,8903000000049,Other,Local,pcs,120,155,170,30,6,18,8204
+RO Service Charge (Annual),WR-050,8903000000050,Other,Service,pcs,0,600,600,999,0,18,9987

@@ -1,0 +1,51 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+Hybrid Tomato Seeds 10g,SF-001,8902900000001,Hybrid Seeds,Syngenta,pkt,180,220,240,100,20,0,1209
+Hybrid Brinjal Seeds 10g,SF-002,8902900000002,Hybrid Seeds,Syngenta,pkt,160,200,220,90,18,0,1209
+Hybrid Chilli Seeds 10g,SF-003,8902900000003,Hybrid Seeds,Syngenta,pkt,200,250,270,80,16,0,1209
+Hybrid Okra (Bhindi) Seeds 500g,SF-004,8902900000004,Hybrid Seeds,Mahyco,pkt,280,340,370,70,14,0,1209
+Hybrid Cucumber Seeds 10g,SF-005,8902900000005,Hybrid Seeds,Syngenta,pkt,170,210,230,60,12,0,1209
+Hybrid Watermelon Seeds 50g,SF-006,8902900000006,Hybrid Seeds,Namdhari,pkt,350,420,450,50,10,0,1209
+Hybrid Cabbage Seeds 10g,SF-007,8902900000007,Hybrid Seeds,Syngenta,pkt,220,270,290,55,11,0,1209
+Hybrid Cauliflower Seeds 10g,SF-008,8902900000008,Hybrid Seeds,Syngenta,pkt,230,280,300,55,11,0,1209
+Organic Tomato Seeds (Heirloom),SF-009,8902900000009,Organic Seeds,Local,pkt,150,190,210,50,10,0,1209
+Organic Spinach Seeds,SF-010,8902900000010,Organic Seeds,Local,pkt,90,120,135,60,12,0,1209
+Organic Methi (Fenugreek) Seeds,SF-011,8902900000011,Organic Seeds,Local,pkt,70,95,105,70,14,0,1209
+Organic Coriander Seeds,SF-012,8902900000012,Organic Seeds,Local,pkt,60,82,92,80,16,0,0909
+Organic Pumpkin Seeds (Sowing),SF-013,8902900000013,Organic Seeds,Local,pkt,110,145,160,45,9,0,1209
+Organic Carrot Seeds,SF-014,8902900000014,Organic Seeds,Local,pkt,95,125,140,50,10,0,1209
+Organic Radish Seeds,SF-015,8902900000015,Organic Seeds,Local,pkt,70,95,105,55,11,0,1209
+Urea 45kg Bag,SF-016,8902900000016,Chemical Fertilizers,IFFCO,bag,266,290,310,150,30,5,3102
+DAP 50kg Bag,SF-017,8902900000017,Chemical Fertilizers,IFFCO,bag,1350,1470,1550,120,25,5,3105
+NPK 12:32:16 50kg Bag,SF-018,8902900000018,Chemical Fertilizers,Coromandel,bag,1400,1530,1600,90,18,5,3105
+MOP (Potash) 50kg Bag,SF-019,8902900000019,Chemical Fertilizers,IPL,bag,1700,1850,1950,80,16,5,3104
+Calcium Nitrate 25kg,SF-020,8902900000020,Chemical Fertilizers,Coromandel,bag,1200,1320,1390,50,10,5,3102
+Sulphur 90% WDG 1kg,SF-021,8902900000021,Chemical Fertilizers,Coromandel,pcs,180,220,240,70,14,5,2503
+Boron Fertilizer 1kg,SF-022,8902900000022,Chemical Fertilizers,Local,pcs,220,270,290,60,12,5,3105
+Micronutrient Mixture 5kg,SF-023,8902900000023,Chemical Fertilizers,Coromandel,bag,650,750,800,45,9,5,3105
+Vermicompost 50kg,SF-024,8902900000024,Organic Fertilizers,Local,bag,350,420,460,100,20,5,3101
+Cow Dung Manure 50kg,SF-025,8902900000025,Organic Fertilizers,Local,bag,200,260,290,120,25,5,3101
+Neem Cake 50kg,SF-026,8902900000026,Organic Fertilizers,Local,bag,650,780,830,60,12,5,2306
+Bone Meal 25kg,SF-027,8902900000027,Organic Fertilizers,Local,bag,550,660,710,45,9,5,0506
+Poultry Manure 50kg,SF-028,8902900000028,Organic Fertilizers,Local,bag,280,350,380,70,14,5,3101
+Compost (Organic) 25kg,SF-029,8902900000029,Organic Fertilizers,Local,bag,320,390,420,80,16,5,3101
+Seaweed Extract Fertilizer 1L,SF-030,8902900000030,Organic Fertilizers,Local,pcs,350,420,450,50,10,5,3101
+Biofertilizer (Rhizobium) 1kg,SF-031,8902900000031,Organic Fertilizers,Local,pcs,180,230,250,60,12,5,3101
+Chlorpyrifos 20% EC 1L,SF-032,8902900000032,Pesticides,Tata Rallis,pcs,420,490,520,70,15,18,3808
+Mancozeb 75% WP 1kg,SF-033,8902900000033,Pesticides,UPL,pcs,480,560,600,60,12,18,3808
+Imidacloprid 17.8% SL 500ml,SF-034,8902900000034,Pesticides,Bayer,pcs,650,750,800,55,12,18,3808
+Glyphosate 41% SL 1L,SF-035,8902900000035,Pesticides,Excel Crop,pcs,380,440,470,65,15,18,3808
+Carbendazim 50% WP 500g,SF-036,8902900000036,Pesticides,Tata Rallis,pcs,310,360,390,55,12,18,3808
+Neem Oil 1L,SF-037,8902900000037,Pesticides,Local,pcs,220,270,300,80,18,18,3808
+Sticky Traps (pack of 10),SF-038,8902900000038,Pesticides,Local,pkt,180,230,250,50,10,18,3808
+Pheromone Traps (pack of 5),SF-039,8902900000039,Pesticides,Local,pkt,220,280,310,40,8,18,3808
+Seaweed Bio-Stimulant 1L,SF-040,8902900000040,Bio-Stimulants,Local,pcs,350,420,450,50,10,18,3101
+Humic Acid 1L,SF-041,8902900000041,Bio-Stimulants,Local,pcs,280,340,370,55,11,18,3824
+Amino Acid Based Growth Promoter 1L,SF-042,8902900000042,Bio-Stimulants,Local,pcs,320,390,420,45,9,18,3824
+Root Growth Hormone 100ml,SF-043,8902900000043,Bio-Stimulants,Local,pcs,180,230,250,60,12,18,3824
+Micronutrient Bio-Stimulant 500ml,SF-044,8902900000044,Bio-Stimulants,Local,pcs,250,310,340,50,10,18,3824
+PGPR Bio-Stimulant 1L,SF-045,8902900000045,Bio-Stimulants,Local,pcs,300,370,400,40,8,18,3824
+Fulvic Acid 1L,SF-046,8902900000046,Bio-Stimulants,Local,pcs,290,355,385,35,7,18,3824
+Seed Treatment Chemical 100g,SF-047,8902900000047,Other,Local,pcs,120,155,170,60,12,18,3808
+Soil pH Testing Kit,SF-048,8902900000048,Other,Local,pcs,650,780,830,20,4,18,9027
+Seed Storage Bags (bundle of 20),SF-049,8902900000049,Other,Local,bundle,250,310,340,40,8,5,6305
+Agricultural Lime 25kg,SF-050,8902900000050,Other,Local,bag,280,340,370,50,10,5,2521

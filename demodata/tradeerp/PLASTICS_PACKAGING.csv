@@ -1,0 +1,51 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+Plastic Storage Container 5L,PP-001,8902800000001,Plastic Containers,Cello,pcs,120,150,165,100,20,18,3924
+Plastic Storage Container 10L,PP-002,8902800000002,Plastic Containers,Cello,pcs,180,230,250,80,16,18,3924
+Airtight Food Container Set (3 pcs),PP-003,8902800000003,Plastic Containers,Milton,set,250,320,350,60,12,18,3924
+Plastic Bucket 20L,PP-004,8902800000004,Plastic Containers,Cello,pcs,220,280,310,70,14,18,3924
+Plastic Mug,PP-005,8902800000005,Plastic Containers,Cello,pcs,35,50,58,150,30,18,3924
+Plastic Crate (Industrial),PP-006,8902800000006,Plastic Containers,Nilkamal,pcs,380,460,490,40,8,18,3923
+Plastic Dustbin 20L,PP-007,8902800000007,Plastic Containers,Nilkamal,pcs,250,320,350,50,10,18,3924
+Plastic Drum 50L,PP-008,8902800000008,Plastic Containers,Supreme,pcs,650,780,830,30,6,18,3923
+LDPE Bags (per kg - mixed size),PP-009,8902800000009,Packaging Bags & Pouches,Local,kg,180,220,240,100,20,18,3923
+HDPE Bags (per kg),PP-010,8902800000010,Packaging Bags & Pouches,Local,kg,190,230,250,90,18,18,3923
+Non-Woven Bags (bundle of 50),PP-011,8902800000011,Packaging Bags & Pouches,Local,bundle,320,390,420,60,12,12,6305
+Zip Lock Pouches (pack of 100),PP-012,8902800000012,Packaging Bags & Pouches,Local,pkt,180,230,250,80,16,18,3923
+Vacuum Packaging Pouches (100 pcs),PP-013,8902800000013,Packaging Bags & Pouches,Local,pkt,350,430,460,40,8,18,3923
+Courier Bags (Tamper Proof - 100 pcs),PP-014,8902800000014,Packaging Bags & Pouches,Local,pkt,420,510,550,50,10,18,3923
+Garbage Bags (Roll of 30),PP-015,8902800000015,Packaging Bags & Pouches,Local,roll,80,105,115,120,25,18,3923
+Jute Shopping Bags (bundle of 20),PP-016,8902800000016,Packaging Bags & Pouches,Local,bundle,280,350,380,45,9,5,6305
+PET Bottles 500ml (pack of 50),PP-017,8902800000017,Bottles & Jars,Local,pkt,350,430,460,60,12,18,3923
+PET Bottles 1L (pack of 50),PP-018,8902800000018,Bottles & Jars,Local,pkt,450,550,590,50,10,18,3923
+Glass Jars 500ml (pack of 12),PP-019,8902800000019,Bottles & Jars,Local,pkt,420,520,560,40,8,18,7010
+Plastic Jars with Lid 1kg (pack of 10),PP-020,8902800000020,Bottles & Jars,Local,pkt,280,350,380,50,10,18,3923
+Spray Bottles 500ml (pack of 10),PP-021,8902800000021,Bottles & Jars,Local,pkt,220,280,310,45,9,18,3923
+Oil Storage Bottle 1L,PP-022,8902800000022,Bottles & Jars,Cello,pcs,45,60,68,80,16,18,3923
+Pump Dispenser Bottle 250ml,PP-023,8902800000023,Bottles & Jars,Local,pcs,65,85,95,70,15,18,3923
+Pickle Jar 1kg,PP-024,8902800000024,Bottles & Jars,Local,pcs,55,72,80,60,12,18,7010
+BOPP Tape 2 inch (per roll),PP-025,8902800000025,Tapes & Wrapping,Local,roll,35,48,54,200,40,18,3919
+Masking Tape 1 inch (per roll),PP-026,8902800000026,Tapes & Wrapping,3M,roll,45,60,68,150,30,18,3919
+Stretch Film Roll (Packaging),PP-027,8902800000027,Tapes & Wrapping,Local,roll,320,390,420,50,10,18,3920
+Bubble Wrap Roll (per meter),PP-028,8902800000028,Tapes & Wrapping,Local,m,20,28,32,300,60,18,3920
+Shrink Wrap Film Roll,PP-029,8902800000029,Tapes & Wrapping,Local,roll,650,790,840,30,6,18,3920
+Duct Tape (per roll),PP-030,8902800000030,Tapes & Wrapping,Local,roll,80,105,115,80,16,18,3919
+Cling Film Roll (Food Grade),PP-031,8902800000031,Tapes & Wrapping,Local,roll,120,155,170,70,15,18,3920
+Butter Paper Roll,PP-032,8902800000032,Tapes & Wrapping,Local,roll,90,115,125,60,12,18,4811
+Disposable Plates (pack of 50),PP-033,8902800000033,Disposable Items,Local,pkt,120,155,170,100,20,12,3924
+Disposable Glasses (pack of 50),PP-034,8902800000034,Disposable Items,Local,pkt,80,105,115,120,25,12,3924
+Disposable Spoons (pack of 100),PP-035,8902800000035,Disposable Items,Local,pkt,60,80,90,100,20,12,3924
+Paper Cups 150ml (pack of 50),PP-036,8902800000036,Disposable Items,Local,pkt,70,92,100,90,18,12,4823
+Aluminium Foil Container (pack of 25),PP-037,8902800000037,Disposable Items,Local,pkt,180,230,250,60,12,12,7612
+Disposable Gloves (pack of 100),PP-038,8902800000038,Disposable Items,Local,pkt,220,280,310,70,15,12,4015
+Straws (pack of 100),PP-039,8902800000039,Disposable Items,Local,pkt,40,55,62,100,20,12,3917
+Food Delivery Boxes (pack of 50),PP-040,8902800000040,Disposable Items,Local,pkt,350,430,460,50,10,12,4819
+LDPE Granules (per kg),PP-041,8902800000041,Raw Plastic Granules,Reliance,kg,105,120,130,500,100,18,3901
+HDPE Granules (per kg),PP-042,8902800000042,Raw Plastic Granules,Reliance,kg,110,125,135,500,100,18,3901
+PP Granules (per kg),PP-043,8902800000043,Raw Plastic Granules,Reliance,kg,115,130,140,450,90,18,3902
+PVC Granules (per kg),PP-044,8902800000044,Raw Plastic Granules,Finolex,kg,95,110,120,400,80,18,3904
+Recycled Plastic Granules (per kg),PP-045,8902800000045,Raw Plastic Granules,Local,kg,70,85,92,350,70,18,3915
+Masterbatch Colour Granules (per kg),PP-046,8902800000046,Raw Plastic Granules,Local,kg,220,260,280,100,20,18,3206
+Packaging Machine Tape Dispenser,PP-047,8902800000047,Other,Local,pcs,850,1020,1080,15,3,18,8422
+Weighing Scale (Packaging),PP-048,8902800000048,Other,Local,pcs,1200,1450,1550,10,2,18,8423
+Heat Sealing Machine (Hand),PP-049,8902800000049,Other,Local,pcs,1800,2150,2300,12,3,18,8422
+Label Printer (Barcode),PP-050,8902800000050,Other,TSC,pcs,8500,9800,10300,5,1,18,8443

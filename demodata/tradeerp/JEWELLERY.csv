@@ -1,0 +1,51 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+Gold Ring 22K (4g),JW-001,8902500000001,Gold Ornaments,Local Artisan,pcs,26000,28500,29500,15,3,3,7113
+Gold Chain 22K (10g),JW-002,8902500000002,Gold Ornaments,Local Artisan,pcs,65000,71000,73500,8,2,3,7113
+Gold Earrings 22K (3g),JW-003,8902500000003,Gold Ornaments,Local Artisan,pair,19500,21500,22500,20,4,3,7113
+Gold Bangle 22K (12g),JW-004,8902500000004,Gold Ornaments,Local Artisan,pcs,78000,85000,88000,6,2,3,7113
+Gold Mangalsutra 22K (8g),JW-005,8902500000005,Gold Ornaments,Local Artisan,pcs,52000,57000,59000,10,2,3,7113
+Gold Nose Pin 22K (0.5g),JW-006,8902500000006,Gold Ornaments,Local Artisan,pcs,3300,3800,4000,25,5,3,7113
+Gold Pendant 22K (2.5g),JW-007,8902500000007,Gold Ornaments,Local Artisan,pcs,16500,18200,19000,18,4,3,7113
+Gold Anklet 22K (15g),JW-008,8902500000008,Gold Ornaments,Local Artisan,pair,97000,106000,110000,4,1,3,7113
+Silver Payal (Anklet Pair) 60g,JW-009,8902500000009,Silver Ornaments,Local Artisan,pair,4800,5400,5700,30,6,3,7113
+Silver Chain 40g,JW-010,8902500000010,Silver Ornaments,Local Artisan,pcs,3200,3650,3850,25,5,3,7113
+Silver Ring 10g,JW-011,8902500000011,Silver Ornaments,Local Artisan,pcs,800,920,980,50,10,3,7113
+Silver Bangles Pair 50g,JW-012,8902500000012,Silver Ornaments,Local Artisan,pair,4000,4550,4800,20,4,3,7113
+Silver Toe Ring Pair 15g,JW-013,8902500000013,Silver Ornaments,Local Artisan,pair,1200,1380,1450,40,8,3,7113
+Silver Coin 10g (999 Purity),JW-014,8902500000014,Silver Ornaments,BIS Hallmark,pcs,950,1050,1100,60,12,3,7113
+Silver Pooja Thali Set,JW-015,8902500000015,Silver Ornaments,Local Artisan,set,8500,9500,9900,10,2,3,7114
+Silver Kids Bracelet 20g,JW-016,8902500000016,Silver Ornaments,Local Artisan,pcs,1600,1850,1950,25,5,3,7113
+Diamond Ring (0.25ct - 18K Gold),JW-017,8902500000017,Diamond Jewellery,Local Artisan,pcs,32000,36000,38000,8,2,3,7113
+Diamond Earrings (Solitaire Look),JW-018,8902500000018,Diamond Jewellery,Local Artisan,pair,45000,50000,52500,5,1,3,7113
+Diamond Pendant (18K Gold),JW-019,8902500000019,Diamond Jewellery,Local Artisan,pcs,28000,31500,33000,6,2,3,7113
+Diamond Nose Pin,JW-020,8902500000020,Diamond Jewellery,Local Artisan,pcs,12000,13500,14200,10,2,3,7113
+Diamond Bracelet (18K Gold),JW-021,8902500000021,Diamond Jewellery,Local Artisan,pcs,55000,61500,64000,3,1,3,7113
+Fashion Jewellery Necklace Set,JW-022,8902500000022,Artificial / Fashion Jewellery,Local,set,350,450,500,100,20,18,7117
+Oxidised Jhumka Earrings,JW-023,8902500000023,Artificial / Fashion Jewellery,Local,pair,180,240,270,120,25,18,7117
+Kundan Bridal Set,JW-024,8902500000024,Artificial / Fashion Jewellery,Local,set,650,850,920,40,8,18,7117
+Pearl Necklace (Imitation),JW-025,8902500000025,Artificial / Fashion Jewellery,Local,pcs,280,360,400,60,12,18,7117
+Antique Temple Jewellery Set,JW-026,8902500000026,Artificial / Fashion Jewellery,Local,set,750,950,1020,35,7,18,7117
+Fashion Bangles Set (6 pcs),JW-027,8902500000027,Artificial / Fashion Jewellery,Local,set,150,200,225,150,30,18,7117
+American Diamond Ring,JW-028,8902500000028,Artificial / Fashion Jewellery,Local,pcs,220,290,320,90,18,18,7117
+Beaded Mala (Fashion),JW-029,8902500000029,Artificial / Fashion Jewellery,Local,pcs,120,160,180,100,20,18,7117
+Ruby Gemstone (Natural 2ct),JW-030,8902500000030,Gemstones,Certified,pcs,4500,5200,5500,15,3,3,7103
+Emerald Gemstone (Natural 1.5ct),JW-031,8902500000031,Gemstones,Certified,pcs,5200,6000,6300,12,3,3,7103
+Blue Sapphire (Natural 2ct),JW-032,8902500000032,Gemstones,Certified,pcs,6800,7800,8200,10,2,3,7103
+Pearl (Natural - per piece),JW-033,8902500000033,Gemstones,Certified,pcs,650,780,830,40,8,3,7101
+Coral Gemstone (Natural),JW-034,8902500000034,Gemstones,Certified,pcs,1200,1400,1480,20,4,3,7103
+Men's Analog Watch,JW-035,8902500000035,Watches,Titan,pcs,1800,2200,2400,40,8,18,9102
+Women's Analog Watch,JW-036,8902500000036,Watches,Titan,pcs,1600,2000,2200,40,8,18,9102
+Smart Watch (Fitness),JW-037,8902500000037,Watches,Noise,pcs,1800,2300,2500,35,7,18,9102
+Couple Watch Set,JW-038,8902500000038,Watches,Fastrack,set,2200,2700,2900,20,4,18,9102
+Luxury Watch (Branded),JW-039,8902500000039,Watches,Fossil,pcs,6500,7500,7900,8,2,18,9102
+Kids Watch,JW-040,8902500000040,Watches,Titan,pcs,450,580,620,50,10,18,9102
+Wall Clock,JW-041,8902500000041,Watches,Ajanta,pcs,350,450,490,30,6,18,9105
+Watch Battery (Button Cell),JW-042,8902500000042,Watches,Local,pcs,30,50,60,200,40,18,8506
+Gold Coin 24K 10g (Hallmarked),JW-043,8902500000043,Coins & Bars,BIS Hallmark,pcs,66000,69500,71000,10,2,3,7108
+Gold Coin 24K 5g (Hallmarked),JW-044,8902500000044,Coins & Bars,BIS Hallmark,pcs,33000,34800,35500,15,3,3,7108
+Gold Bar 24K 20g,JW-045,8902500000045,Coins & Bars,BIS Hallmark,pcs,132000,139000,142000,4,1,3,7108
+Silver Bar 100g (999 Purity),JW-046,8902500000046,Coins & Bars,BIS Hallmark,pcs,9500,10000,10300,12,2,3,7106
+Silver Coin 20g (Pooja Special),JW-047,8902500000047,Coins & Bars,BIS Hallmark,pcs,1900,2100,2200,25,5,3,7113
+Jewellery Polishing Cloth,JW-048,8902500000048,Other,Local,pcs,60,90,100,100,20,18,6307
+Jewellery Box (Velvet),JW-049,8902500000049,Other,Local,pcs,180,250,280,60,12,18,4202
+Jewellery Cleaning Solution,JW-050,8902500000050,Other,Local,pcs,150,200,225,50,10,18,3402

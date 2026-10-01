@@ -1,0 +1,51 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+White Bread (400g),BK-001,8902600000001,Bread & Buns,In-house,pcs,28,35,40,60,15,0,1905
+Brown Bread (400g),BK-002,8902600000002,Bread & Buns,In-house,pcs,32,40,45,50,12,0,1905
+Multigrain Bread (400g),BK-003,8902600000003,Bread & Buns,In-house,pcs,38,48,54,40,10,0,1905
+Burger Buns (pack of 4),BK-004,8902600000004,Bread & Buns,In-house,pkt,30,40,45,45,10,0,1905
+Pav (pack of 6),BK-005,8902600000005,Bread & Buns,In-house,pkt,22,30,35,70,15,0,1905
+Garlic Bread,BK-006,8902600000006,Bread & Buns,In-house,pcs,45,58,65,30,8,0,1905
+Dinner Rolls (pack of 6),BK-007,8902600000007,Bread & Buns,In-house,pkt,35,45,50,35,8,0,1905
+Sandwich Bread (large),BK-008,8902600000008,Bread & Buns,In-house,pcs,40,50,56,30,8,0,1905
+Bun Rusk (pack),BK-009,8902600000009,Bread & Buns,In-house,pkt,45,58,65,40,10,0,1905
+Chocolate Truffle Cake (500g),BK-010,8902600000010,Cakes & Pastries,In-house,pcs,350,450,490,20,5,5,1905
+Black Forest Cake (500g),BK-011,8902600000011,Cakes & Pastries,In-house,pcs,320,420,460,20,5,5,1905
+Red Velvet Cake (500g),BK-012,8902600000012,Cakes & Pastries,In-house,pcs,380,480,520,15,4,5,1905
+Pineapple Pastry,BK-013,8902600000013,Cakes & Pastries,In-house,pcs,45,60,68,50,12,5,1905
+Chocolate Pastry,BK-014,8902600000014,Cakes & Pastries,In-house,pcs,48,65,72,50,12,5,1905
+Cupcake (Vanilla),BK-015,8902600000015,Cakes & Pastries,In-house,pcs,35,48,54,60,15,5,1905
+Cheesecake Slice,BK-016,8902600000016,Cakes & Pastries,In-house,pcs,80,105,115,30,8,5,1905
+Custom Birthday Cake (1kg),BK-017,8902600000017,Cakes & Pastries,In-house,pcs,550,700,760,10,2,5,1905
+Donuts (Glazed),BK-018,8902600000018,Cakes & Pastries,In-house,pcs,30,42,48,55,12,5,1905
+Butter Cookies (250g),BK-019,8902600000019,Cookies & Biscuits,In-house,pkt,80,105,115,70,15,18,1905
+Chocolate Chip Cookies (250g),BK-020,8902600000020,Cookies & Biscuits,In-house,pkt,90,115,125,65,15,18,1905
+Oatmeal Cookies (250g),BK-021,8902600000021,Cookies & Biscuits,In-house,pkt,85,110,120,50,12,18,1905
+Nankhatai (250g),BK-022,8902600000022,Cookies & Biscuits,In-house,pkt,60,80,90,60,15,18,1905
+Cream Biscuits (200g),BK-023,8902600000023,Cookies & Biscuits,Britannia,pkt,35,45,50,100,20,18,1905
+Digestive Biscuits (250g),BK-024,8902600000024,Cookies & Biscuits,Britannia,pkt,45,58,65,80,18,18,1905
+Jeera Biscuits (200g),BK-025,8902600000025,Cookies & Biscuits,In-house,pkt,40,52,58,70,15,18,1905
+Khari Biscuits (200g),BK-026,8902600000026,Cookies & Biscuits,In-house,pkt,35,48,54,65,15,18,1905
+Cashew Cookies (250g),BK-027,8902600000027,Cookies & Biscuits,In-house,pkt,120,155,170,40,10,18,1905
+Veg Puffs,BK-028,8902600000028,Savory Snacks,In-house,pcs,25,35,40,80,18,12,1905
+Chicken Puffs,BK-029,8902600000029,Savory Snacks,In-house,pcs,35,48,54,60,15,12,1905
+Samosa,BK-030,8902600000030,Savory Snacks,In-house,pcs,15,22,25,100,20,12,1905
+Pizza Bread,BK-031,8902600000031,Savory Snacks,In-house,pcs,55,70,78,40,10,12,1905
+Cheese Rolls,BK-032,8902600000032,Savory Snacks,In-house,pcs,40,52,58,50,12,12,1905
+Bread Pakora Mix (frozen pack),BK-033,8902600000033,Savory Snacks,In-house,pkt,60,78,85,30,8,12,1905
+Mini Quiche (Veg),BK-034,8902600000034,Savory Snacks,In-house,pcs,45,60,68,35,8,12,1905
+Pattice (Aloo),BK-035,8902600000035,Savory Snacks,In-house,pcs,20,28,32,70,15,12,1905
+Custom Wedding Cake (per kg),BK-036,8902600000036,Custom Orders,In-house,kg,600,780,850,5,2,5,1905
+Custom Anniversary Cake (per kg),BK-037,8902600000037,Custom Orders,In-house,kg,580,750,820,5,2,5,1905
+Custom Theme Cake (Kids),BK-038,8902600000038,Custom Orders,In-house,pcs,650,850,920,4,1,5,1905
+Bulk Party Snacks Platter,BK-039,8902600000039,Custom Orders,In-house,platter,850,1100,1200,3,1,12,1905
+Custom Cupcake Box (12 pcs),BK-040,8902600000040,Custom Orders,In-house,box,420,550,600,8,2,5,1905
+Corporate Gift Hamper (Bakery),BK-041,8902600000041,Custom Orders,In-house,box,650,850,920,6,2,12,1905
+Bread Knife,BK-042,8902600000042,Other,Victorinox,pcs,350,430,460,15,3,18,8211
+Cake Box (1kg size),BK-043,8902600000043,Other,Local,pcs,15,22,25,200,40,12,4819
+Candles (Birthday Pack),BK-044,8902600000044,Other,Local,pkt,30,42,48,100,20,12,3406
+Baking Paper Roll,BK-045,8902600000045,Other,Local,roll,80,105,115,40,8,12,4811
+Cake Stand,BK-046,8902600000046,Other,Local,pcs,250,320,350,20,4,18,6911
+Piping Bags (set of 12),BK-047,8902600000047,Other,Wilton,set,180,230,250,25,5,18,3917
+Food Colour (Set of 6),BK-048,8902600000048,Other,Local,set,120,160,175,40,8,18,3204
+Cake Topper (Custom),BK-049,8902600000049,Other,Local,pcs,60,90,100,50,10,12,4819
+Gift Wrap Paper (Bakery),BK-050,8902600000050,Other,Local,roll,40,58,65,60,12,12,4811

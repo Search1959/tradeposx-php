@@ -1,0 +1,51 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+Sheesham Wood Dining Table (6-seater),FW-001,8902700000001,Wooden Furniture,Local,pcs,18000,21500,22500,5,1,18,9403
+Teak Wood Bed (Queen Size),FW-002,8902700000002,Wooden Furniture,Local,pcs,22000,26000,27500,4,1,18,9403
+Wooden Study Table,FW-003,8902700000003,Wooden Furniture,Local,pcs,4500,5400,5700,15,3,18,9403
+Wooden Bookshelf (5-tier),FW-004,8902700000004,Wooden Furniture,Local,pcs,6500,7800,8200,10,2,18,9403
+Wooden Dressing Table with Mirror,FW-005,8902700000005,Wooden Furniture,Local,pcs,9500,11200,11800,8,2,18,9403
+Wooden Rocking Chair,FW-006,8902700000006,Wooden Furniture,Local,pcs,5500,6600,7000,10,2,18,9401
+Wooden TV Unit,FW-007,8902700000007,Wooden Furniture,Local,pcs,8500,10200,10700,8,2,18,9403
+Wooden Pooja Mandir,FW-008,8902700000008,Wooden Furniture,Local,pcs,7500,9000,9500,6,2,18,9403
+Steel Almirah (2-door),FW-009,8902700000009,Steel Furniture,Godrej,pcs,8500,10000,10500,10,2,18,9403
+Steel Office Chair,FW-010,8902700000010,Steel Furniture,Godrej,pcs,2800,3400,3600,20,4,18,9401
+Steel Bed Frame (Queen),FW-011,8902700000011,Steel Furniture,Nilkamal,pcs,6500,7800,8200,8,2,18,9403
+Steel Filing Cabinet (4-drawer),FW-012,8902700000012,Steel Furniture,Godrej,pcs,5500,6600,7000,10,2,18,9403
+Steel Shoe Rack,FW-013,8902700000013,Steel Furniture,Local,pcs,1800,2200,2350,15,3,18,9403
+Steel Locker (Personal),FW-014,8902700000014,Steel Furniture,Godrej,pcs,3200,3850,4050,12,3,18,9403
+Steel Bunk Bed,FW-015,8902700000015,Steel Furniture,Local,pcs,9500,11200,11800,5,1,18,9403
+Plywood 19mm (8x4 ft),FW-016,8902700000016,Plywood & Boards,Century Ply,sheet,2800,3200,3400,40,8,18,4412
+Plywood 12mm (8x4 ft),FW-017,8902700000017,Plywood & Boards,Century Ply,sheet,2000,2300,2450,45,9,18,4412
+MDF Board 18mm (8x4 ft),FW-018,8902700000018,Plywood & Boards,Greenply,sheet,1800,2100,2250,35,8,18,4411
+Particle Board 18mm (8x4 ft),FW-019,8902700000019,Plywood & Boards,Greenply,sheet,1200,1450,1550,40,8,18,4410
+Marine Plywood 12mm (8x4 ft),FW-020,8902700000020,Plywood & Boards,Century Ply,sheet,2600,3000,3200,25,5,18,4412
+Block Board 19mm (8x4 ft),FW-021,8902700000021,Plywood & Boards,Greenply,sheet,2400,2750,2900,30,6,18,4412
+HDHMR Board 18mm (8x4 ft),FW-022,8902700000022,Plywood & Boards,Greenlam,sheet,2900,3350,3550,20,4,18,4411
+WPC Board 12mm (8x4 ft),FW-023,8902700000023,Plywood & Boards,Local,sheet,2200,2550,2700,22,5,18,3920
+Laminate Sheet (Glossy - per sheet),FW-024,8902700000024,Laminates & Veneers,Greenlam,sheet,1400,1650,1750,40,8,18,4823
+Laminate Sheet (Matte - per sheet),FW-025,8902700000025,Laminates & Veneers,Merino,sheet,1500,1750,1850,35,7,18,4823
+Teak Veneer Sheet,FW-026,8902700000026,Laminates & Veneers,Local,sheet,1800,2100,2250,20,4,18,4408
+Acrylic Sheet (High Gloss),FW-027,8902700000027,Laminates & Veneers,Merino,sheet,2200,2550,2700,18,4,18,3920
+PVC Laminate Roll,FW-028,8902700000028,Laminates & Veneers,Local,roll,850,1000,1060,25,5,18,3920
+Edge Banding Tape (per roll),FW-029,8902700000029,Laminates & Veneers,Local,roll,320,390,420,50,10,18,3919
+Decorative Film Roll (Self-Adhesive),FW-030,8902700000030,Laminates & Veneers,Local,roll,450,540,580,40,8,18,3919
+Cabinet Hinges (pair),FW-031,8902700000031,Hardware & Fittings,Hettich,pair,80,105,115,150,30,18,8302
+Drawer Channel (Telescopic - pair),FW-032,8902700000032,Hardware & Fittings,Hettich,pair,250,310,340,80,16,18,8302
+Door Handle (Stainless Steel),FW-033,8902700000033,Hardware & Fittings,Dorset,pcs,180,230,250,100,20,18,8302
+Soft Close Hinges (pair),FW-034,8902700000034,Hardware & Fittings,Hettich,pair,150,190,210,100,20,18,8302
+Wardrobe Lift-Up Fitting,FW-035,8902700000035,Hardware & Fittings,Hettich,set,650,790,840,25,5,18,8302
+Cabinet Lock,FW-036,8902700000036,Hardware & Fittings,Godrej,pcs,220,270,290,60,12,18,8301
+Screws (Wood - box of 100),FW-037,8902700000037,Hardware & Fittings,Local,box,120,150,165,80,16,18,7318
+Furniture Legs (Adjustable - set of 4),FW-038,8902700000038,Hardware & Fittings,Local,set,280,350,380,50,10,18,9403
+Modular Kitchen Cabinet (per sq.ft),FW-039,8902700000039,Modular Furniture,Local,sqft,1200,1450,1550,30,6,18,9403
+Modular Wardrobe (3-door),FW-040,8902700000040,Modular Furniture,Sleek,pcs,32000,37500,39500,4,1,18,9403
+Modular TV Unit,FW-041,8902700000041,Modular Furniture,Sleek,pcs,15000,17800,18700,6,2,18,9403
+Modular Office Workstation,FW-042,8902700000042,Modular Furniture,Godrej,pcs,18000,21200,22300,5,1,18,9403
+Modular Shoe Cabinet,FW-043,8902700000043,Modular Furniture,Local,pcs,6500,7800,8200,8,2,18,9403
+Modular Bookshelf Unit,FW-044,8902700000044,Modular Furniture,Local,pcs,8500,10100,10600,6,2,18,9403
+Modular Bathroom Vanity,FW-045,8902700000045,Modular Furniture,Local,pcs,9500,11200,11800,5,1,18,9403
+Modular Pantry Unit,FW-046,8902700000046,Modular Furniture,Local,pcs,22000,25800,27000,3,1,18,9403
+Furniture Polish (500ml),FW-047,8902700000047,Other,Local,pcs,180,230,250,50,10,18,3405
+Wood Adhesive (Fevicol Marine) 1kg,FW-048,8902700000048,Other,Pidilite,tin,240,290,310,60,12,18,3506
+Measuring Tape (5m),FW-049,8902700000049,Other,Freemans,pcs,90,120,135,70,15,18,9017
+Furniture Delivery/Assembly Charge,FW-050,8902700000050,Other,Service,pcs,0,500,500,999,0,18,9987

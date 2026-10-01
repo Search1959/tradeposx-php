@@ -1,0 +1,51 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+Hybrid Paddy Seeds 1kg,AG-001,8902200000001,Seeds,Mahyco,pkt,180,220,240,120,25,0,1006
+Hybrid Maize Seeds 2kg,AG-002,8902200000002,Seeds,Kaveri,pkt,320,380,410,90,20,0,1005
+Hybrid Cotton Seeds 475g,AG-003,8902200000003,Seeds,Mahyco,pkt,780,880,940,60,12,0,1207
+Wheat Seeds HD-2967 40kg,AG-004,8902200000004,Seeds,NSC,bag,850,950,1000,40,8,0,1001
+Mustard Seeds Pusa Bold 5kg,AG-005,8902200000005,Seeds,NSC,bag,450,520,560,50,10,0,1205
+Soybean Seeds JS-335 30kg,AG-006,8902200000006,Seeds,NSC,bag,1600,1800,1900,30,6,0,1201
+Vegetable Seed Mini Kit,AG-007,8902200000007,Seeds,Mahyco,pkt,90,120,135,150,30,0,1209
+Urea 45kg Bag,AG-008,8902200000008,Fertilizers,IFFCO,bag,266,290,310,200,40,5,3102
+DAP 50kg Bag,AG-009,8902200000009,Fertilizers,IFFCO,bag,1350,1470,1550,150,30,5,3105
+MOP (Potash) 50kg Bag,AG-010,8902200000010,Fertilizers,IPL,bag,1700,1850,1950,100,20,5,3104
+NPK 19:19:19 50kg Bag,AG-011,8902200000011,Fertilizers,Coromandel,bag,1450,1580,1650,110,20,5,3105
+Single Super Phosphate 50kg,AG-012,8902200000012,Fertilizers,GSFC,bag,500,560,600,90,18,5,3103
+Zinc Sulphate 25kg,AG-013,8902200000013,Fertilizers,Coromandel,bag,900,1000,1060,60,12,5,2833
+Vermicompost 50kg,AG-014,8902200000014,Fertilizers,Local,bag,350,420,460,120,25,5,3101
+Chlorpyrifos 20% EC 1L,AG-015,8902200000015,Pesticides & Insecticides,Tata Rallis,pcs,420,490,520,70,15,18,3808
+Imidacloprid 17.8% SL 500ml,AG-016,8902200000016,Pesticides & Insecticides,Bayer,pcs,650,750,800,55,12,18,3808
+Mancozeb 75% WP 1kg,AG-017,8902200000017,Pesticides & Insecticides,UPL,pcs,480,560,600,60,12,18,3808
+Glyphosate 41% SL 1L,AG-018,8902200000018,Pesticides & Insecticides,Excel Crop,pcs,380,440,470,65,15,18,3808
+Neem Oil 1L,AG-019,8902200000019,Pesticides & Insecticides,Local,pcs,220,270,300,80,18,18,3808
+Carbendazim 50% WP 500g,AG-020,8902200000020,Pesticides & Insecticides,Tata Rallis,pcs,310,360,390,55,12,18,3808
+Bio-Pesticide (Neem Based) 1L,AG-021,8902200000021,Pesticides & Insecticides,Local,pcs,250,300,330,50,10,18,3808
+Khurpi (Hand Hoe),AG-022,8902200000022,Farm Tools & Equipment,Falcon,pcs,80,110,125,150,30,18,8201
+Sickle,AG-023,8902200000023,Farm Tools & Equipment,Falcon,pcs,90,120,135,140,28,18,8201
+Spade,AG-024,8902200000024,Farm Tools & Equipment,Falcon,pcs,250,310,340,90,18,18,8201
+Power Tiller Blade Set,AG-025,8902200000025,Farm Tools & Equipment,Mahindra,set,1800,2100,2250,25,5,18,8432
+Garden Fork,AG-026,8902200000026,Farm Tools & Equipment,Falcon,pcs,180,230,250,80,16,18,8201
+Pruning Shears,AG-027,8902200000027,Farm Tools & Equipment,Felco,pcs,350,430,460,60,12,18,8201
+Drip Irrigation Pipe 16mm (100m),AG-028,8902200000028,Irrigation Supplies,Jain Irrigation,roll,1800,2100,2250,35,8,18,3917
+Sprinkler Set,AG-029,8902200000029,Irrigation Supplies,Jain Irrigation,set,650,780,840,45,10,18,8424
+Foot Valve 2 inch,AG-030,8902200000030,Irrigation Supplies,Local,pcs,220,280,310,60,12,18,8481
+Submersible Pump 1HP,AG-031,8902200000031,Irrigation Supplies,Kirloskar,pcs,6500,7400,7800,15,3,18,8413
+PVC Pipe 4 inch (6m),AG-032,8902200000032,Irrigation Supplies,Finolex,pcs,850,980,1050,40,8,18,3917
+Irrigation Fittings Kit,AG-033,8902200000033,Irrigation Supplies,Jain Irrigation,set,450,540,580,50,10,18,3917
+Cattle Feed 50kg,AG-034,8902200000034,Animal Feed,Godrej Agrovet,bag,1150,1280,1340,80,16,5,2309
+Poultry Feed (Layer) 50kg,AG-035,8902200000035,Animal Feed,Godrej Agrovet,bag,1250,1380,1450,70,14,5,2309
+Poultry Feed (Broiler) 50kg,AG-036,8902200000036,Animal Feed,Godrej Agrovet,bag,1300,1430,1500,65,13,5,2309
+Mineral Mixture 25kg,AG-037,8902200000037,Animal Feed,Venky's,bag,950,1060,1120,40,8,5,2309
+Calf Starter Feed 25kg,AG-038,8902200000038,Animal Feed,Godrej Agrovet,bag,980,1090,1150,35,7,5,2309
+Fish Feed 25kg,AG-039,8902200000039,Animal Feed,Godrej Agrovet,bag,1050,1170,1230,30,6,5,2309
+Manual Knapsack Sprayer 16L,AG-040,8902200000040,Sprayers & Pumps,Aspee,pcs,950,1120,1200,50,10,18,8424
+Battery Sprayer 16L,AG-041,8902200000041,Sprayers & Pumps,Aspee,pcs,2400,2750,2900,30,6,18,8424
+Power Sprayer (Petrol),AG-042,8902200000042,Sprayers & Pumps,Honda,pcs,8500,9600,10100,10,2,18,8424
+Hand Sprayer 2L,AG-043,8902200000043,Sprayers & Pumps,Local,pcs,180,230,250,70,15,18,8424
+Foot Sprayer,AG-044,8902200000044,Sprayers & Pumps,Aspee,pcs,650,770,820,25,5,18,8424
+HTP Sprayer,AG-045,8902200000045,Sprayers & Pumps,Aspee,pcs,3800,4300,4550,12,3,18,8424
+Mulching Sheet (per roll),AG-046,8902200000046,Other,Local,roll,1200,1400,1500,25,5,18,3920
+Shade Net (per sq.m roll),AG-047,8902200000047,Other,Garware,roll,950,1100,1180,20,4,18,5608
+Jute Bags (bundle of 50),AG-048,8902200000048,Other,Local,bundle,850,980,1030,30,6,5,6305
+Weighing Scale (Farm),AG-049,8902200000049,Other,Local,pcs,1400,1650,1750,15,3,18,8423
+Soil Testing Kit,AG-050,8902200000050,Other,Local,pcs,650,780,830,20,4,18,9027

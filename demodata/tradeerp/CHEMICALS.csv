@@ -1,0 +1,51 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+Caustic Soda Flakes 50kg,CH-001,8902300000001,Industrial Chemicals,GACL,bag,2800,3100,3250,30,6,18,2815
+Soda Ash Light 50kg,CH-002,8902300000002,Industrial Chemicals,Tata Chemicals,bag,1900,2100,2200,35,7,18,2836
+Hydrochloric Acid 30% 35kg Carboy,CH-003,8902300000003,Industrial Chemicals,GACL,carboy,1200,1380,1450,25,5,18,2806
+Sulphuric Acid 98% 35kg Carboy,CH-004,8902300000004,Industrial Chemicals,GACL,carboy,1350,1520,1600,20,4,18,2807
+Calcium Carbide 1kg,CH-005,8902300000005,Industrial Chemicals,Local,tin,110,140,155,80,16,18,2849
+Sodium Hypochlorite 30kg,CH-006,8902300000006,Industrial Chemicals,DCW,carboy,1600,1800,1900,20,4,18,2828
+Activated Carbon 25kg,CH-007,8902300000007,Industrial Chemicals,Local,bag,2200,2450,2600,18,4,18,3802
+Acetone 20L Carboy,CH-008,8902300000008,Acids & Solvents,Deepak Nitrite,carboy,2600,2900,3050,20,4,18,2914
+Toluene 20L Carboy,CH-009,8902300000009,Acids & Solvents,Local,carboy,2400,2700,2850,18,4,18,2902
+Methanol 20L Carboy,CH-010,8902300000010,Acids & Solvents,Local,carboy,1700,1900,2000,22,5,18,2905
+Isopropyl Alcohol (IPA) 20L,CH-011,8902300000011,Acids & Solvents,Local,carboy,2900,3250,3400,15,3,18,2905
+Nitric Acid 20L Carboy,CH-012,8902300000012,Acids & Solvents,GACL,carboy,1500,1700,1800,16,3,18,2808
+Thinner (NC) 20L,CH-013,8902300000013,Acids & Solvents,Asian Paints,carboy,1800,2050,2150,25,5,18,3814
+Dyes & Pigments 1kg Red Oxide,CH-014,8902300000014,Dyes & Pigments,Local,tin,320,380,410,40,8,18,3204
+Titanium Dioxide 25kg,CH-015,8902300000015,Dyes & Pigments,Local,bag,5800,6400,6700,10,2,18,3206
+Phthalocyanine Blue 1kg,CH-016,8902300000016,Dyes & Pigments,Local,tin,850,950,1010,15,3,18,3204
+Reactive Dye Powder 1kg,CH-017,8902300000017,Dyes & Pigments,Local,tin,650,740,790,20,4,18,3204
+Carbon Black 25kg,CH-018,8902300000018,Dyes & Pigments,Local,bag,2800,3100,3250,12,3,18,2803
+Yellow Oxide Pigment 1kg,CH-019,8902300000019,Dyes & Pigments,Local,tin,280,330,360,30,6,18,3206
+Fevicol SH 1kg,CH-020,8902300000020,Adhesives & Resins,Pidilite,tin,220,260,280,80,16,18,3506
+Araldite Epoxy 100g,CH-021,8902300000021,Adhesives & Resins,Huntsman,pcs,150,180,195,60,12,18,3506
+Rubber Based Adhesive 1L,CH-022,8902300000022,Adhesives & Resins,Dunlop,tin,320,380,410,40,8,18,3506
+Polyester Resin 20kg,CH-023,8902300000023,Adhesives & Resins,Local,carboy,3200,3550,3750,15,3,18,3907
+Hot Melt Adhesive Sticks 1kg,CH-024,8902300000024,Adhesives & Resins,Local,pkt,280,330,360,45,9,18,3506
+M-Seal 100g,CH-025,8902300000025,Adhesives & Resins,Pidilite,pcs,90,115,125,70,15,18,3506
+Silicone Sealant 280ml,CH-026,8902300000026,Adhesives & Resins,Dow,pcs,250,300,325,55,12,18,3506
+Phenyl Concentrate 5L,CH-027,8902300000027,Cleaning Chemicals,Local,carboy,350,420,450,60,12,18,3402
+Toilet Cleaner Acid 5L,CH-028,8902300000028,Cleaning Chemicals,Local,carboy,380,450,480,55,11,18,3402
+Floor Cleaner 5L,CH-029,8902300000029,Cleaning Chemicals,Lizol,carboy,420,490,520,50,10,18,3402
+Hand Wash Liquid 5L,CH-030,8902300000030,Cleaning Chemicals,Dettol,carboy,650,750,800,40,8,18,3401
+Degreaser Concentrate 5L,CH-031,8902300000031,Cleaning Chemicals,Local,carboy,550,640,680,35,7,18,3402
+Glass Cleaner 5L,CH-032,8902300000032,Cleaning Chemicals,Colin,carboy,480,560,600,30,6,18,3402
+Bleaching Powder 25kg,CH-033,8902300000033,Cleaning Chemicals,Local,bag,900,1020,1080,25,5,18,2828
+Sodium Chloride (Lab Grade) 500g,CH-034,8902300000034,Lab Chemicals,Merck,tin,220,260,280,30,6,18,2501
+Potassium Permanganate 500g,CH-035,8902300000035,Lab Chemicals,Local,tin,280,330,360,25,5,18,2841
+Litmus Paper Pack,CH-036,8902300000036,Lab Chemicals,Local,pkt,120,150,165,40,8,18,3822
+Lab Glassware Beaker Set,CH-037,8902300000037,Lab Chemicals,Borosil,set,850,980,1040,15,3,18,7017
+pH Testing Strips,CH-038,8902300000038,Lab Chemicals,Local,pkt,150,185,200,35,7,18,3822
+Distilled Water 5L,CH-039,8902300000039,Lab Chemicals,Local,can,120,150,165,60,12,18,2853
+Safety Goggles,CH-040,8902300000040,Safety Equipment,Udyogi,pcs,120,160,175,90,18,18,9004
+Chemical Resistant Gloves (pair),CH-041,8902300000041,Safety Equipment,Udyogi,pair,180,230,250,80,16,18,4015
+Full Face Respirator Mask,CH-042,8902300000042,Safety Equipment,3M,pcs,850,980,1040,30,6,18,9020
+Chemical Apron (PVC),CH-043,8902300000043,Safety Equipment,Udyogi,pcs,280,340,370,50,10,18,6210
+Safety Shoes,CH-044,8902300000044,Safety Equipment,Liberty,pair,950,1150,1220,40,8,18,6403
+Fire Extinguisher 4kg (ABC),CH-045,8902300000045,Safety Equipment,Ceasefire,pcs,1400,1650,1750,20,4,18,8424
+Eye Wash Station Bottle,CH-046,8902300000046,Safety Equipment,Local,pcs,450,540,580,15,3,18,9020
+Chemical Storage Drum 50L,CH-047,8902300000047,Other,Local,pcs,850,1000,1060,25,5,18,3923
+Spill Containment Kit,CH-048,8902300000048,Other,Local,kit,650,780,830,15,3,18,3926
+MSDS Label Pack,CH-049,8902300000049,Other,Local,pkt,90,120,135,40,8,18,4821
+Chemical Transfer Pump (Manual),CH-050,8902300000050,Other,Local,pcs,480,570,610,20,4,18,8413

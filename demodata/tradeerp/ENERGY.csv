@@ -1,0 +1,51 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+Solar Panel 100W Polycrystalline,EN-001,8902400000001,Solar Panels & Equipment,Waaree,pcs,2800,3200,3400,25,5,12,8541
+Solar Panel 335W Mono PERC,EN-002,8902400000002,Solar Panels & Equipment,Adani Solar,pcs,8500,9600,10100,15,3,12,8541
+Solar Charge Controller 20A,EN-003,8902400000003,Solar Panels & Equipment,Luminous,pcs,1400,1650,1750,30,6,12,8504
+Solar Inverter 1kVA (Hybrid),EN-004,8902400000004,Solar Panels & Equipment,Luminous,pcs,9500,10800,11300,12,3,12,8504
+Solar Water Pump (1HP),EN-005,8902400000005,Solar Panels & Equipment,Shakti,pcs,28000,31500,33000,5,2,12,8413
+Solar Street Light (All-in-One),EN-006,8902400000006,Solar Panels & Equipment,Havells,pcs,3200,3700,3900,20,4,12,9405
+Solar Panel Mounting Structure,EN-007,8902400000007,Solar Panels & Equipment,Local,set,2200,2550,2700,18,4,18,7308
+Solar Battery 150Ah (Tubular),EN-008,8902400000008,Solar Panels & Equipment,Luminous,pcs,12500,14000,14700,10,2,18,8507
+Inverter 850VA (Pure Sine Wave),EN-009,8902400000009,Batteries & Inverters,Luminous,pcs,4200,4800,5050,25,5,18,8504
+Inverter 1500VA,EN-010,8902400000010,Batteries & Inverters,Microtek,pcs,6500,7400,7800,18,4,18,8504
+Inverter Battery 150Ah Tubular,EN-011,8902400000011,Batteries & Inverters,Exide,pcs,13500,15200,16000,15,3,18,8507
+Inverter Battery 220Ah Tubular,EN-012,8902400000012,Batteries & Inverters,Amaron,pcs,18500,20800,21800,10,2,18,8507
+UPS 600VA,EN-013,8902400000013,Batteries & Inverters,APC,pcs,2800,3250,3450,30,6,18,8504
+Car Battery (Automotive) 35Ah,EN-014,8902400000014,Batteries & Inverters,Exide,pcs,4200,4800,5050,20,4,28,8507
+Dry Cell Battery AA (pack of 4),EN-015,8902400000015,Batteries & Inverters,Eveready,pkt,60,80,90,150,30,18,8506
+Battery Water (Distilled) 500ml,EN-016,8902400000016,Batteries & Inverters,Exide,pcs,45,60,68,100,20,18,2853
+Diesel Generator 5kVA,EN-017,8902400000017,Generators,Mahindra Powerol,pcs,95000,108000,113000,4,1,18,8502
+Petrol Generator 2kVA,EN-018,8902400000018,Generators,Honda,pcs,32000,36500,38500,8,2,18,8502
+Portable Inverter Generator 1kVA,EN-019,8902400000019,Generators,Honda,pcs,42000,47500,50000,5,1,18,8502
+Generator Spark Plug,EN-020,8902400000020,Generators,NGK,pcs,80,110,125,60,12,18,8511
+Generator Engine Oil 1L,EN-021,8902400000021,Generators,Servo,pcs,280,340,370,50,10,18,2710
+Generator Canopy (Acoustic),EN-022,8902400000022,Generators,Local,pcs,18000,20500,21500,3,1,18,8502
+Armoured Cable 4-core 16sq mm (per meter),EN-023,8902400000023,Cables & Wiring,Polycab,m,220,260,280,500,100,18,8544
+House Wire 1.5sq mm (90m coil),EN-024,8902400000024,Cables & Wiring,Havells,coil,1400,1600,1700,60,12,18,8544
+House Wire 2.5sq mm (90m coil),EN-025,8902400000025,Cables & Wiring,Havells,coil,2100,2400,2550,50,10,18,8544
+Submersible Cable 3-core (per meter),EN-026,8902400000026,Cables & Wiring,Finolex,m,55,70,78,400,80,18,8544
+Flexible Wire 4sq mm (90m coil),EN-027,8902400000027,Cables & Wiring,Polycab,coil,3200,3600,3800,30,6,18,8544
+Earthing Cable (Copper) per meter,EN-028,8902400000028,Cables & Wiring,Local,m,90,115,125,200,40,18,8544
+Cable Ties (pack of 100),EN-029,8902400000029,Cables & Wiring,Local,pkt,80,100,110,100,20,18,3926
+Junction Box (Weatherproof),EN-030,8902400000030,Cables & Wiring,Anchor,pcs,180,220,240,70,14,18,8536
+LED Bulb 9W,EN-031,8902400000031,LED Lighting,Philips,pcs,65,85,95,300,60,12,8539
+LED Bulb 15W,EN-032,8902400000032,LED Lighting,Philips,pcs,95,120,135,200,40,12,8539
+LED Tube Light 20W (4ft),EN-033,8902400000033,LED Lighting,Havells,pcs,180,220,240,150,30,12,8539
+LED Panel Light 18W,EN-034,8902400000034,LED Lighting,Havells,pcs,320,380,410,80,16,12,8539
+LED Street Light 50W,EN-035,8902400000035,LED Lighting,Crompton,pcs,1200,1400,1500,25,5,12,8539
+LED Flood Light 50W,EN-036,8902400000036,LED Lighting,Havells,pcs,950,1120,1200,30,6,12,8539
+LED Strip Light (per meter),EN-037,8902400000037,LED Lighting,Syska,m,80,100,110,100,20,12,8539
+Decorative LED String Lights,EN-038,8902400000038,LED Lighting,Local,pcs,150,190,210,80,16,12,9405
+Diesel (per litre - store stock),EN-039,8902400000039,Fuel & Lubricants,Local,ltr,95,100,105,500,100,18,2710
+Petrol (per litre - store stock),EN-040,8902400000040,Fuel & Lubricants,Local,ltr,103,108,112,400,80,18,2710
+Engine Oil 4T 1L,EN-041,8902400000041,Fuel & Lubricants,Castrol,pcs,280,340,370,100,20,18,2710
+Hydraulic Oil 20L,EN-042,8902400000042,Fuel & Lubricants,Servo,carboy,2800,3200,3400,20,4,18,2710
+Grease Cartridge 500g,EN-043,8902400000043,Fuel & Lubricants,Servo,pcs,150,190,210,60,12,18,2710
+Coolant 1L,EN-044,8902400000044,Fuel & Lubricants,Castrol,pcs,220,270,290,80,16,18,3820
+Kerosene (per litre),EN-045,8902400000045,Fuel & Lubricants,Local,ltr,55,65,72,200,40,18,2710
+MCB 16A Single Pole,EN-046,8902400000046,Other,Havells,pcs,120,150,165,100,20,18,8536
+Distribution Board 8-way,EN-047,8902400000047,Other,Havells,pcs,850,1000,1060,30,6,18,8537
+Voltage Stabilizer (for AC),EN-048,8902400000048,Other,V-Guard,pcs,2200,2550,2700,25,5,18,8504
+Extension Board (4 socket),EN-049,8902400000049,Other,Anchor,pcs,280,340,370,70,14,18,8536
+Energy Meter (Single Phase),EN-050,8902400000050,Other,L&T,pcs,1400,1650,1750,15,3,18,9028
