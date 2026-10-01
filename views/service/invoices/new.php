@@ -56,6 +56,16 @@
             <span class="text-sm font-semibold w-20 text-right" x-text="'₹' + (line.qty * line.price).toFixed(2)"></span>
             <button type="button" @click="cart.splice(idx,1)" class="text-red-500 text-xs">✕</button>
           </div>
+          <!-- Editable per-unit price — for when a customer bargains. Only
+               ever changes what this one invoice charges; the service item's
+               own price is never touched. -->
+          <div class="flex items-center gap-1 text-xs text-slate-500 mt-0.5">
+            <span>₹</span>
+            <input type="number" step="0.01" min="0" x-model.number="line.price" @blur="clampPrice(line)"
+                   class="w-16 rounded border border-slate-300 px-1 py-0.5 text-xs">
+            <span>each</span>
+            <span x-show="line.price !== line.originalPrice" class="line-through text-slate-400" x-text="'₹' + Number(line.originalPrice).toFixed(2)"></span>
+          </div>
           <select x-model.number="line.staff_id" class="mt-1 w-full text-xs rounded border border-slate-200 px-2 py-1">
             <option value="0">No staff assigned</option>
             <?php foreach ($staff as $s): ?>
@@ -108,7 +118,7 @@
 
     <form method="POST" class="mt-3 space-y-2" @submit="onSubmit">
       <?= CsrfHelper::getField() ?>
-      <input type="hidden" name="cart_json" :value="JSON.stringify(cart.map(l => ({id: l.id, qty: l.qty, staff_id: l.staff_id || null})))">
+      <input type="hidden" name="cart_json" :value="JSON.stringify(cart.map(l => ({id: l.id, qty: l.qty, staff_id: l.staff_id || null, price: l.price})))">
       <input type="hidden" name="labour_charges" :value="labour">
       <input type="hidden" name="discount" :value="discountAmount()">
       <input type="hidden" name="discount_percent" :value="['5','10'].includes(discountMode) ? discountMode : ''">
@@ -190,9 +200,13 @@ function invoiceScreen() {
     addToCart(s) {
       const existing = this.cart.find(l => l.id === s.id);
       if (existing) existing.qty += 1;
-      else this.cart.push({ id: s.id, name: s.name, price: s.price, gst: s.gst, qty: 1, staff_id: 0 });
+      else this.cart.push({ id: s.id, name: s.name, price: s.price, originalPrice: s.price, gst: s.gst, qty: 1, staff_id: 0 });
     },
     clampQty(line) { if (!line.qty || line.qty < 1) line.qty = 1; },
+    // Only clamps a negative/blank price back to 0 on blur (not on every
+    // keystroke) — ₹0 itself is left alone since giving a service away is a
+    // legitimate bargain outcome.
+    clampPrice(line) { if (!line.price || line.price < 0) line.price = 0; },
     lineTotal() { return this.cart.reduce((s,l) => s + l.qty*l.price, 0); },
     taxableAmount() {
       if (this.taxType === 'INCLUSIVE') {
@@ -240,7 +254,7 @@ function invoiceScreen() {
     specializedStaffCommissionAmount() { return +(this.taxableAmount() * this.specializedStaffCommissionPercent() / 100).toFixed(2); },
     onSubmit(e) {
       if (this.cart.length === 0) { e.preventDefault(); return; }
-      this.cart.forEach(line => this.clampQty(line));
+      this.cart.forEach(line => { this.clampQty(line); this.clampPrice(line); });
       if (this.paymentStatus === 'FULL') this.paidAmount = this.grandTotal();
       if (this.paymentStatus === 'CREDIT') this.paidAmount = 0;
     },

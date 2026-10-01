@@ -127,7 +127,11 @@ class SaleController {
             $product = $this->productModel->find($orgId, (int) $line['id']);
             if (!$product) continue;
             $qty = (float) $line['qty'];
-            $unitPrice = (float) $product['selling_price'];
+            // A bargained price typed into the cart overrides the product's own
+            // selling_price for this sale only — floored at 0 so a cart edit can
+            // never produce a negative line; the product record itself (and its
+            // MRP/purchase_price) is never touched by this.
+            $unitPrice = isset($line['price']) ? max(0, (float) $line['price']) : (float) $product['selling_price'];
             $lineAmount = round($qty * $unitPrice, 2);
             $gstRate = $taxType === 'EXEMPT' ? 0.0 : (float) $product['gst_percent'];
 

@@ -60,7 +60,16 @@
         <div class="py-2 flex items-center gap-2">
           <div class="flex-1 min-w-0">
             <div class="text-sm font-medium text-slate-900 truncate" x-text="line.name"></div>
-            <div class="text-xs text-slate-500" x-text="'₹' + Number(line.price).toFixed(2) + ' each'"></div>
+            <!-- Editable per-unit price — for when a customer bargains. Only
+                 ever changes what this one sale charges; the product's own
+                 selling_price is never touched. -->
+            <div class="flex items-center gap-1 text-xs text-slate-500 mt-0.5">
+              <span>₹</span>
+              <input type="number" step="0.01" min="0" x-model.number="line.price" @blur="clampPrice(line)"
+                     class="w-16 rounded border border-slate-300 px-1 py-0.5 text-xs">
+              <span>each</span>
+              <span x-show="line.price !== line.originalPrice" class="line-through text-slate-400" x-text="'₹' + Number(line.originalPrice).toFixed(2)"></span>
+            </div>
           </div>
           <input type="number" step="0.001" min="0.001" x-model.number="line.qty" @blur="clampQty(line)"
                  class="w-16 rounded border border-slate-300 px-2 py-1 text-sm text-right">
@@ -113,7 +122,7 @@
 
     <form method="POST" class="mt-3 space-y-2" @submit="onSubmit">
       <?= CsrfHelper::getField() ?>
-      <input type="hidden" name="cart_json" :value="JSON.stringify(cart.map(l => ({id: l.id, qty: l.qty})))">
+      <input type="hidden" name="cart_json" :value="JSON.stringify(cart.map(l => ({id: l.id, qty: l.qty, price: l.price})))">
       <input type="hidden" name="discount" :value="discountAmount()">
       <input type="hidden" name="discount_percent" :value="['5','10'].includes(discountMode) ? discountMode : ''">
       <input type="hidden" name="tax_type" :value="taxType">
@@ -238,12 +247,16 @@ function posScreen() {
     addToCart(p) {
       const existing = this.cart.find(l => l.id === p.id);
       if (existing) { existing.qty += 1; }
-      else { this.cart.push({ id: p.id, name: p.name, price: p.selling_price, gst: p.gst_percent, qty: 1 }); }
+      else { this.cart.push({ id: p.id, name: p.name, price: p.selling_price, originalPrice: p.selling_price, gst: p.gst_percent, qty: 1 }); }
       this.search = '';
       if (!this.isTouchDevice) this.$refs.searchBox.focus();
     },
     removeFromCart(idx) { this.cart.splice(idx, 1); },
     clampQty(line) { if (!line.qty || line.qty < 0) line.qty = 0.001; },
+    // Only clamps a negative/blank price back to 0 on blur (not on every
+    // keystroke — see clampQty's own history of the same bug) — ₹0 itself is
+    // left alone since giving an item away is a legitimate bargain outcome.
+    clampPrice(line) { if (!line.price || line.price < 0) line.price = 0; },
     lineTotal() { return this.cart.reduce((s, l) => s + l.qty * l.price, 0); },
     taxableAmount() {
       if (this.taxType === 'INCLUSIVE') {
@@ -305,10 +318,11 @@ function posScreen() {
     },
     onSubmit(e) {
       if (this.cart.length === 0) { e.preventDefault(); return; }
-      // A tap straight from the qty field to "Complete Sale" can beat that
-      // field's own blur handler to the submit — clamp every line here too so
-      // a still-empty/zero quantity never reaches the server.
-      this.cart.forEach(line => this.clampQty(line));
+      // A tap straight from the qty/price field to "Complete Sale" can beat
+      // that field's own blur handler to the submit — clamp every line here
+      // too so a still-empty/zero quantity or negative price never reaches
+      // the server.
+      this.cart.forEach(line => { this.clampQty(line); this.clampPrice(line); });
       if (this.owed() > 0 && !this.customerId) {
         e.preventDefault();
         alert('Select a customer before recording a part-paid or Udhaar sale.');

@@ -42,7 +42,12 @@ class ServiceInvoiceController {
                 $service = $this->itemModel->find($org['id'], (int) $line['id']);
                 if (!$service) continue;
                 $qty = max(1, (float) ($line['qty'] ?? 1));
-                $lineAmount = round($qty * (float) $service['price'], 2);
+                // A bargained price typed into the cart overrides the service
+                // item's own price for this invoice only — floored at 0 so a cart
+                // edit can never produce a negative line; the service item's own
+                // master price is never touched by this.
+                $unitPrice = isset($line['price']) ? max(0, (float) $line['price']) : (float) $service['price'];
+                $lineAmount = round($qty * $unitPrice, 2);
                 $gstRate = $taxType === 'EXEMPT' ? 0.0 : (float) $service['gst_percent'];
 
                 if ($taxType === 'INCLUSIVE' && $gstRate > 0) {
@@ -57,7 +62,7 @@ class ServiceInvoiceController {
 
                 $items[] = [
                     'service_id' => $service['id'], 'name' => $service['name'], 'item_type' => 'SERVICE',
-                    'price' => $service['price'], 'quantity' => $qty, 'total' => $lineAmount,
+                    'price' => $unitPrice, 'quantity' => $qty, 'total' => $lineAmount,
                     'gst_rate' => $gstRate, 'gst_amount' => $gstAmount, 'staff_id' => $line['staff_id'] ?: null,
                 ];
             }
