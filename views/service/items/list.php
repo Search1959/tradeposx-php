@@ -8,33 +8,73 @@
   </div>
 </div>
 
-<div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
-  <table class="w-full text-sm">
-    <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
-      <tr><th class="text-left px-4 py-2">Name</th><th class="text-left px-4 py-2">Category</th><th class="text-right px-4 py-2">Price</th><th class="text-right px-4 py-2">Duration</th><th class="text-center px-4 py-2">GST%</th><th class="px-4 py-2"></th></tr>
-    </thead>
-    <tbody class="divide-y divide-slate-100">
-      <?php foreach ($items as $i): ?>
-      <tr>
-        <td class="px-4 py-2 font-medium text-slate-900"><?= h($i['name']) ?> <?= $i['is_popular'] ? '<span class="text-xs text-amber-500">★</span>' : '' ?></td>
-        <td class="px-4 py-2 text-slate-600"><?= h($i['category'] ?? '') ?></td>
-        <td class="px-4 py-2 text-right"><?= formatCurrency((float)$i['price']) ?></td>
-        <td class="px-4 py-2 text-right text-slate-500"><?= $i['duration_minutes'] ? $i['duration_minutes'].' min' : '—' ?></td>
-        <td class="px-4 py-2 text-center text-slate-500"><?= h((string)$i['gst_percent']) ?>%</td>
-        <td class="px-4 py-2 text-right whitespace-nowrap">
-          <a href="<?= $base ?>/service-items/edit/<?= (int)$i['id'] ?>" class="text-indigo-600 hover:underline text-xs">Edit</a>
-          <form method="POST" action="<?= $base ?>/service-items/delete/<?= (int)$i['id'] ?>" class="inline" onsubmit="return confirm('Delete?');">
-            <?= CsrfHelper::getField() ?><button class="text-red-600 hover:underline text-xs ml-2">Delete</button>
-          </form>
-        </td>
-      </tr>
-      <?php endforeach; ?>
-      <?php if (empty($items)): ?>
-      <tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">No service items yet.</td></tr>
-      <?php endif; ?>
-    </tbody>
-  </table>
-  <?= renderPagination($page, $totalPages, $base . '/service-items') ?>
-</div>
+<form method="POST" action="<?= $base ?>/service-items/bulk-delete" id="bulkDeleteForm"
+      onsubmit="return confirm('Delete ' + document.querySelectorAll('.row-check:checked').length + ' selected service item(s)? This cannot be undone.');">
+  <?= CsrfHelper::getField() ?>
+
+  <!-- "Select all ₹0.00 items" exists specifically for cleaning up a bulk
+       import whose column names didn't match (every row landing at ₹0.00)
+       without hunting through rows one by one — same pattern as the
+       TradeERP Products list. Scoped to the current page only. -->
+  <div class="flex flex-wrap items-center gap-3 mb-3 bg-white rounded-lg border border-slate-200 px-4 py-2.5 text-sm">
+    <label class="flex items-center gap-2 font-medium text-slate-700">
+      <input type="checkbox" id="selectAll" onchange="toggleAll(this)"> Select all on this page
+    </label>
+    <button type="button" onclick="selectZeroPrice()" class="text-indigo-600 hover:underline">Select all ₹0.00 items on this page</button>
+    <span class="text-slate-400">·</span>
+    <span id="selectedCount" class="text-slate-500">0 selected</span>
+    <button type="submit" id="deleteSelectedBtn" disabled
+            class="ml-auto bg-red-600 disabled:bg-slate-300 text-white text-xs font-medium px-3 py-1.5 rounded hover:bg-red-700">Delete Selected</button>
+  </div>
+
+  <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+        <tr><th class="px-4 py-2 w-8"></th><th class="text-left px-4 py-2">Name</th><th class="text-left px-4 py-2">Category</th><th class="text-right px-4 py-2">Price</th><th class="text-right px-4 py-2">Duration</th><th class="text-center px-4 py-2">GST%</th><th class="px-4 py-2"></th></tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        <?php foreach ($items as $i): ?>
+        <tr>
+          <td class="px-4 py-2">
+            <input type="checkbox" name="ids[]" value="<?= (int)$i['id'] ?>" class="row-check" data-price="<?= (float)$i['price'] ?>" onchange="updateCount()">
+          </td>
+          <td class="px-4 py-2 font-medium text-slate-900"><?= h($i['name']) ?> <?= $i['is_popular'] ? '<span class="text-xs text-amber-500">★</span>' : '' ?></td>
+          <td class="px-4 py-2 text-slate-600"><?= h($i['category'] ?? '') ?></td>
+          <td class="px-4 py-2 text-right"><?= formatCurrency((float)$i['price']) ?></td>
+          <td class="px-4 py-2 text-right text-slate-500"><?= $i['duration_minutes'] ? $i['duration_minutes'].' min' : '—' ?></td>
+          <td class="px-4 py-2 text-center text-slate-500"><?= h((string)$i['gst_percent']) ?>%</td>
+          <td class="px-4 py-2 text-right whitespace-nowrap">
+            <a href="<?= $base ?>/service-items/edit/<?= (int)$i['id'] ?>" class="text-indigo-600 hover:underline text-xs">Edit</a>
+          </td>
+        </tr>
+        <?php endforeach; ?>
+        <?php if (empty($items)): ?>
+        <tr><td colspan="7" class="px-4 py-8 text-center text-slate-400">No service items yet.</td></tr>
+        <?php endif; ?>
+      </tbody>
+    </table>
+    <?= renderPagination($page, $totalPages, $base . '/service-items') ?>
+  </div>
+</form>
+
+<script>
+function updateCount() {
+  const checked = document.querySelectorAll('.row-check:checked').length;
+  document.getElementById('selectedCount').textContent = checked + ' selected';
+  document.getElementById('deleteSelectedBtn').disabled = checked === 0;
+  const all = document.querySelectorAll('.row-check').length;
+  document.getElementById('selectAll').checked = all > 0 && checked === all;
+}
+function toggleAll(box) {
+  document.querySelectorAll('.row-check').forEach(c => { c.checked = box.checked; });
+  updateCount();
+}
+function selectZeroPrice() {
+  document.querySelectorAll('.row-check').forEach(c => {
+    if (parseFloat(c.dataset.price) === 0) c.checked = true;
+  });
+  updateCount();
+}
+</script>
 
 <?php require __DIR__ . '/../../layouts/footer.php'; ?>

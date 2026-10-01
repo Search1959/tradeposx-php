@@ -73,6 +73,20 @@ class ServiceItemController {
         redirect($org['slug'] . '/service-items');
     }
 
+    /** Cleans up a botched bulk import (mismatched column names landing every
+     * row at ₹0.00) without clicking Delete 50+ times — same pattern as
+     * ProductController::bulkDeleteAction(). */
+    public function bulkDeleteAction(): void {
+        $org = Tenant::current();
+        Auth::requireOrgAccess($org['id']);
+        CsrfHelper::validate();
+        $ids = array_filter(array_map('intval', $_POST['ids'] ?? []));
+        foreach ($ids as $id) {
+            $this->model->delete($org['id'], $id);
+        }
+        redirect($org['slug'] . '/service-items');
+    }
+
     /** A ready-to-fill CSV — the header row IS the contract for bulkImportAction
      * below, so keep the two in sync if this ever changes. */
     public function templateAction(): void {
