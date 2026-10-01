@@ -33,9 +33,17 @@
     </div>
     <div>
       <label class="block text-sm font-medium text-slate-700 mb-1">GST %</label>
-      <select name="gst_percent" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+      <!-- No silent 0% default for a new item — 0% used to be pre-selected
+           automatically, so an owner quickly adding a menu item could save it
+           GST-exempt without ever touching this field, and then not understand
+           why no GST showed up on an invoice later. Editing an existing item
+           still correctly pre-selects whatever rate (even 0%) it already has. -->
+      <select name="gst_percent" required class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+        <?php if (!isset($i['gst_percent'])): ?>
+          <option value="" disabled selected>— Select GST % —</option>
+        <?php endif; ?>
         <?php foreach ([0,5,12,18,28] as $g): ?>
-          <option value="<?= $g ?>" <?= (float)($i['gst_percent'] ?? 0) == $g ? 'selected' : '' ?>><?= $g ?>%</option>
+          <option value="<?= $g ?>" <?= isset($i['gst_percent']) && (float)$i['gst_percent'] == $g ? 'selected' : '' ?>><?= $g ?>%</option>
         <?php endforeach; ?>
       </select>
     </div>
