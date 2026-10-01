@@ -290,6 +290,208 @@ PROMPT;
         return ['error' => 'Claude returned an unexpected response.'];
     }
 
+    /** Same two-tier pipeline as scanPurchaseBill() (free OCR+Groq first, Claude
+     * vision as a paid fallback) but for a service-business price list / rate
+     * card / menu photo instead of a supplier purchase bill — different prompt
+     * and item shape (name/price/category/durationMinutes/gstPercent, no
+     * quantity or HSN, since a menu isn't billing a quantity of anything yet).
+     * Kept as fully separate methods from the purchase-bill path rather than
+     * parameterizing it, so nothing here can regress the already-working
+     * Purchases/Job Card scan flows.
+     * @return array{items:array}|array{error:string} */
+    public static function scanServiceList(string $fileContent, string $mimeType): array {
+        $result = self::scanFreeServiceList($fileContent, $mimeType);
+        if (self::isUsableServiceList($result)) {
+            return $result;
+        }
+        if (CLAUDE_API_KEY !== '') {
+            $claudeResult = self::scanServiceListWithClaude($fileContent, $mimeType);
+            if (self::isUsableServiceList($claudeResult)) {
+                return $claudeResult;
+            }
+            error_log('BillScanHelper: free service-list scan failed (' . ($result['error'] ?? 'no usable items') . '), Claude fallback also failed (' . ($claudeResult['error'] ?? 'no usable items') . ')');
+            return isset($claudeResult['error']) ? $claudeResult : $result;
+        }
+        return $result;
+    }
+
+    private static function isUsableServiceList(array $result): bool {
+        if (isset($result['error']) || empty($result['items'])) {
+            return false;
+        }
+        foreach ($result['items'] as $item) {
+            if (($item['price'] ?? null) !== null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static function scanFreeServiceList(string $fileContent, string $mimeType): array {
+        if (OCR_SPACE_API_KEY === '' || GROQ_API_KEY === '') {
+            return ['error' => 'Free OCR scanning isn\'t set up — add OCR_SPACE_API_KEY and GROQ_API_KEY in config/constants.php.'];
+        }
+        $ocr = self::runOcr($fileContent, $mimeType);
+        if (isset($ocr['error'])) {
+            return $ocr;
+        }
+        if (trim($ocr['text']) === '') {
+            return ['error' => 'No readable text found in the scanned photo — try a clearer, well-lit photo.'];
+        }
+        return self::structureServiceListWithGroq($ocr['text']);
+    }
+
+    private static function structureServiceListWithGroq(string $ocrText): array {
+        $prompt = <<<PROMPT
+The following text was OCR'd from a price list, rate card, or menu for a service business
+(e.g. salon, repair shop, clinic, tuition centre, restaurant, gym) — possibly with OCR errors
+or garbled table alignment — use context to correct obvious OCR mistakes. Extract every
+service/item exactly as listed — do not skip rows, do not invent data. price must be a number
+(not a string) — the price actually shown for that item. If a duration (in minutes) or GST% is
+shown, include it; otherwise omit it or use null.
+
+Return ONLY a JSON object with exactly this shape, nothing else:
+{"items": [{"name": string, "price": number, "category": string or null, "durationMinutes": number or null, "gstPercent": number or null}]}
+
+OCR TEXT:
+---
+{$ocrText}
+---
+PROMPT;
+
+        $body = [
+            'model' => GROQ_TEXT_MODEL,
+            'messages' => [['role' => 'user', 'content' => $prompt]],
+            'response_format' => ['type' => 'json_object'],
+            'temperature' => 0,
+        ];
+        $ch = curl_init('https://api.groq.com/openai/v1/chat/completions');
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . GROQ_API_KEY, 'Content-Type: application/json'],
+            CURLOPT_POSTFIELDS => json_encode($body),
+            CURLOPT_TIMEOUT => 45,
+        ]);
+        $raw = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($raw === false) {
+            return ['error' => 'Could not reach the structuring service: ' . $curlError];
+        }
+        if ($httpCode === 429) {
+            return ['error' => 'The free structuring service has hit its rate limit for now. Try again in a minute.'];
+        }
+        if ($httpCode !== 200) {
+            return ['error' => "Structuring service returned an error (HTTP {$httpCode})."];
+        }
+
+        $decoded = json_decode($raw, true);
+        $content = $decoded['choices'][0]['message']['content'] ?? null;
+        if (!$content) {
+            return ['error' => 'Structuring service returned an empty response.'];
+        }
+        $parsed = json_decode($content, true);
+        if (!is_array($parsed) || empty($parsed['items'])) {
+            return ['error' => 'No line items found in the scanned photo — try a clearer photo.'];
+        }
+        return $parsed;
+    }
+
+    private static function scanServiceListWithClaude(string $fileContent, string $mimeType): array {
+        $tool = self::serviceListToolSchema();
+
+        $mediaBlock = $mimeType === 'application/pdf'
+            ? ['type' => 'document', 'source' => ['type' => 'base64', 'media_type' => 'application/pdf', 'data' => base64_encode($fileContent)]]
+            : ['type' => 'image', 'source' => ['type' => 'base64', 'media_type' => $mimeType, 'data' => base64_encode($fileContent)]];
+
+        $body = [
+            'model' => CLAUDE_MODEL,
+            'max_tokens' => 4096,
+            'tools' => [$tool],
+            'tool_choice' => ['type' => 'tool', 'name' => 'extract_service_list_items'],
+            'messages' => [[
+                'role' => 'user',
+                'content' => [
+                    $mediaBlock,
+                    ['type' => 'text', 'text' => 'This is a photo or scan of a price list, rate card, or menu for a service '
+                        . 'business, possibly in a regional Indian language or handwritten. Extract every service/item exactly '
+                        . 'as listed — do not skip rows, do not invent data.'],
+                ],
+            ]],
+        ];
+
+        $ch = curl_init('https://api.anthropic.com/v1/messages');
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => [
+                'x-api-key: ' . CLAUDE_API_KEY,
+                'anthropic-version: 2023-06-01',
+                'content-type: application/json',
+            ],
+            CURLOPT_POSTFIELDS => json_encode($body),
+            CURLOPT_TIMEOUT => 60,
+        ]);
+        $raw = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($raw === false) {
+            return ['error' => 'Could not reach Claude: ' . $curlError];
+        }
+        if ($httpCode === 429) {
+            return ['error' => 'Claude has hit its rate limit for now. Try again shortly.'];
+        }
+        if ($httpCode !== 200) {
+            $decoded = json_decode($raw, true);
+            $msg = $decoded['error']['message'] ?? "Claude returned an error (HTTP {$httpCode}).";
+            return ['error' => $msg];
+        }
+
+        $decoded = json_decode($raw, true);
+        foreach (($decoded['content'] ?? []) as $block) {
+            if (($block['type'] ?? '') === 'tool_use') {
+                $parsed = $block['input'] ?? [];
+                if (!is_array($parsed) || empty($parsed['items'])) {
+                    return ['error' => 'No line items found in the scanned photo — try a clearer photo.'];
+                }
+                return $parsed;
+            }
+        }
+        return ['error' => 'Claude returned an unexpected response.'];
+    }
+
+    private static function serviceListToolSchema(): array {
+        return [
+            'name' => 'extract_service_list_items',
+            'description' => 'Extract structured items from a service-business price list, rate card, or menu.',
+            'input_schema' => [
+                'type' => 'object',
+                'properties' => [
+                    'items' => [
+                        'type' => 'array',
+                        'items' => [
+                            'type' => 'object',
+                            'properties' => [
+                                'name' => ['type' => 'string'],
+                                'price' => ['type' => 'number'],
+                                'category' => ['type' => 'string'],
+                                'durationMinutes' => ['type' => 'number'],
+                                'gstPercent' => ['type' => 'number'],
+                            ],
+                            'required' => ['name', 'price'],
+                        ],
+                    ],
+                ],
+                'required' => ['items'],
+            ],
+        ];
+    }
+
     private static function claudeToolSchema(): array {
         return [
             'name' => 'extract_bill_items',

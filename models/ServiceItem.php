@@ -41,6 +41,13 @@ class ServiceItem extends BaseModel {
         return $this->execute('DELETE FROM service_items WHERE org_id = ? AND id = ?', [$orgId, $id]);
     }
 
+    /** Touches only gst_percent — used by the list screen's bulk "Set GST% for
+     * Selected" to fix a batch of items that imported or were saved at 0% without
+     * rewriting every other column (unlike update(), which expects a full form post). */
+    public function updateGstPercent(int $orgId, int $id, float $gstPercent): bool {
+        return $this->execute('UPDATE service_items SET gst_percent = ? WHERE org_id = ? AND id = ?', [$gstPercent, $orgId, $id]);
+    }
+
     /** Service items have no SKU/barcode to match on — name (case-insensitive) is the
      * only natural key, same as how a shop owner would recognize "the same" service. */
     public function findForImportMatch(int $orgId, string $name): ?array {

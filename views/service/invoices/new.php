@@ -38,7 +38,13 @@
         <button type="button" @click="addToCart(s)" class="text-left border border-slate-200 rounded-lg p-3 hover:border-indigo-400 hover:bg-indigo-50 transition">
           <div class="font-medium text-sm text-slate-900 truncate" x-text="s.name"></div>
           <div class="text-xs text-slate-500 mt-1" x-text="s.category"></div>
-          <div class="text-sm font-semibold text-indigo-700 mt-2" x-text="'₹' + Number(s.price).toFixed(2)"></div>
+          <div class="flex items-center justify-between mt-2">
+            <span class="text-sm font-semibold text-indigo-700" x-text="'₹' + Number(s.price).toFixed(2)"></span>
+            <!-- GST% shown right on the card — so a 0% item (often just a blank
+                 CSV cell at import time) is obvious before it ever reaches the
+                 invoice, not discovered later when no tax shows up on it. -->
+            <span class="text-[11px] px-1.5 py-0.5 rounded" :class="s.gst > 0 ? 'text-slate-400' : 'text-amber-700 bg-amber-50'" x-text="'GST ' + s.gst + '%'"></span>
+          </div>
         </button>
       </template>
     </div>
@@ -65,6 +71,11 @@
                    class="w-16 rounded border border-slate-300 px-1 py-0.5 text-xs">
             <span>each</span>
             <span x-show="line.price !== line.originalPrice" class="line-through text-slate-400" x-text="'₹' + Number(line.originalPrice).toFixed(2)"></span>
+            <!-- Per-line GST% — the CGST/SGST breakdown below only shows rates
+                 that are actually present in the cart, so a 0%-GST item (and
+                 the resulting "no tax line at all") would otherwise look
+                 indistinguishable from a bug. -->
+            <span class="ml-auto" :class="line.gst > 0 ? 'text-slate-400' : 'text-amber-700 font-medium'" x-text="'GST ' + (line.gst || 0) + '%'"></span>
           </div>
           <select x-model.number="line.staff_id" class="mt-1 w-full text-xs rounded border border-slate-200 px-2 py-1">
             <option value="0">No staff assigned</option>

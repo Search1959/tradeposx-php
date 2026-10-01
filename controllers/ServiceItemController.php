@@ -87,6 +87,23 @@ class ServiceItemController {
         redirect($org['slug'] . '/service-items');
     }
 
+    /** Fixes a batch of items that ended up at 0% GST (most often a blank
+     * gst_percent cell on a bulk import row, which silently defaults new items
+     * to 0% — see bulkImportAction's $blankGst warning below) without editing
+     * each one by hand. Same checkbox-selection form as bulkDeleteAction, just a
+     * second submit button with its own formaction. */
+    public function bulkSetGstAction(): void {
+        $org = Tenant::current();
+        Auth::requireOrgAccess($org['id']);
+        CsrfHelper::validate();
+        $ids = array_filter(array_map('intval', $_POST['ids'] ?? []));
+        $gst = (float) ($_POST['gst_percent'] ?? 0);
+        foreach ($ids as $id) {
+            $this->model->updateGstPercent($org['id'], $id, $gst);
+        }
+        redirect($org['slug'] . '/service-items');
+    }
+
     /** A ready-to-fill CSV — the header row IS the contract for bulkImportAction
      * below, so keep the two in sync if this ever changes. */
     public function templateAction(): void {
@@ -155,7 +172,7 @@ class ServiceItemController {
                         . 'Make sure you\'re uploading the CSV, not another file, and that its header row matches the "⬇ Download CSV template" above.';
                 } else {
                     $header = array_map(fn($h) => strtolower(trim($h)), $header);
-                    $created = 0; $updated = 0; $skipped = [];
+                    $created = 0; $updated = 0; $skipped = []; $blankGstRows = [];
                     $rowNum = 1;
                     while (($rawRow = fgetcsv($handle, 0, $delimiter)) !== false) {
                         $rowNum++;
@@ -190,6 +207,13 @@ class ServiceItemController {
                             $this->model->updateFromImportMerge($org['id'], (int) $existing['id'], $existing, $data);
                             $updated++;
                         } else {
+                            // A blank gst_percent cell on a brand-new row silently becomes 0%
+                            // here — not wrong (some items genuinely are GST-exempt) but easy
+                            // to not notice until an invoice months later shows no tax for it,
+                            // which is exactly what prompted this warning.
+                            if ($data['gst_percent'] === null) {
+                                $blankGstRows[] = "Row {$rowNum}: {$name} (GST% left blank — saved as 0%)";
+                            }
                             $this->model->create($org['id'], [
                                 'name' => $name,
                                 'category' => $data['category'] ?: null,
@@ -204,7 +228,7 @@ class ServiceItemController {
                         }
                     }
                     fclose($handle);
-                    $result = ['created' => $created, 'updated' => $updated, 'skipped' => $skipped];
+                    $result = ['created' => $created, 'updated' => $updated, 'skipped' => $skipped, 'blankGstRows' => $blankGstRows];
                     logActivity($org['id'], 'service_item_bulk_import', 'service_item', 0, "created={$created} updated={$updated}");
                 }
             }
@@ -212,5 +236,92 @@ class ServiceItemController {
 
         $pageTitle = 'Bulk Import Service Items';
         require __DIR__ . '/../views/service/items/bulk-import.php';
+    }
+
+    /** Same shape as PurchaseController::scanAction() — a photo of a menu/rate
+     * card is OCR'd and structured into a review table; nothing is saved here,
+     * only on saveScannedAction below. */
+    public function scanAction(): void {
+        $org = Tenant::current();
+        Auth::requireOrgAccess($org['id']);
+        $error = null;
+        $scanned = null;
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            CsrfHelper::validate();
+            $upload = BillScanHelper::readUploadedBill($_FILES['bill_file'] ?? []);
+            if (isset($upload['error'])) {
+                $error = $upload['error'];
+            } else {
+                $result = BillScanHelper::scanServiceList($upload['content'], $upload['mimeType']);
+                if (isset($result['error'])) {
+                    $error = $result['error'];
+                } else {
+                    $scanned = $result;
+                }
+            }
+        }
+
+        $pageTitle = 'Scan Service Price List';
+        require __DIR__ . '/../views/service/items/scan.php';
+    }
+
+    /** Commits the (possibly hand-corrected) reviewed scan — matches each row to
+     * an existing item by name (same natural-key match as bulkImportAction) so
+     * re-scanning an updated price list updates existing items instead of
+     * duplicating them; unmatched rows create new items. */
+    public function saveScannedAction(): void {
+        $org = Tenant::current();
+        Auth::requireOrgAccess($org['id']);
+        $error = null;
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            CsrfHelper::validate();
+            $lines = json_decode($_POST['items_json'] ?? '[]', true) ?: [];
+            $created = 0; $updated = 0;
+            foreach ($lines as $line) {
+                $name = trim($line['name'] ?? '');
+                if ($name === '') continue;
+
+                $data = [
+                    'name' => $name,
+                    'category' => trim($line['category'] ?? ''),
+                    'sector' => '',
+                    'price' => (float) ($line['price'] ?? 0),
+                    'duration_minutes' => $line['duration_minutes'] !== '' && $line['duration_minutes'] !== null ? (int) $line['duration_minutes'] : null,
+                    'gst_percent' => $line['gst_percent'] !== '' && $line['gst_percent'] !== null ? (float) $line['gst_percent'] : null,
+                    'warranty_days' => null,
+                    'description' => '',
+                ];
+
+                $existing = $this->model->findForImportMatch($org['id'], $name);
+                if ($existing) {
+                    $this->model->updateFromImportMerge($org['id'], (int) $existing['id'], $existing, $data);
+                    $updated++;
+                } else {
+                    $this->model->create($org['id'], [
+                        'name' => $name,
+                        'category' => $data['category'] ?: null,
+                        'sector' => 'General',
+                        'price' => $data['price'],
+                        'duration_minutes' => $data['duration_minutes'],
+                        'gst_percent' => $data['gst_percent'] ?? 0,
+                        'warranty_days' => 0,
+                        'description' => null,
+                    ]);
+                    $created++;
+                }
+            }
+
+            if ($created === 0 && $updated === 0) {
+                $error = 'At least one valid line item (with a name) is required.';
+            } else {
+                logActivity($org['id'], 'service_item_scan_import', 'service_item', 0, "created={$created} updated={$updated}");
+                redirect($org['slug'] . '/service-items');
+                return;
+            }
+        }
+
+        redirect($org['slug'] . '/service-items/scan');
     }
 }

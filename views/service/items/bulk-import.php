@@ -23,6 +23,15 @@
         </ul>
       </div>
     <?php endif; ?>
+    <?php if (!empty($result['blankGstRows'])): ?>
+      <div class="text-xs text-amber-700 mt-2">
+        <?= count($result['blankGstRows']) ?> new item(s) had no GST% in the CSV and were saved as 0% —
+        they won't add any tax on an invoice until fixed. Use "Select all 0% GST items" below to find and fix them:
+        <ul class="list-disc list-inside">
+          <?php foreach ($result['blankGstRows'] as $s): ?><li><?= h($s) ?></li><?php endforeach; ?>
+        </ul>
+      </div>
+    <?php endif; ?>
   </div>
 <?php endif; ?>
 
@@ -40,6 +49,15 @@
     <input type="file" name="csv_file" accept=".csv" required class="w-full text-sm border border-slate-300 rounded px-3 py-2">
     <button type="submit" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">Upload &amp; Import</button>
   </form>
+</div>
+
+<div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 max-w-xl">
+  <h2 class="text-sm font-semibold text-slate-900 mb-1">No menu/price list as a CSV?</h2>
+  <p class="text-sm text-slate-600 mb-4">
+    Take a photo of a printed menu, rate card, or fee list — AI reads it and fills in a table
+    you can review and correct before anything is saved.
+  </p>
+  <a href="<?= $base ?>/service-items/scan" class="inline-block bg-white border border-slate-300 text-slate-700 text-sm font-medium px-4 py-2 rounded hover:bg-slate-50">📷 Scan a Photo (AI)</a>
 </div>
 
 <?php require __DIR__ . '/../../layouts/footer.php'; ?>
