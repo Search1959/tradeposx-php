@@ -117,6 +117,23 @@ class ProductController {
         redirect($org['slug'] . '/products');
     }
 
+    /** Cleans up a botch — e.g. a bulk import with mismatched column names that
+     * landed every row at ₹0.00/0 stock — without clicking Delete 50+ times.
+     * Only ever deletes ids the list screen actually rendered as checkboxes,
+     * each individually scoped to this org by Product::delete's own WHERE
+     * clause, so there's no way to pass an id belonging to another tenant. */
+    public function bulkDeleteAction(): void {
+        $org = Tenant::current();
+        Auth::requireOrgAccess($org['id']);
+        CsrfHelper::validate();
+        $ids = array_filter(array_map('intval', $_POST['ids'] ?? []));
+        foreach ($ids as $id) {
+            $this->model->delete($org['id'], $id);
+        }
+        $search = trim($_POST['q'] ?? '');
+        redirect($org['slug'] . '/products' . ($search !== '' ? '?q=' . urlencode($search) : ''));
+    }
+
     /** A ready-to-fill CSV — the header row IS the contract for bulkImportAction
      * below, so keep the two in sync if this ever changes. */
     public function templateAction(): void {
