@@ -16,3 +16,6 @@ Thumbs.db
 # Generated production artifacts (data dump with real customer data, and a
 # deploy zip with production DB credentials baked in) — local only.
 /sql/migrate/production/
+
+# Real third-party API keys (OCR.space/Groq/Claude/Gemini) — local + manual upload only.
+/config/secrets.php
