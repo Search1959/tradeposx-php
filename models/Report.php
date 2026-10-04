@@ -146,4 +146,99 @@ class Report extends BaseModel {
         );
         return (float) ($row['cost'] ?? 0);
     }
+
+    // ── Dashboard series/lists (zero-filled so a quiet day still shows as a bar) ──
+
+    /** @return array{labels:string[],values:float[]} last $days days incl. today */
+    private function dailySeries(string $table, string $where, int $orgId, int $days): array {
+        $rows = $this->query(
+            "SELECT DATE(created_at) AS d, COALESCE(SUM(grand_total),0) AS t FROM {$table}
+             WHERE org_id = ? AND {$where} AND created_at >= DATE_SUB(CURDATE(), INTERVAL ? DAY) GROUP BY DATE(created_at)",
+            [$orgId, $days - 1]
+        );
+        $byDay = [];
+        foreach ($rows as $r) { $byDay[$r['d']] = (float) $r['t']; }
+        $labels = []; $values = [];
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $d = date('Y-m-d', strtotime("-{$i} day"));
+            $labels[] = date('D', strtotime($d));
+            $values[] = $byDay[$d] ?? 0.0;
+        }
+        return ['labels' => $labels, 'values' => $values];
+    }
+
+    /** @return array{labels:string[],values:float[]} last $months calendar months incl. this one */
+    private function monthlySeries(string $table, string $where, int $orgId, int $months): array {
+        $start = date('Y-m-01', strtotime('-' . ($months - 1) . ' month'));
+        $rows = $this->query(
+            "SELECT DATE_FORMAT(created_at,'%Y-%m') AS m, COALESCE(SUM(grand_total),0) AS t FROM {$table}
+             WHERE org_id = ? AND {$where} AND created_at >= ? GROUP BY DATE_FORMAT(created_at,'%Y-%m')",
+            [$orgId, $start]
+        );
+        $byMonth = [];
+        foreach ($rows as $r) { $byMonth[$r['m']] = (float) $r['t']; }
+        $labels = []; $values = [];
+        for ($i = $months - 1; $i >= 0; $i--) {
+            $ts = strtotime(date('Y-m-01') . " -{$i} month");
+            $labels[] = date('M', $ts);
+            $values[] = $byMonth[date('Y-m', $ts)] ?? 0.0;
+        }
+        return ['labels' => $labels, 'values' => $values];
+    }
+
+    public function salesByDay(int $orgId, int $days = 7): array { return $this->dailySeries('sales', 'status IS NULL', $orgId, $days); }
+    public function salesByMonth(int $orgId, int $months = 6): array { return $this->monthlySeries('sales', 'status IS NULL', $orgId, $months); }
+    public function serviceRevenueByDay(int $orgId, int $days = 7): array { return $this->dailySeries('service_invoices', "status != 'CANCELLED'", $orgId, $days); }
+    public function serviceRevenueByMonth(int $orgId, int $months = 6): array { return $this->monthlySeries('service_invoices', "status != 'CANCELLED'", $orgId, $months); }
+
+    /** @return array{ok:int,low:int,out:int} active products only */
+    public function stockStatus(int $orgId): array {
+        $r = $this->queryOne(
+            "SELECT COALESCE(SUM(current_stock <= 0),0) AS out_n,
+                    COALESCE(SUM(current_stock > 0 AND current_stock <= min_stock),0) AS low_n,
+                    COALESCE(SUM(current_stock > min_stock),0) AS ok_n
+             FROM products WHERE org_id = ? AND status = 'ACTIVE'",
+            [$orgId]
+        );
+        return ['ok' => (int) ($r['ok_n'] ?? 0), 'low' => (int) ($r['low_n'] ?? 0), 'out' => (int) ($r['out_n'] ?? 0)];
+    }
+
+    public function topUdhaarCustomers(int $orgId, int $limit = 5): array {
+        return $this->query(
+            'SELECT id, name, mobile, current_balance FROM customers WHERE org_id = ? AND current_balance > 0 ORDER BY current_balance DESC LIMIT ?',
+            [$orgId, $limit]
+        );
+    }
+
+    public function recentSales(int $orgId, int $limit = 5): array {
+        return $this->query(
+            'SELECT id, sale_number, customer_name, grand_total, payment_status, created_at FROM sales WHERE org_id = ? AND status IS NULL ORDER BY id DESC LIMIT ?',
+            [$orgId, $limit]
+        );
+    }
+
+    /** @return array<string,int> job card counts keyed by status */
+    public function jobCardsByStatus(int $orgId): array {
+        $out = ['Pending' => 0, 'In-Progress' => 0, 'Completed' => 0, 'Delivered' => 0];
+        foreach ($this->query("SELECT status, COUNT(*) AS n FROM job_cards WHERE org_id = ? AND status != 'Cancelled' GROUP BY status", [$orgId]) as $r) {
+            $out[$r['status']] = (int) $r['n'];
+        }
+        return $out;
+    }
+
+    public function todaysAppointments(int $orgId, int $limit = 5): array {
+        return $this->query(
+            "SELECT id, customer_name, service_name, staff_name, appt_time, status FROM appointments
+             WHERE org_id = ? AND appt_date = CURDATE() AND status NOT IN ('Cancelled') ORDER BY appt_time LIMIT ?",
+            [$orgId, $limit]
+        );
+    }
+
+    public function unpaidInvoices(int $orgId, int $limit = 5): array {
+        return $this->query(
+            "SELECT id, invoice_no, customer_name, balance_amount FROM service_invoices
+             WHERE org_id = ? AND status IN ('UNPAID','PARTIAL') AND balance_amount > 0 ORDER BY balance_amount DESC LIMIT ?",
+            [$orgId, $limit]
+        );
+    }
 }

@@ -16,6 +16,12 @@ class DashboardController {
         $todaySales = (float) $sales['today']['total'];
         $outstandingUdhaar = $this->report->outstandingUdhaar($org['id']);
         $lowStockCount = $this->report->lowStockCount($org['id']);
+        $salesWeek = $this->report->salesByDay($org['id'], 7);
+        $salesMonths = $this->report->salesByMonth($org['id'], 6);
+        $stockStatus = $this->report->stockStatus($org['id']);
+        $topUdhaar = $this->report->topUdhaarCustomers($org['id'], 5);
+        $recentSales = $this->report->recentSales($org['id'], 5);
+        $topProducts = $this->report->topProducts($org['id'], 30, 5);
 
         $pageTitle = 'Dashboard';
         require __DIR__ . '/../views/dashboard/index.php';
@@ -33,6 +39,11 @@ class DashboardController {
         $todayAppointments = $this->report->todayAppointmentsCount($org['id']);
         $upcomingAppointments = $this->report->upcomingAppointmentsCount($org['id']);
         $pendingJobCards = $this->report->pendingJobCardsCount($org['id']);
+        $revenueWeek = $this->report->serviceRevenueByDay($org['id'], 7);
+        $revenueMonths = $this->report->serviceRevenueByMonth($org['id'], 6);
+        $jobStatus = $this->report->jobCardsByStatus($org['id']);
+        $todaysAppts = $this->report->todaysAppointments($org['id'], 5);
+        $unpaidInvoices = $this->report->unpaidInvoices($org['id'], 5);
 
         $pageTitle = 'Dashboard';
         require __DIR__ . '/../views/dashboard/service.php';
