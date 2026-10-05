@@ -1,0 +1,74 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+Mortise Lever Handle on Plate SS Matt 200mm,DL-001,8904100000011,Mortise Handle Sets,Dorset,set,780,1050,1250,24,6,18,8302
+Mortise Lever Handle on Plate SS Matt 250mm,DL-002,8904100000028,Mortise Handle Sets,Dorset,set,860,1150,1380,30,8,18,8302
+Mortise Lever Handle on Plate SS Matt 300mm,DL-003,8904100000035,Mortise Handle Sets,Dorset,set,950,1280,1520,22,6,18,8302
+Mortise Lever Handle on Plate SS Satin 250mm,DL-004,8904100000042,Mortise Handle Sets,Godrej,set,1100,1480,1750,18,5,18,8302
+Mortise Lever Handle on Plate SS Satin 300mm,DL-005,8904100000059,Mortise Handle Sets,Godrej,set,1220,1620,1900,16,5,18,8302
+Mortise Lever Handle on Plate Antique Brass 250mm,DL-006,8904100000066,Mortise Handle Sets,Ebco,set,980,1320,1560,14,4,18,8302
+Mortise Lever Handle on Plate Antique Brass 300mm,DL-007,8904100000073,Mortise Handle Sets,Ebco,set,1080,1450,1700,12,4,18,8302
+Mortise Lever Handle on Plate Black Matt 250mm,DL-008,8904100000080,Mortise Handle Sets,Hafele,set,1350,1790,2100,10,3,18,8302
+Mortise Lever Handle on Plate Black Matt 300mm,DL-009,8904100000097,Mortise Handle Sets,Hafele,set,1480,1950,2280,8,3,18,8302
+Mortise Lever Handle on Plate Chrome 200mm,DL-010,8904100000103,Mortise Handle Sets,Plaza,set,640,880,1050,26,6,18,8302
+Mortise Lever Handle on Plate Chrome 250mm,DL-011,8904100000110,Mortise Handle Sets,Plaza,set,710,960,1140,28,6,18,8302
+Mortise Lever Handle on Plate Rose Gold 250mm,DL-012,8904100000127,Mortise Handle Sets,Ebco,set,1250,1680,1990,9,3,18,8302
+Heavy Duty Lever Handle on Plate SS 304 350mm,DL-013,8904100000134,Mortise Handle Sets,Godrej,set,1850,2450,2890,8,2,18,8302
+Lever Handle Pair on Rose SS 304,DL-014,8904100000141,Mortise Handle Sets,Dorset,pair,520,720,860,34,8,18,8302
+Mortise Lock Body 45mm Backset 6 Lever,DL-015,8904100000158,Mortise Lock Bodies,Godrej,pcs,420,580,690,40,10,18,8301
+Mortise Lock Body 60mm Backset 6 Lever,DL-016,8904100000165,Mortise Lock Bodies,Godrej,pcs,460,640,760,36,10,18,8301
+Mortise Lock Body 70mm Backset 6 Lever,DL-017,8904100000172,Mortise Lock Bodies,Godrej,pcs,520,710,840,24,8,18,8301
+Mortise Lock Body 60mm Backset Euro Profile,DL-018,8904100000189,Mortise Lock Bodies,Dorset,pcs,560,780,920,30,8,18,8301
+Mortise Lock Body 85mm Backset Euro Profile,DL-019,8904100000196,Mortise Lock Bodies,Dorset,pcs,640,880,1040,20,6,18,8301
+Mortise Lock Body Heavy Duty Deadbolt 60mm,DL-020,8904100000202,Mortise Lock Bodies,Europa,pcs,980,1320,1560,14,4,18,8301
+Euro Profile Cylinder 60mm Key and Key,DL-021,8904100000219,Euro Cylinders,Godrej,pcs,260,360,430,60,15,18,8301
+Euro Profile Cylinder 70mm Key and Key,DL-022,8904100000226,Euro Cylinders,Godrej,pcs,290,400,480,55,15,18,8301
+Euro Profile Cylinder 80mm Key and Key,DL-023,8904100000233,Euro Cylinders,Godrej,pcs,320,440,530,40,12,18,8301
+Euro Profile Cylinder 90mm Key and Key,DL-024,8904100000240,Euro Cylinders,Godrej,pcs,360,490,590,28,10,18,8301
+Euro Profile Cylinder 70mm Key and Thumb Turn,DL-025,8904100000257,Euro Cylinders,Dorset,pcs,340,470,560,32,10,18,8301
+Euro Profile Cylinder 80mm Key and Thumb Turn,DL-026,8904100000264,Euro Cylinders,Dorset,pcs,380,520,620,26,8,18,8301
+Euro Profile Cylinder 70mm Brass Finish,DL-027,8904100000271,Euro Cylinders,Ebco,pcs,310,430,520,30,10,18,8301
+Euro Profile Cylinder 70mm Anti Drill High Security,DL-028,8904100000288,Euro Cylinders,Yale,pcs,780,1050,1250,15,5,18,8301
+Euro Profile Cylinder 90mm Anti Drill High Security,DL-029,8904100000295,Euro Cylinders,Yale,pcs,880,1180,1400,10,4,18,8301
+Cylinder Replacement Keys (set of 3),DL-030,8904100000301,Euro Cylinders,Local,set,40,90,120,120,30,18,8301
+Stainless Steel Hinge 3 inch (pair),DL-031,8904100000318,Hinges,Ebco,pair,70,110,130,200,50,18,8302
+Stainless Steel Hinge 4 inch (pair),DL-032,8904100000325,Hinges,Ebco,pair,95,145,175,260,60,18,8302
+Stainless Steel Hinge 5 inch (pair),DL-033,8904100000332,Hinges,Ebco,pair,130,190,230,180,40,18,8302
+Ball Bearing Hinge SS 4 inch (pair),DL-034,8904100000349,Hinges,Dorset,pair,210,300,360,90,20,18,8302
+Ball Bearing Hinge SS 5 inch (pair),DL-035,8904100000356,Hinges,Dorset,pair,260,360,430,75,18,18,8302
+Brass Butt Hinge 4 inch (pair),DL-036,8904100000363,Hinges,Local,pair,160,230,280,70,15,18,8302
+Concealed Cabinet Hinge 35mm Soft Close,DL-037,8904100000370,Hinges,Hafele,pcs,85,130,155,320,80,18,8302
+Piano Hinge SS 1 meter,DL-038,8904100000387,Hinges,Local,pcs,180,260,310,40,10,18,8302
+Hydraulic Door Closer 45kg,DL-039,8904100000394,Door Closers,Dorma,pcs,780,1050,1250,18,5,18,8302
+Hydraulic Door Closer 65kg,DL-040,8904100000400,Door Closers,Dorma,pcs,950,1280,1520,14,4,18,8302
+Hydraulic Door Closer 85kg Heavy,DL-041,8904100000417,Door Closers,Dorma,pcs,1250,1680,1990,9,3,18,8302
+Tower Bolt SS 4 inch,DL-042,8904100000424,Bolts and Latches,Ebco,pcs,45,75,90,150,40,18,8302
+Tower Bolt SS 6 inch,DL-043,8904100000431,Bolts and Latches,Ebco,pcs,70,110,130,130,35,18,8302
+Tower Bolt SS 8 inch,DL-044,8904100000448,Bolts and Latches,Ebco,pcs,105,160,190,90,25,18,8302
+Tower Bolt SS 10 inch,DL-045,8904100000455,Bolts and Latches,Ebco,pcs,150,220,260,60,15,18,8302
+Aldrop Latch SS 6 inch,DL-046,8904100000462,Bolts and Latches,Local,pcs,40,70,85,140,35,18,8302
+Aldrop Latch SS 10 inch,DL-047,8904100000479,Bolts and Latches,Local,pcs,75,120,145,100,25,18,8302
+Barrel Bolt SS 6 inch,DL-048,8904100000486,Bolts and Latches,Dorset,pcs,55,90,110,110,30,18,8302
+Magnetic Door Catch,DL-049,8904100000493,Bolts and Latches,Ebco,pcs,22,40,50,260,60,18,8302
+Door Stopper Floor Mount SS,DL-050,8904100000509,Door Accessories,Ebco,pcs,45,80,95,180,40,18,8302
+Door Stopper Wall Mount Magnetic,DL-051,8904100000516,Door Accessories,Ebco,pcs,60,100,120,140,35,18,8302
+Door Eye Viewer Brass 180 Degree,DL-052,8904100000523,Door Accessories,Plaza,pcs,70,120,145,85,20,18,8302
+Chain Door Guard SS 6 inch,DL-053,8904100000530,Door Accessories,Local,pcs,60,100,120,95,25,18,8302
+Door Name Plate Acrylic 6x2 inch,DL-054,8904100000547,Door Accessories,Local,pcs,40,85,110,75,15,18,9403
+Strike Plate Replacement SS,DL-055,8904100000554,Door Accessories,Dorset,pcs,18,35,45,200,50,18,8302
+Handle Backplate Cover Screw Set (4 pcs),DL-056,8904100000561,Door Accessories,Local,set,12,25,30,300,80,18,7318
+Pull Handle SS 12 inch (pair),DL-057,8904100000578,Pull Handles,Dorset,pair,420,580,690,30,8,18,8302
+Pull Handle SS 18 inch (pair),DL-058,8904100000585,Pull Handles,Dorset,pair,620,850,1000,22,6,18,8302
+Pull Handle SS 24 inch (pair),DL-059,8904100000592,Pull Handles,Dorset,pair,820,1120,1320,16,5,18,8302
+Main Door Pull Handle Black 24 inch (pair),DL-060,8904100000608,Pull Handles,Hafele,pair,980,1350,1590,12,4,18,8302
+Padlock Brass 40mm,DL-061,8904100000615,Padlocks,Godrej,pcs,110,170,200,150,40,18,8301
+Padlock Brass 50mm,DL-062,8904100000622,Padlocks,Godrej,pcs,160,240,285,130,35,18,8301
+Padlock Brass 65mm,DL-063,8904100000639,Padlocks,Godrej,pcs,260,380,450,80,20,18,8301
+Padlock Steel Disc 70mm Heavy,DL-064,8904100000646,Padlocks,Godrej,pcs,320,460,540,60,15,18,8301
+Combination Padlock 4 Digit,DL-065,8904100000653,Padlocks,Harrison,pcs,120,190,230,70,20,18,8301
+Digital Door Lock Fingerprint,DL-066,8904100000660,Smart Locks,Yale,pcs,6800,8900,10500,6,2,18,8301
+Digital Door Lock Keypad and Card,DL-067,8904100000677,Smart Locks,Godrej,pcs,5400,7200,8500,8,2,18,8301
+Wood Screw SS 1 inch (box of 100),DL-068,8904100000684,Fasteners,Local,box,55,95,115,100,25,18,7318
+Wood Screw SS 1.5 inch (box of 100),DL-069,8904100000691,Fasteners,Local,box,70,120,145,90,22,18,7318
+Wood Screw SS 2 inch (box of 100),DL-070,8904100000707,Fasteners,Local,box,90,150,180,80,20,18,7318
+Wall Plug Nylon 8mm (pack of 100),DL-071,8904100000714,Fasteners,Fischer,pack,60,100,120,120,30,18,3926
+Door Lock Lubricant Spray 100ml,DL-072,8904100000721,Lock Care,WD-40,pcs,95,150,180,60,15,18,3403
+Graphite Lock Powder 10g,DL-073,8904100000738,Lock Care,Local,pcs,18,35,45,90,20,18,3403
