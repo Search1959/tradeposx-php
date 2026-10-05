@@ -60,3 +60,15 @@ if (!function_exists('kpiMoney')) {
     /** Whole-rupee amount for stat cards (paise just crowd a phone-width card); lists keep formatCurrency(). */
     function kpiMoney(float $v): string { return '₹' . number_format($v, 0); }
 }
+
+if (!function_exists('uiIconExtra')) {
+    /** Extra glyphs used by the System Admin registry. */
+    function uiIconExtra(string $name, string $class = 'w-5 h-5'): string {
+        static $p = [
+            'pencil'   => 'M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10',
+            'building' => 'M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z',
+            'filter'   => 'M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z',
+        ];
+        return '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="' . $class . ' shrink-0" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="' . ($p[$name] ?? $p['building']) . '"/></svg>';
+    }
+}

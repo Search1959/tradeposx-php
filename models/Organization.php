@@ -46,4 +46,15 @@ class Organization extends BaseModel {
     public function slugExists(string $slug): bool {
         return $this->count('organizations', 'slug = ?', [$slug]) > 0;
     }
+    /** Every business with its user count and primary owner contact — one query for the System Admin registry. */
+    public function allWithOwner(): array {
+        return $this->query(
+            "SELECT o.*,
+                    (SELECT COUNT(*) FROM users u WHERE u.org_id = o.id) AS user_count,
+                    ow.name AS owner_name, ow.email AS owner_email, ow.mobile AS owner_mobile
+             FROM organizations o
+             LEFT JOIN users ow ON ow.id = (SELECT id FROM users WHERE org_id = o.id AND role = 'owner' ORDER BY id LIMIT 1)
+             ORDER BY o.created_at DESC"
+        );
+    }
 }

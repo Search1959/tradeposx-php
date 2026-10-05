@@ -75,4 +75,12 @@ class User extends BaseModel {
     public function updatePassword(int $id, string $newPassword): bool {
         return $this->execute('UPDATE users SET password_hash = ? WHERE id = ?', [password_hash($newPassword, PASSWORD_DEFAULT), $id]);
     }
+
+    /** Every account on the platform with the business it belongs to — System Admin "All Users" tab. */
+    public function allWithOrg(): array {
+        return $this->query(
+            'SELECT u.id, u.name, u.email, u.mobile, u.role, u.status, u.created_at, o.name AS org_name, o.slug AS org_slug
+             FROM users u LEFT JOIN organizations o ON o.id = u.org_id ORDER BY u.created_at DESC, u.id DESC'
+        );
+    }
 }

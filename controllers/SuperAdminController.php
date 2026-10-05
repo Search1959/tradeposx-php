@@ -10,8 +10,48 @@ class SuperAdminController {
 
     public function indexAction(): void {
         Auth::requireSuperAdmin();
-        $organizations = $this->orgModel->all();
+        $organizations = $this->orgModel->allWithOwner();
+        $users = $this->userModel->allWithOrg();
+        $subs = (new OrgSubscription())->allByOrg();
+
+        // Billable = live paying-type accounts: active only (demo and suspended are excluded).
+        $ledger = [];
+        $totals = ['billed' => 0.0, 'collected' => 0.0, 'outstanding' => 0.0];
+        foreach ($organizations as $o) {
+            if ($o['status'] !== 'active') continue;
+            $s = $subs[(int) $o['id']] ?? ['monthly_fee' => 0.0, 'billing_start' => null, 'paid' => 0.0];
+            $months = OrgSubscription::monthsBilled($s['billing_start'] ?: $o['created_at']);
+            $due = $s['monthly_fee'] * $months;
+            $balance = $due - $s['paid'];
+            $ledger[] = $o + ['fee' => $s['monthly_fee'], 'months' => $months, 'due' => $due, 'paid' => $s['paid'], 'balance' => $balance];
+            $totals['billed'] += $due;
+            $totals['collected'] += $s['paid'];
+            $totals['outstanding'] += max(0, $balance);
+        }
+
+        $stats = [
+            'orgs' => count($organizations),
+            'users' => count($users),
+            'new30' => count(array_filter($organizations, fn($o) => strtotime($o['created_at']) >= strtotime('-30 days'))),
+            'suspended' => count(array_filter($organizations, fn($o) => $o['status'] === 'suspended')),
+        ];
+        $tab = in_array($_GET['tab'] ?? '', ['firms', 'users', 'new', 'ledger'], true) ? $_GET['tab'] : 'firms';
         require __DIR__ . '/../views/superadmin/index.php';
+    }
+
+    public function setFeeAction(?string $id = null): void {
+        Auth::requireSuperAdmin();
+        CsrfHelper::validate();
+        (new OrgSubscription())->setFee((int) $id, (float) ($_POST['fee'] ?? 0));
+        redirect('superadmin?tab=ledger');
+    }
+
+    public function recordPaymentAction(?string $id = null): void {
+        Auth::requireSuperAdmin();
+        CsrfHelper::validate();
+        $ok = (new OrgSubscription())->recordPayment((int) $id, (float) ($_POST['amount'] ?? 0), $_POST['note'] ?? null);
+        if ($ok) $_SESSION['flash_success'] = 'Payment recorded.';
+        redirect('superadmin?tab=ledger');
     }
 
     private function slugify(string $name): string {
