@@ -46,6 +46,23 @@ class SuperAdminController {
         redirect('superadmin?tab=ledger');
     }
 
+    /** System Admin sets a new password for any non-admin account (passwords are hashed, so they can only be
+     * replaced, never read back). The new password is shown once in the confirmation so it can be shared. */
+    public function resetPasswordAction(?string $id = null): void {
+        Auth::requireSuperAdmin();
+        CsrfHelper::validate();
+        $user = $this->userModel->find((int) $id);
+        $new = $_POST['new_password'] ?? '';
+        if (!$user || $user['role'] === 'superadmin') {
+            $_SESSION['flash_success'] = 'That account cannot be reset here.';
+        } elseif (strlen($new) < 6) {
+            $_SESSION['flash_success'] = 'Password must be at least 6 characters.';
+        } else {
+            $this->userModel->updatePassword((int) $id, $new);
+            $_SESSION['flash_success'] = "Password reset for {$user['name']} ({$user['email']}). New password: {$new} - share it with them; they can change it in Settings.";
+        }
+        redirect('superadmin?tab=users');
+    }
     public function recordPaymentAction(?string $id = null): void {
         Auth::requireSuperAdmin();
         CsrfHelper::validate();

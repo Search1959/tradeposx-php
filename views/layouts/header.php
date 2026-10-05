@@ -91,11 +91,11 @@ $navGroups = $isTrade ? [
     ],
     'Grow' => [['Customer Outreach', '/outreach', 'chat', ['outreach']]],
 ];
+$navGroups['Account'] = [['Account & Password', '/settings', 'lock', ['settings']]];
 if ($isAdmin) {
     $navGroups['System'] = [
         ['Team', '/team', 'users', ['team']],
         ['Activity Log', '/activity-log', 'clipboard', ['activity-log']],
-        ['Settings', '/settings', 'sliders', ['settings']],
     ];
 }
 $userInitial = strtoupper(mb_substr(trim($user['name'] ?? $org['name'] ?? 'U'), 0, 1));
@@ -191,7 +191,7 @@ $sidebarNav = ob_get_clean();
         <div class="text-[11px] text-slate-500 truncate leading-tight"><?= h($org['name'] ?? APP_NAME) ?></div>
       </div>
       <span class="text-[11px] font-medium px-2 py-1 rounded-full <?= $accentSoft ?>"><?= $isTrade ? 'Trade' : 'Service' ?></span>
-      <div class="w-8 h-8 rounded-full <?= $accentBg ?> text-white text-sm font-semibold flex items-center justify-center"><?= h($userInitial) ?></div>
+      <a href="<?= $base ?>/settings" aria-label="Account and password" class="w-8 h-8 rounded-full <?= $accentBg ?> text-white text-sm font-semibold flex items-center justify-center"><?= h($userInitial) ?></a>
     </header>
 
     <!-- Desktop top bar -->
@@ -208,7 +208,7 @@ $sidebarNav = ob_get_clean();
             <?= uiIcon('chevron', 'w-4 h-4 text-slate-400') ?>
           </button>
           <div x-show="userMenu" x-cloak class="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg border border-slate-200 py-1 text-sm">
-            <a href="<?= $base ?>/settings" class="block px-3 py-2 text-slate-700 hover:bg-slate-50">Settings</a>
+            <a href="<?= $base ?>/settings" class="block px-3 py-2 text-slate-700 hover:bg-slate-50">Account &amp; Password</a>
             <a href="/" class="block px-3 py-2 text-slate-700 hover:bg-slate-50">Home</a>
             <a href="<?= $base ?>/logout" class="block px-3 py-2 text-red-600 hover:bg-slate-50">Logout</a>
           </div>

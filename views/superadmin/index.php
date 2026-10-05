@@ -157,6 +157,7 @@ $ledgerTiles = [
 
   <!-- ── All users ── -->
   <div x-show="tab === 'users'" x-cloak class="space-y-2.5">
+    <p class="text-xs text-slate-500 mb-1">Passwords are stored encrypted, so they can't be viewed - not even by you. Use <b class="text-slate-300">Reset</b> to set a new one and share it with the user. Users can also change their own in Settings.</p>
     <?php foreach ($users as $u): ?>
       <div x-show="vis($el)" data-st="<?= h($u['status']) ?>" data-s="<?= h(strtolower($u['name'] . ' ' . ($u['email'] ?? '') . ' ' . ($u['mobile'] ?? '') . ' ' . ($u['org_name'] ?? '') . ' ' . $u['role'])) ?>"
            class="rounded-2xl border border-white/10 bg-[#0f1e38] p-4 flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
@@ -171,6 +172,19 @@ $ledgerTiles = [
           <span class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-indigo-500/15 text-indigo-200 border border-indigo-400/30 capitalize"><?= h($u['role']) ?></span>
           <span class="text-[11px] font-bold px-2.5 py-1 rounded-full border capitalize <?= $statusTone[$u['status']] ?? '' ?>"><?= h($u['status']) ?></span>
           <span class="text-[11px] text-slate-500 hidden sm:inline"><?= date('j M Y', strtotime($u['created_at'])) ?></span>
+        </div>
+        <div class="md:w-60" x-data="{ open: false, pw: '' }">
+          <div x-show="!open" class="flex items-center gap-2">
+            <span class="font-mono text-slate-500 tracking-widest" title="Passwords are stored encrypted and cannot be viewed">••••••••</span>
+            <?php if ($u['role'] !== 'superadmin'): ?><button type="button" @click="open = true" class="text-xs font-semibold px-2.5 py-1 rounded-lg border border-amber-400/40 text-amber-300 hover:bg-amber-400/10">Reset</button><?php endif; ?>
+          </div>
+          <form x-show="open" x-cloak method="POST" action="/superadmin/resetPassword/<?= (int) $u['id'] ?>" class="flex items-center gap-1 flex-wrap">
+            <?= CsrfHelper::getField() ?>
+            <input type="text" name="new_password" x-model="pw" required minlength="6" placeholder="New password" autocomplete="off" class="w-32 px-2 py-1 rounded-lg bg-black/40 border border-amber-400/50 text-white text-xs">
+            <button type="button" title="Generate a password" @click="pw = Array.from({length: 8}, () => 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 55)]).join('') + '@' + (10 + Math.floor(Math.random() * 90))" class="px-1.5 py-1 rounded bg-white/10 text-slate-200 text-xs">Auto</button>
+            <button class="px-2 py-1 rounded bg-amber-600 text-white text-xs font-bold">Set</button>
+            <button type="button" @click="open = false; pw = ''" class="text-slate-400 text-xs">✕</button>
+          </form>
         </div>
       </div>
     <?php endforeach; ?>
