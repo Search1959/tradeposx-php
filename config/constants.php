@@ -27,7 +27,7 @@ define('LIST_PAGE_SIZE', 20);
 // unused, in case it's ever worth reviving.
 // API keys live in config/secrets.php (git-ignored); fall back to empty so a missing file just disables scanning.
 if (is_file(__DIR__ . '/secrets.php')) { require_once __DIR__ . '/secrets.php'; }
-foreach (['OCR_SPACE_API_KEY', 'GROQ_API_KEY', 'CLAUDE_API_KEY', 'GEMINI_API_KEY'] as $k) { if (!defined($k)) define($k, ''); }
+foreach (['OCR_SPACE_API_KEY', 'GROQ_API_KEY', 'CLAUDE_API_KEY', 'GEMINI_API_KEY', 'SUPERADMIN_EMAIL', 'SUPERADMIN_PASSWORD_HASH'] as $k) { if (!defined($k)) define($k, ''); }
 define('GROQ_TEXT_MODEL', 'openai/gpt-oss-120b');
 define('CLAUDE_MODEL', 'claude-haiku-4-5-20251001');
 

@@ -30,7 +30,14 @@ class AuthController {
             if ($org) {
                 $user = $this->userModel->findByLoginInOrg($org['id'], $identifier);
             } elseif ($loginAs === 'admin') {
-                $user = $this->userModel->findSuperAdminByEmail($identifier);
+                // A fixed System Admin can be configured in config/secrets.php (git-ignored) so this
+                // login never depends on what's in the users table; a password hash, not the password, lives there.
+                if (SUPERADMIN_EMAIL !== '' && SUPERADMIN_PASSWORD_HASH !== ''
+                    && strcasecmp($identifier, SUPERADMIN_EMAIL) === 0 && password_verify($password, SUPERADMIN_PASSWORD_HASH)) {
+                    $user = $this->userModel->ensureSuperAdmin(SUPERADMIN_EMAIL, SUPERADMIN_PASSWORD_HASH);
+                } else {
+                    $user = $this->userModel->findSuperAdminByEmail($identifier);
+                }
             } else {
                 $user = $this->userModel->findByEmailAcrossOrgs($identifier);
             }

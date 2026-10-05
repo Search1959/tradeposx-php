@@ -19,6 +19,25 @@ class User extends BaseModel {
         return $this->queryOne("SELECT * FROM users WHERE org_id IS NULL AND role = 'superadmin' AND email = ?", [$email]);
     }
 
+    /** Makes sure the configured System Admin exists in the users table with the configured password hash,
+     * so normal session handling keeps working. Returns null if the email belongs to a business account —
+     * a business owner is never silently promoted to platform admin. */
+    public function ensureSuperAdmin(string $email, string $hash): ?array {
+        $existing = $this->queryOne('SELECT * FROM users WHERE email = ?', [$email]);
+        if ($existing) {
+            if ($existing['org_id'] !== null || $existing['role'] !== 'superadmin') return null;
+            $this->execute("UPDATE users SET password_hash = ?, status = 'active' WHERE id = ?", [$hash, $existing['id']]);
+        } else {
+            $first = $this->queryOne("SELECT id FROM users WHERE org_id IS NULL AND role = 'superadmin' ORDER BY id LIMIT 1");
+            if ($first) {
+                $this->execute("UPDATE users SET email = ?, password_hash = ?, status = 'active' WHERE id = ?", [$email, $hash, $first['id']]);
+            } else {
+                $this->execute("INSERT INTO users (org_id, name, email, password_hash, role, status) VALUES (NULL, 'System Admin', ?, ?, 'superadmin', 'active')", [$email, $hash]);
+            }
+        }
+        return $this->queryOne("SELECT * FROM users WHERE org_id IS NULL AND role = 'superadmin' AND email = ?", [$email]);
+    }
+
     /** Platform-level /login "Login" tab has no org-slug in the URL to scope by —
      * looks a tenant user up by email alone, relying on uniq_users_email. */
     public function findByEmailAcrossOrgs(string $email): ?array {

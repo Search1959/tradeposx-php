@@ -23,3 +23,5 @@ Thumbs.db
 # One-time admin reset script (contains a password) - upload by hand, never commit.
 /reset_admin.php
 /fix_admin.php
+/step2_add_admin.php
+/step1_delete_business.php
