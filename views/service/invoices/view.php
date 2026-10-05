@@ -10,10 +10,14 @@ $gstBreakdown = $isGst ? gstBreakdownByRate($invoice['items'], $invoice['tax_typ
     <a href="<?= $base ?>/service-invoices" class="text-sm text-slate-500">&larr; Back to Invoices</a>
     <div class="flex gap-2">
       <button onclick="window.print()" class="bg-slate-700 text-white text-sm px-3 py-1.5 rounded">Print</button>
+      <?php $billMsg = serviceInvoiceWhatsAppMessage($org, $invoice); ?>
       <?php if (!empty($invoice['mobile'])): ?>
-        <?php $billMsg = serviceInvoiceWhatsAppMessage($org, $invoice); ?>
         <a href="<?= h(whatsappLink($invoice['mobile'], $billMsg)) ?>" target="_blank" rel="noopener"
-           class="bg-green-600 text-white text-sm px-3 py-1.5 rounded hover:bg-green-700">💬 Send Bill</a>
+           class="bg-green-600 text-white text-sm px-3 py-1.5 rounded hover:bg-green-700">💬 WhatsApp</a>
+      <?php else: ?>
+        <!-- Walk-in with no saved number: ask for one (or leave blank to pick the contact inside WhatsApp). -->
+        <button type="button" data-msg="<?= h($billMsg) ?>" onclick="sendBillOnWhatsApp(this)"
+                class="bg-green-600 text-white text-sm px-3 py-1.5 rounded hover:bg-green-700">💬 WhatsApp</button>
       <?php endif; ?>
       <?php if ($invoice['status'] !== 'CANCELLED'): ?>
       <form method="POST" action="<?= $base ?>/service-invoices/cancel/<?= (int)$invoice['id'] ?>" onsubmit="return confirm('Cancel this invoice?') && (this.reason.value = prompt('Reason?') || 'No reason given');">
@@ -171,4 +175,13 @@ $gstBreakdown = $isGst ? gstBreakdownByRate($invoice['items'], $invoice['tax_typ
   <?php endif; ?>
 </div>
 
+<script>
+function sendBillOnWhatsApp(btn) {
+  const n = prompt("Customer's WhatsApp number (10 digits). Leave empty to choose the contact inside WhatsApp.");
+  if (n === null) return;
+  const d = n.replace(/\D/g, '');
+  const num = d.length === 10 ? '91' + d : d;
+  window.open('https://wa.me/' + num + '?text=' + encodeURIComponent(btn.dataset.msg), '_blank');
+}
+</script>
 <?php require __DIR__ . '/../../layouts/footer.php'; ?>
