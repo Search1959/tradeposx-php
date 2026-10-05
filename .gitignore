@@ -19,3 +19,6 @@ Thumbs.db
 
 # Real third-party API keys (OCR.space/Groq/Claude/Gemini) — local + manual upload only.
 /config/secrets.php
+
+# One-time admin reset script (contains a password) - upload by hand, never commit.
+/reset_admin.php
