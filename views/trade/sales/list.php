@@ -1,7 +1,7 @@
 <?php $org = Tenant::current(); $base = '/' . $org['slug']; require __DIR__ . '/../../layouts/header.php'; ?>
 
 <div class="flex items-center justify-between mb-4">
-  <h1 class="text-xl font-semibold text-slate-900">Sales</h1>
+  <h1 class="text-xl font-semibold text-slate-900">Invoices</h1>
   <a href="<?= $base ?>/sales/newSale" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">+ New Sale</a>
 </div>
 

@@ -164,7 +164,7 @@ class SaleController {
         $sales = $this->model->allForOrg($org['id'], $perPage, ($page - 1) * $perPage);
         $totalCount = $this->model->countForOrg($org['id']);
         $totalPages = max(1, (int) ceil($totalCount / $perPage));
-        $pageTitle = 'Sales';
+        $pageTitle = 'Invoices';
         require __DIR__ . '/../views/trade/sales/list.php';
     }
 
@@ -173,6 +173,7 @@ class SaleController {
         Auth::requireOrgAccess($org['id']);
         $sale = $this->model->find($org['id'], (int) $id);
         if (!$sale) { http_response_code(404); include __DIR__ . '/../views/404.php'; return; }
+        $pageTitle = 'Invoice ' . ($sale['sale_number'] ?? '');
         require __DIR__ . '/../views/trade/sales/receipt.php';
     }
 

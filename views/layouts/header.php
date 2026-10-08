@@ -52,7 +52,8 @@ $isAdmin = in_array($user['role'] ?? '', ['owner', 'admin'], true);
 $navGroups = $isTrade ? [
     'Overview' => [['Dashboard', '/dashboard', 'home', ['dashboard']]],
     'Sales' => [
-        ['New Sale (POS)', '/sales', 'cart', ['sales', 'pos']],
+        ['New Sale (POS)', '/sales', 'cart', ['sales', 'pos'], 'notinv'],
+        ['Invoices', '/sales/list', 'document', ['sales'], 'inv'],
         ['Quick Sale (Mobile)', '/pos-mobile', 'phone', ['pos-mobile']],
         ['Customers / Udhaar', '/customers', 'users', ['customers']],
         ['Brokers', '/brokers', 'briefcase', ['brokers']],
@@ -153,7 +154,7 @@ ob_start();
         <div class="px-2 pt-4 pb-1.5 text-[10px] font-semibold uppercase tracking-widest text-slate-500"><?= h($groupLabel) ?></div>
         <?php foreach ($items as $it):
           $isActive = in_array($currentModule, $it[3], true)
-              && (($it[4] ?? '') === 'new' ? $seg2 === 'new' : (($it[4] ?? '') === 'list' ? $seg2 !== 'new' : true)); ?>
+              && match ($it[4] ?? '') { 'new' => $seg2 === 'new', 'list' => $seg2 !== 'new', 'inv' => in_array($seg2, ['list', 'receipt'], true), 'notinv' => !in_array($seg2, ['list', 'receipt'], true), default => true }; ?>
           <a href="<?= $base . $it[1] ?>" class="relative flex items-center gap-3 px-3 py-2.5 rounded-lg mb-0.5 <?= $isActive ? 'bg-white/10 text-white font-medium' : 'text-slate-400 hover:bg-white/5 hover:text-white' ?>">
             <?php if ($isActive): ?><span class="absolute left-0 top-2 bottom-2 w-1 rounded-r <?= $accentBar ?>"></span><?php endif; ?>
             <?= uiIcon($it[2], 'w-5 h-5') ?><span><?= h($it[0]) ?></span>
