@@ -132,6 +132,12 @@ $userInitial = strtoupper(mb_substr(trim($user['name'] ?? $org['name'] ?? 'U'), 
   body { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
   /* 16px inputs stop iOS Safari zooming the page on focus - phones only, desktop keeps compact fields */
   @media (max-width: 767px) { input, select, textarea { font-size: 16px !important; } }
+  /* Phones: list tables scroll sideways, so keep the Actions column (last cell) pinned to the right edge */
+  @media (max-width: 767px) {
+    table.sticky-actions th:last-child, table.sticky-actions td:last-child { position: sticky; right: 0; background: #fff; box-shadow: -8px 0 8px -8px rgba(15,23,42,.18); }
+    table.sticky-actions thead th:last-child { background: #f8fafc; }
+    table.sticky-actions td:last-child { white-space: normal !important; width: 8.5rem; min-width: 8.5rem; line-height: 1.9; }
+  }
 </style>
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased">
@@ -217,3 +223,6 @@ $sidebarNav = ob_get_clean();
       </div>
     </header>
     <div class="p-4 md:p-6 pb-28 md:pb-8">
+<?php foreach (['flash_success' => 'emerald', 'flash_error' => 'red'] as $flashKey => $flashTone): if (!empty($_SESSION[$flashKey])): ?>
+  <div class="mb-4 text-sm rounded-lg px-4 py-3 border bg-<?= $flashTone ?>-50 border-<?= $flashTone ?>-200 text-<?= $flashTone ?>-800"><?= h($_SESSION[$flashKey]) ?></div>
+<?php unset($_SESSION[$flashKey]); endif; endforeach; ?>

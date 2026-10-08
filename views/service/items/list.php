@@ -39,7 +39,7 @@
   </div>
 
   <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
-    <table class="w-full text-sm">
+    <table class="w-full text-sm sticky-actions">
       <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
         <tr><th class="px-4 py-2 w-8"></th><th class="text-left px-4 py-2">Name</th><th class="text-left px-4 py-2">Category</th><th class="text-right px-4 py-2">Price</th><th class="text-right px-4 py-2">Duration</th><th class="text-center px-4 py-2">GST%</th><th class="px-4 py-2"></th></tr>
       </thead>
@@ -56,6 +56,7 @@
           <td class="px-4 py-2 text-center text-slate-500"><?= h((string)$i['gst_percent']) ?>%</td>
           <td class="px-4 py-2 text-right whitespace-nowrap">
             <a href="<?= $base ?>/service-items/edit/<?= (int)$i['id'] ?>" class="text-indigo-600 hover:underline text-xs">Edit</a>
+            <a href="#" onclick="deleteOne(<?= (int)$i['id'] ?>, <?= h(json_encode($i['name'])) ?>); return false;" class="text-red-600 hover:underline text-xs ml-2">Delete</a>
           </td>
         </tr>
         <?php endforeach; ?>
@@ -68,7 +69,16 @@
   </div>
 </form>
 
+<form method="POST" action="<?= $base ?>/service-items/bulk-delete" id="oneDeleteForm" class="hidden">
+  <?= CsrfHelper::getField() ?><input type="hidden" name="ids[]" id="oneDeleteId" value="">
+</form>
+
 <script>
+function deleteOne(id, name) {
+  if (!confirm('Delete "' + name + '"? This cannot be undone.')) return;
+  document.getElementById('oneDeleteId').value = id;
+  document.getElementById('oneDeleteForm').submit();
+}
 function updateCount() {
   const checked = document.querySelectorAll('.row-check:checked').length;
   document.getElementById('selectedCount').textContent = checked + ' selected';

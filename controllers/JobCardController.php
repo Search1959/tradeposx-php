@@ -195,7 +195,14 @@ class JobCardController {
         $org = Tenant::current();
         Auth::requireOrgAccess($org['id']);
         CsrfHelper::validate();
+        $job = $this->model->find($org['id'], (int) $id);
+        if ($job && (float) $job['paid_amount'] > 0) {
+            $_SESSION['flash_error'] = "Job card {$job['job_no']} has payments recorded, so it can't be deleted. Set its status to Cancelled instead.";
+            redirect($org['slug'] . '/job-cards');
+            return;
+        }
         $this->model->delete($org['id'], (int) $id);
+        logActivity($org['id'], 'job_card_deleted', 'job_card', (int) $id, $job['job_no'] ?? '');
         redirect($org['slug'] . '/job-cards');
     }
 }

@@ -6,7 +6,7 @@
 </div>
 
 <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
-  <table class="w-full text-sm">
+  <table class="w-full text-sm sticky-actions">
     <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
       <tr><th class="text-left px-4 py-2">Invoice #</th><th class="text-left px-4 py-2">Date</th><th class="text-left px-4 py-2">Customer</th><th class="text-right px-4 py-2">Amount</th><th class="text-center px-4 py-2">Status</th><th class="px-4 py-2"></th></tr>
     </thead>
@@ -25,6 +25,16 @@
           <?php if ($bal > 0 && !empty($i['mobile'])): ?>
             <?php $msg = serviceBalanceReminderMessage($org['name'], $i['customer_name'] ?: 'Customer', $i['invoice_no'], $bal, $org['phone'] ?? null); ?>
             <a href="<?= h(whatsappLink($i['mobile'], $msg)) ?>" target="_blank" rel="noopener" class="text-green-600 hover:underline text-xs">💬 Remind</a>
+          <?php endif; ?>
+          <a href="<?= $base ?>/service-invoices/view/<?= (int)$i['id'] ?>" class="text-indigo-600 hover:underline text-xs ml-2">View</a>
+          <?php if ($i['status'] !== 'CANCELLED'): ?>
+            <a href="<?= $base ?>/service-invoices/edit/<?= (int)$i['id'] ?>" class="text-slate-600 hover:underline text-xs ml-2">Edit</a>
+            <?php if ($isAdmin): ?>
+            <form method="POST" action="<?= $base ?>/service-invoices/cancel/<?= (int)$i['id'] ?>" class="inline" onsubmit="return confirm('Cancel this invoice?') && (this.reason.value = prompt('Reason?') || 'No reason given');">
+              <?= CsrfHelper::getField() ?><input type="hidden" name="reason" value="">
+              <button class="text-red-600 hover:underline text-xs ml-2">Cancel</button>
+            </form>
+            <?php endif; ?>
           <?php endif; ?>
         </td>
       </tr>

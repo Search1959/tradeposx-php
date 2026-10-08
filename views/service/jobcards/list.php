@@ -9,7 +9,7 @@ $priorityColors = ['Low'=>'text-slate-400','Medium'=>'text-slate-600','High'=>'t
 </div>
 
 <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
-  <table class="w-full text-sm">
+  <table class="w-full text-sm sticky-actions">
     <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
       <tr><th class="text-left px-4 py-2">Job #</th><th class="text-left px-4 py-2">Customer</th><th class="text-left px-4 py-2">Issue</th><th class="text-center px-4 py-2">Priority</th><th class="text-center px-4 py-2">Warranty</th><th class="text-right px-4 py-2">Balance Due</th><th class="text-center px-4 py-2">Status</th><th class="px-4 py-2"></th></tr>
     </thead>
@@ -32,7 +32,11 @@ $priorityColors = ['Low'=>'text-slate-400','Medium'=>'text-slate-600','High'=>'t
             <?php $msg = serviceBalanceReminderMessage($org['name'], $j['customer_name'] ?: 'Customer', $j['job_no'], $bal, $org['phone'] ?? null); ?>
             <a href="<?= h(whatsappLink($j['mobile'], $msg)) ?>" target="_blank" rel="noopener" class="text-green-600 hover:underline text-xs">💬 Remind</a>
           <?php endif; ?>
-          <a href="<?= $base ?>/job-cards/edit/<?= (int)$j['id'] ?>" class="text-indigo-600 hover:underline text-xs ml-2">Edit</a>
+          <a href="<?= $base ?>/job-cards/view/<?= (int)$j['id'] ?>" class="text-indigo-600 hover:underline text-xs ml-2">View</a>
+          <a href="<?= $base ?>/job-cards/edit/<?= (int)$j['id'] ?>" class="text-slate-600 hover:underline text-xs ml-2">Edit</a>
+          <form method="POST" action="<?= $base ?>/job-cards/delete/<?= (int)$j['id'] ?>" class="inline" onsubmit="return confirm('Delete job card <?= h($j['job_no']) ?>? This cannot be undone.');">
+            <?= CsrfHelper::getField() ?><button class="text-red-600 hover:underline text-xs ml-2">Delete</button>
+          </form>
         </td>
       </tr>
       <?php endforeach; ?>

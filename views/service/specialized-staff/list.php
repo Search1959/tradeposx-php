@@ -6,7 +6,7 @@
 </div>
 
 <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
-  <table class="w-full text-sm">
+  <table class="w-full text-sm sticky-actions">
     <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
       <tr>
         <th class="text-left px-4 py-2">Name</th>

@@ -51,4 +51,12 @@ class ServiceCustomer extends BaseModel {
     public function addSpent(int $orgId, int $id, float $amount): bool {
         return $this->execute('UPDATE service_customers SET total_spent = total_spent + ? WHERE org_id = ? AND id = ?', [$amount, $orgId, $id]);
     }
-}
+
+    /** Everything a shop owner wants on one screen about a customer: bills, jobs and bookings. */
+    public function history(int $orgId, int $id): array {
+        return [
+            'invoices' => $this->query('SELECT id, invoice_no, invoice_date, grand_total, balance_amount, status FROM service_invoices WHERE org_id = ? AND customer_id = ? ORDER BY id DESC LIMIT 25', [$orgId, $id]),
+            'jobs' => $this->query('SELECT id, job_no, issue_description, total_amount, balance_amount, status FROM job_cards WHERE org_id = ? AND customer_id = ? ORDER BY id DESC LIMIT 25', [$orgId, $id]),
+            'appointments' => $this->query('SELECT id, appt_date, appt_time, service_name, status FROM appointments WHERE org_id = ? AND customer_id = ? ORDER BY appt_date DESC, appt_time DESC LIMIT 25', [$orgId, $id]),
+        ];
+    }}

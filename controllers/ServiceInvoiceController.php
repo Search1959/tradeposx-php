@@ -175,4 +175,47 @@ class ServiceInvoiceController {
         $this->model->cancel($org['id'], (int) $id, $_POST['reason'] ?? 'No reason given');
         redirect($org['slug'] . '/service-invoices/view/' . (int) $id);
     }
-}
+
+    public function editAction(?string $id = null): void {
+        $org = Tenant::current();
+        Auth::requireOrgAccess($org['id']);
+        $invoice = $this->model->find($org['id'], (int) $id);
+        if (!$invoice) { http_response_code(404); include __DIR__ . '/../views/404.php'; return; }
+        $backUrl = '/' . $org['slug'] . '/service-invoices/view/' . (int) $id;
+        if ($invoice['status'] === 'CANCELLED') { redirect($org['slug'] . '/service-invoices/view/' . (int) $id); return; }
+
+        $methods = ['CASH', 'UPI', 'BANK', 'OTHER'];
+        $error = null;
+        $values = $invoice;
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            CsrfHelper::validate();
+            $date = $_POST['invoice_date'] ?? '';
+            $validDate = preg_match('/^\d{4}-\d{2}-\d{2}$/', $date) && strtotime($date) !== false;
+            $data = [
+                'invoice_date' => $validDate ? $date : $invoice['invoice_date'],
+                'payment_method' => in_array($_POST['payment_method'] ?? '', $methods, true) ? $_POST['payment_method'] : ($invoice['payment_method'] ?? 'CASH'),
+                'notes' => trim($_POST['notes'] ?? '') ?: null,
+            ];
+            if (!$invoice['customer_id']) {
+                $data['customer_name'] = mb_substr(trim($_POST['customer_name'] ?? ''), 0, 150) ?: null;
+                $data['mobile'] = mb_substr(trim($_POST['mobile'] ?? ''), 0, 20) ?: null;
+            }
+            $this->model->updateDetails($org['id'], (int) $id, $data);
+            logActivity($org['id'], 'service_invoice_edited', 'service_invoice', (int) $id, $invoice['invoice_no']);
+            redirect($org['slug'] . '/service-invoices/view/' . (int) $id);
+            return;
+        }
+
+        $linked = (bool) $invoice['customer_id'];
+        $docTitle = 'Edit invoice';
+        $docNo = $invoice['invoice_no'];
+        $note = 'You can correct the customer details, date, payment method and notes. Services, amounts and tax are fixed — to change those, cancel this invoice and bill again.';
+        $fields = [
+            ['name' => 'customer_name', 'label' => 'Customer name', 'readonly' => $linked, 'help' => $linked ? 'Linked customer — edit their details under Service Customers.' : ''],
+            ['name' => 'mobile', 'label' => 'Customer mobile / WhatsApp', 'readonly' => $linked],
+            ['name' => 'invoice_date', 'label' => 'Invoice date', 'type' => 'date'],
+            ['name' => 'payment_method', 'label' => 'Payment method', 'type' => 'select', 'options' => $methods],
+            ['name' => 'notes', 'label' => 'Notes', 'type' => 'textarea'],
+        ];
+        require __DIR__ . '/../views/shared/doc-edit.php';
+    }}

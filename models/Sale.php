@@ -166,4 +166,17 @@ class Sale extends BaseModel {
             return false;
         }
     }
-}
+
+    /** Corrects the descriptive bits of a finished sale — never amounts or line items (void and
+     * re-bill for those so stock, Udhaar and tax stay consistent). Customer name/mobile are only
+     * editable on walk-in sales; a linked customer's details live on the Customers screen. */
+    public function updateDetails(int $orgId, int $id, array $d): bool {
+        $set = 'payment_method = ?, notes = ?';
+        $params = [$d['payment_method'], $d['notes']];
+        if (array_key_exists('customer_name', $d)) {
+            $set .= ', customer_name = ?, customer_mobile = ?';
+            array_push($params, $d['customer_name'], $d['customer_mobile']);
+        }
+        array_push($params, $orgId, $id);
+        return $this->execute("UPDATE sales SET {$set} WHERE org_id = ? AND id = ?", $params);
+    }}

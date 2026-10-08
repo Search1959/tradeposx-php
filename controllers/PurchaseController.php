@@ -187,4 +187,42 @@ class PurchaseController {
         logActivity($org['id'], 'purchase_cancelled', 'purchase', (int) $id, $reason);
         redirect($org['slug'] . '/purchases/view/' . (int) $id);
     }
-}
+
+    public function editAction(?string $id = null): void {
+        $org = Tenant::current();
+        Auth::requireOrgAccess($org['id']);
+        $purchase = $this->model->find($org['id'], (int) $id);
+        if (!$purchase) { http_response_code(404); include __DIR__ . '/../views/404.php'; return; }
+        $backUrl = '/' . $org['slug'] . '/purchases/view/' . (int) $id;
+        if ($purchase['status'] === 'CANCELLED') { redirect($org['slug'] . '/purchases/view/' . (int) $id); return; }
+
+        $methods = ['CASH', 'UPI', 'BANK', 'OTHER'];
+        $error = null;
+        $values = $purchase;
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            CsrfHelper::validate();
+            $date = $_POST['purchase_date'] ?? '';
+            $validDate = preg_match('/^\d{4}-\d{2}-\d{2}$/', $date) && strtotime($date) !== false;
+            $this->model->updateDetails($org['id'], (int) $id, [
+                'invoice_number' => mb_substr(trim($_POST['invoice_number'] ?? ''), 0, 60) ?: null,
+                'purchase_date' => $validDate ? $date : $purchase['purchase_date'],
+                'payment_method' => in_array($_POST['payment_method'] ?? '', $methods, true) ? $_POST['payment_method'] : $purchase['payment_method'],
+                'notes' => trim($_POST['notes'] ?? '') ?: null,
+            ]);
+            logActivity($org['id'], 'purchase_edited', 'purchase', (int) $id, $purchase['purchase_number']);
+            redirect($org['slug'] . '/purchases/view/' . (int) $id);
+            return;
+        }
+
+        $docTitle = 'Edit purchase';
+        $docNo = $purchase['purchase_number'];
+        $note = 'You can correct the supplier bill number, date, payment method and notes. Items, quantities and amounts are fixed — to change those, cancel this purchase and enter it again so stock and the supplier balance stay correct.';
+        $fields = [
+            ['name' => 'supplier_name', 'label' => 'Supplier', 'readonly' => true],
+            ['name' => 'invoice_number', 'label' => 'Supplier bill / invoice number'],
+            ['name' => 'purchase_date', 'label' => 'Purchase date', 'type' => 'date'],
+            ['name' => 'payment_method', 'label' => 'Payment method', 'type' => 'select', 'options' => $methods],
+            ['name' => 'notes', 'label' => 'Notes', 'type' => 'textarea'],
+        ];
+        require __DIR__ . '/../views/shared/doc-edit.php';
+    }}

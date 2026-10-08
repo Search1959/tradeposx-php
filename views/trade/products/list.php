@@ -60,6 +60,7 @@
           <div class="flex items-center gap-3 text-xs">
             <a href="<?= $base ?>/products/ledger/<?= (int)$p['id'] ?>" class="text-slate-500">Ledger</a>
             <a href="<?= $base ?>/products/edit/<?= (int)$p['id'] ?>" class="text-indigo-600 font-medium">Edit</a>
+            <a href="#" onclick="deleteOne(<?= (int)$p['id'] ?>, <?= h(json_encode($p['name'])) ?>); return false;" class="text-red-600 font-medium">Delete</a>
           </div>
         </div>
       </div>
@@ -71,7 +72,7 @@
 
   <!-- Desktop: table -->
   <div class="hidden md:block bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
-    <table class="w-full text-sm">
+    <table class="w-full text-sm sticky-actions">
       <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
         <tr>
           <th class="px-4 py-2 w-8"></th>
@@ -104,6 +105,7 @@
           <td class="px-4 py-2 text-right whitespace-nowrap">
             <a href="<?= $base ?>/products/ledger/<?= (int)$p['id'] ?>" class="text-slate-500 hover:underline text-xs">Ledger</a>
             <a href="<?= $base ?>/products/edit/<?= (int)$p['id'] ?>" class="text-indigo-600 hover:underline text-xs ml-2">Edit</a>
+            <a href="#" onclick="deleteOne(<?= (int)$p['id'] ?>, <?= h(json_encode($p['name'])) ?>); return false;" class="text-red-600 hover:underline text-xs ml-2">Delete</a>
           </td>
         </tr>
         <?php endforeach; ?>
@@ -119,7 +121,16 @@
   <?= renderPagination($page, $totalPages, $base . '/products', ['q' => $_GET['q'] ?? '']) ?>
 </div>
 
+<form method="POST" action="<?= $base ?>/products/bulk-delete" id="oneDeleteForm" class="hidden">
+  <?= CsrfHelper::getField() ?><input type="hidden" name="ids[]" id="oneDeleteId" value="">
+</form>
+
 <script>
+function deleteOne(id, name) {
+  if (!confirm('Delete "' + name + '"? This cannot be undone.')) return;
+  document.getElementById('oneDeleteId').value = id;
+  document.getElementById('oneDeleteForm').submit();
+}
 function updateCount() {
   const checked = document.querySelectorAll('.row-check:checked').length;
   document.getElementById('selectedCount').textContent = checked + ' selected';

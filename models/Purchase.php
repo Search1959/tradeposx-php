@@ -136,4 +136,20 @@ class Purchase extends BaseModel {
             return false;
         }
     }
-}
+
+    /** Supplier bill reference, date, payment method and notes only — quantities and amounts
+     * drive stock and the supplier balance, so those change by cancelling and re-entering. */
+    public function updateDetails(int $orgId, int $id, array $d): bool {
+        return $this->execute(
+            'UPDATE purchases SET invoice_number = ?, purchase_date = ?, payment_method = ?, notes = ? WHERE org_id = ? AND id = ?',
+            [$d['invoice_number'], $d['purchase_date'], $d['payment_method'], $d['notes'], $orgId, $id]
+        );
+    }
+    /** A supplier's bills, newest first (cancelled ones included, shown as such). */
+    public function forSupplier(int $orgId, int $supplierId, int $limit = 100): array {
+        return $this->query(
+            'SELECT id, purchase_number, purchase_date, invoice_number, grand_total, payment_status, status
+             FROM purchases WHERE org_id = ? AND supplier_id = ? ORDER BY id DESC LIMIT ?',
+            [$orgId, $supplierId, $limit]
+        );
+    }}

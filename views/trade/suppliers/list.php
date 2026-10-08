@@ -6,7 +6,7 @@
 </div>
 
 <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
-  <table class="w-full text-sm">
+  <table class="w-full text-sm sticky-actions">
     <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
       <tr>
         <th class="text-left px-4 py-2">Name</th>
@@ -26,7 +26,8 @@
         <td class="px-4 py-2 text-slate-600"><?= h($s['city'] ?? '') ?></td>
         <td class="px-4 py-2 text-right <?= (float)$s['outstanding_balance'] > 0 ? 'text-amber-600 font-medium' : 'text-slate-500' ?>"><?= formatCurrency((float)$s['outstanding_balance']) ?></td>
         <td class="px-4 py-2 text-right whitespace-nowrap">
-          <a href="<?= $base ?>/suppliers/edit/<?= (int)$s['id'] ?>" class="text-indigo-600 hover:underline text-xs">Edit</a>
+          <a href="<?= $base ?>/suppliers/view/<?= (int)$s['id'] ?>" class="text-indigo-600 hover:underline text-xs">View</a>
+          <a href="<?= $base ?>/suppliers/edit/<?= (int)$s['id'] ?>" class="text-slate-600 hover:underline text-xs ml-2">Edit</a>
           <form method="POST" action="<?= $base ?>/suppliers/delete/<?= (int)$s['id'] ?>" class="inline" onsubmit="return confirm('Delete this supplier?');">
             <?= CsrfHelper::getField() ?>
             <button class="text-red-600 hover:underline text-xs ml-2">Delete</button>

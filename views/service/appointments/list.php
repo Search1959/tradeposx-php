@@ -8,7 +8,7 @@ $statusColors = ['Scheduled'=>'bg-slate-100 text-slate-600','In-Progress'=>'bg-b
 </div>
 
 <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
-  <table class="w-full text-sm">
+  <table class="w-full text-sm sticky-actions">
     <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
       <tr><th class="text-left px-4 py-2">Date/Time</th><th class="text-left px-4 py-2">Customer</th><th class="text-left px-4 py-2">Service</th><th class="text-left px-4 py-2">Staff</th><th class="text-center px-4 py-2">Status</th><th class="px-4 py-2"></th></tr>
     </thead>

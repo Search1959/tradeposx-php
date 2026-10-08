@@ -10,6 +10,7 @@ $gstBreakdown = $isGst ? gstBreakdownByRate($invoice['items'], $invoice['tax_typ
     <a href="<?= $base ?>/service-invoices" class="text-sm text-slate-500">&larr; Back to Invoices</a>
     <div class="flex gap-2">
       <button onclick="window.print()" class="bg-slate-700 text-white text-sm px-3 py-1.5 rounded">Print</button>
+      <?php if ($invoice['status'] !== 'CANCELLED'): ?><a href="<?= $base ?>/service-invoices/edit/<?= (int)$invoice['id'] ?>" class="bg-white border border-slate-300 text-slate-700 text-sm px-3 py-1.5 rounded hover:bg-slate-50">Edit</a><?php endif; ?>
       <?php $billMsg = serviceInvoiceWhatsAppMessage($org, $invoice); ?>
       <?php if (!empty($invoice['mobile'])): ?>
         <a href="<?= h(whatsappLink($invoice['mobile'], $billMsg)) ?>" target="_blank" rel="noopener"

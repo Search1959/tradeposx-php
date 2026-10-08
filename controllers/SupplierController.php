@@ -73,4 +73,14 @@ class SupplierController {
         $this->model->delete($org['id'], (int) $id);
         redirect($org['slug'] . '/suppliers');
     }
-}
+
+    public function viewAction(?string $id = null): void {
+        $org = Tenant::current();
+        Auth::requireOrgAccess($org['id']);
+        $supplier = $this->model->find($org['id'], (int) $id);
+        if (!$supplier) { http_response_code(404); include __DIR__ . '/../views/404.php'; return; }
+        $purchases = (new Purchase())->forSupplier($org['id'], (int) $id);
+        $totalBought = array_sum(array_map(fn($p) => $p['status'] === 'CANCELLED' ? 0 : (float) $p['grand_total'], $purchases));
+        $pageTitle = $supplier['name'];
+        require __DIR__ . '/../views/trade/suppliers/view.php';
+    }}

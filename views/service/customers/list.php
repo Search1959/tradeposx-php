@@ -9,7 +9,7 @@
 </div>
 
 <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
-  <table class="w-full text-sm">
+  <table class="w-full text-sm sticky-actions">
     <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
       <tr><th class="text-left px-4 py-2">Name</th><th class="text-left px-4 py-2">Mobile</th><th class="text-left px-4 py-2">Sector</th><th class="text-right px-4 py-2">Total Spent</th><th class="px-4 py-2"></th></tr>
     </thead>
@@ -21,7 +21,8 @@
         <td class="px-4 py-2 text-slate-600"><?= h($c['sector'] ?? '') ?></td>
         <td class="px-4 py-2 text-right"><?= formatCurrency((float)$c['total_spent']) ?></td>
         <td class="px-4 py-2 text-right whitespace-nowrap">
-          <a href="<?= $base ?>/service-customers/edit/<?= (int)$c['id'] ?>" class="text-indigo-600 hover:underline text-xs">Edit</a>
+          <a href="<?= $base ?>/service-customers/view/<?= (int)$c['id'] ?>" class="text-indigo-600 hover:underline text-xs">View</a>
+          <a href="<?= $base ?>/service-customers/edit/<?= (int)$c['id'] ?>" class="text-slate-600 hover:underline text-xs ml-2">Edit</a>
           <form method="POST" action="<?= $base ?>/service-customers/delete/<?= (int)$c['id'] ?>" class="inline" onsubmit="return confirm('Delete this customer?');">
             <?= CsrfHelper::getField() ?>
             <button class="text-red-600 hover:underline text-xs ml-2">Delete</button>

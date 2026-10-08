@@ -130,4 +130,15 @@ class ServiceInvoice extends BaseModel {
         }
         return $ok;
     }
-}
+
+    /** Descriptive fields only (see Sale::updateDetails) — amounts, tax and payments are not editable. */
+    public function updateDetails(int $orgId, int $id, array $d): bool {
+        $set = 'invoice_date = ?, payment_method = ?, notes = ?';
+        $params = [$d['invoice_date'], $d['payment_method'], $d['notes']];
+        if (array_key_exists('customer_name', $d)) {
+            $set .= ', customer_name = ?, mobile = ?';
+            array_push($params, $d['customer_name'], $d['mobile']);
+        }
+        array_push($params, $orgId, $id);
+        return $this->execute("UPDATE service_invoices SET {$set} WHERE org_id = ? AND id = ?", $params);
+    }}

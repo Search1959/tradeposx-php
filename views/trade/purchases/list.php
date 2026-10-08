@@ -9,7 +9,7 @@
 </div>
 
 <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
-  <table class="w-full text-sm">
+  <table class="w-full text-sm sticky-actions">
     <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
       <tr>
         <th class="text-left px-4 py-2">Purchase #</th>
@@ -17,6 +17,7 @@
         <th class="text-left px-4 py-2">Invoice #</th>
         <th class="text-right px-4 py-2">Amount</th>
         <th class="text-center px-4 py-2">Status</th>
+        <th class="text-right px-4 py-2">Actions</th>
       </tr>
     </thead>
     <tbody class="divide-y divide-slate-100">
@@ -34,10 +35,22 @@
             <span class="text-xs px-2 py-0.5 rounded-full <?= $badge[$p['payment_status']] ?? '' ?>"><?= h($p['payment_status']) ?></span>
           <?php endif; ?>
         </td>
+        <td class="px-4 py-2 text-right whitespace-nowrap" onclick="event.stopPropagation()">
+          <a href="<?= $base ?>/purchases/view/<?= (int)$p['id'] ?>" class="text-indigo-600 hover:underline text-xs">View</a>
+          <?php if ($p['status'] !== 'CANCELLED'): ?>
+            <a href="<?= $base ?>/purchases/edit/<?= (int)$p['id'] ?>" class="text-slate-600 hover:underline text-xs ml-2">Edit</a>
+            <?php if ($isAdmin): ?>
+            <form method="POST" action="<?= $base ?>/purchases/cancel/<?= (int)$p['id'] ?>" class="inline" onsubmit="return confirm('Cancel this purchase? Stock and supplier balance will be reversed.') && (this.reason.value = prompt('Reason for cancelling?') || 'No reason given');">
+              <?= CsrfHelper::getField() ?><input type="hidden" name="reason" value="">
+              <button class="text-red-600 hover:underline text-xs ml-2">Cancel</button>
+            </form>
+            <?php endif; ?>
+          <?php endif; ?>
+        </td>
       </tr>
       <?php endforeach; ?>
       <?php if (empty($purchases)): ?>
-      <tr><td colspan="5" class="px-4 py-8 text-center text-slate-400">No purchases yet.</td></tr>
+      <tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">No purchases yet.</td></tr>
       <?php endif; ?>
     </tbody>
   </table>

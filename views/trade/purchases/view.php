@@ -5,6 +5,7 @@
   <div class="flex items-center gap-2">
     <a href="<?= $base ?>/purchases" class="text-sm text-slate-500">&larr; Back to Purchases</a>
     <?php if ($purchase['status'] !== 'CANCELLED'): ?>
+      <a href="<?= $base ?>/purchases/edit/<?= (int)$purchase['id'] ?>" class="bg-white border border-slate-300 text-slate-700 text-sm px-3 py-1.5 rounded hover:bg-slate-50">Edit</a>
       <form method="POST" action="<?= $base ?>/purchases/cancel/<?= (int)$purchase['id'] ?>" onsubmit="return confirm('Cancel this purchase? Stock and supplier balance will be reversed.') && (this.reason.value = prompt('Reason for cancelling?') || 'No reason given');">
         <?= CsrfHelper::getField() ?>
         <input type="hidden" name="reason" value="">

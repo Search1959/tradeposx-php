@@ -8,7 +8,7 @@ $statusColors = ['Draft'=>'bg-slate-100 text-slate-600','Sent'=>'bg-blue-100 tex
 </div>
 
 <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
-  <table class="w-full text-sm">
+  <table class="w-full text-sm sticky-actions">
     <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
       <tr><th class="text-left px-4 py-2">Quote #</th><th class="text-left px-4 py-2">Date</th><th class="text-left px-4 py-2">Customer</th><th class="text-right px-4 py-2">Amount</th><th class="text-center px-4 py-2">Status</th><th class="px-4 py-2"></th></tr>
     </thead>
@@ -21,6 +21,7 @@ $statusColors = ['Draft'=>'bg-slate-100 text-slate-600','Sent'=>'bg-blue-100 tex
         <td class="px-4 py-2 text-right font-medium"><?= formatCurrency((float)$q['grand_total']) ?></td>
         <td class="px-4 py-2 text-center"><span class="text-xs px-2 py-0.5 rounded-full <?= $statusColors[$q['status']] ?? '' ?>"><?= h(str_replace(['ConvertedToJob','ConvertedToInvoice'], ['Converted (Job)','Converted (Invoice)'], $q['status'])) ?></span></td>
         <td class="px-4 py-2 text-right whitespace-nowrap" onclick="event.stopPropagation()">
+          <a href="<?= $base ?>/service-quotations/view/<?= (int)$q['id'] ?>" class="text-indigo-600 hover:underline text-xs mr-2">View</a>
           <?php if (!$converted): ?>
             <a href="<?= $base ?>/service-quotations/edit/<?= (int)$q['id'] ?>" class="text-indigo-600 hover:underline text-xs">Edit</a>
             <form method="POST" action="<?= $base ?>/service-quotations/delete/<?= (int)$q['id'] ?>" class="inline" onsubmit="return confirm('Delete this quotation?');">

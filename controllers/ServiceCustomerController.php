@@ -75,4 +75,16 @@ class ServiceCustomerController {
         $this->model->delete($org['id'], (int) $id);
         redirect($org['slug'] . '/service-customers');
     }
-}
+
+    public function viewAction(?string $id = null): void {
+        $org = Tenant::current();
+        Auth::requireOrgAccess($org['id']);
+        $customer = $this->model->find($org['id'], (int) $id);
+        if (!$customer) { http_response_code(404); include __DIR__ . '/../views/404.php'; return; }
+        $history = $this->model->history($org['id'], (int) $id);
+        $due = 0.0;
+        foreach ($history['invoices'] as $i) { if ($i['status'] !== 'CANCELLED') $due += (float) $i['balance_amount']; }
+        foreach ($history['jobs'] as $j) { if ($j['status'] !== 'Cancelled') $due += (float) $j['balance_amount']; }
+        $pageTitle = $customer['name'];
+        require __DIR__ . '/../views/service/customers/view.php';
+    }}

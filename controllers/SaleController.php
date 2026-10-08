@@ -187,4 +187,43 @@ class SaleController {
         logActivity($org['id'], 'sale_voided', 'sale', (int) $id, $reason);
         redirect($org['slug'] . '/sales/receipt/' . (int) $id);
     }
-}
+
+    public function editAction(?string $id = null): void {
+        $org = Tenant::current();
+        Auth::requireOrgAccess($org['id']);
+        $sale = $this->model->find($org['id'], (int) $id);
+        if (!$sale) { http_response_code(404); include __DIR__ . '/../views/404.php'; return; }
+        $backUrl = '/' . $org['slug'] . '/sales/receipt/' . (int) $id;
+        if ($sale['status'] === 'CANCELLED') { redirect($org['slug'] . '/sales/receipt/' . (int) $id); return; }
+
+        $methods = ['CASH', 'UPI', 'BANK', 'OTHER', 'CREDIT'];
+        $error = null;
+        $values = $sale;
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            CsrfHelper::validate();
+            $data = [
+                'payment_method' => in_array($_POST['payment_method'] ?? '', $methods, true) ? $_POST['payment_method'] : $sale['payment_method'],
+                'notes' => trim($_POST['notes'] ?? '') ?: null,
+            ];
+            if (!$sale['customer_id']) {
+                $data['customer_name'] = mb_substr(trim($_POST['customer_name'] ?? ''), 0, 150) ?: null;
+                $data['customer_mobile'] = mb_substr(trim($_POST['customer_mobile'] ?? ''), 0, 20) ?: null;
+            }
+            $this->model->updateDetails($org['id'], (int) $id, $data);
+            logActivity($org['id'], 'sale_edited', 'sale', (int) $id, $sale['sale_number']);
+            redirect($org['slug'] . '/sales/receipt/' . (int) $id);
+            return;
+        }
+
+        $linked = (bool) $sale['customer_id'];
+        $docTitle = 'Edit invoice';
+        $docNo = $sale['sale_number'];
+        $note = 'You can correct the customer details, payment method and notes. Items, amounts and tax are fixed — to change those, void this invoice and bill again so stock and Udhaar stay correct.';
+        $fields = [
+            ['name' => 'customer_name', 'label' => 'Customer name', 'readonly' => $linked, 'help' => $linked ? 'Linked customer — edit their details under Customers / Udhaar.' : ''],
+            ['name' => 'customer_mobile', 'label' => 'Customer mobile / WhatsApp', 'readonly' => $linked],
+            ['name' => 'payment_method', 'label' => 'Payment method', 'type' => 'select', 'options' => $methods],
+            ['name' => 'notes', 'label' => 'Notes', 'type' => 'textarea'],
+        ];
+        require __DIR__ . '/../views/shared/doc-edit.php';
+    }}
