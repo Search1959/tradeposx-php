@@ -17,8 +17,11 @@ class ServiceInvoice extends BaseModel {
     }
 
     public function nextInvoiceNo(int $orgId): string {
+        // Highest existing SVI- number (not just the row count) so numbers stay unique after an invoice is deleted.
         $count = $this->count('service_invoices', 'org_id = ?', [$orgId]);
-        return 'SVI-' . str_pad((string)($count + 1), 5, '0', STR_PAD_LEFT);
+        $row = $this->queryOne("SELECT MAX(CAST(SUBSTRING(invoice_no, 5) AS UNSIGNED)) AS m FROM service_invoices WHERE org_id = ? AND invoice_no LIKE 'SVI-%'", [$orgId]);
+        $next = max($count, (int) ($row['m'] ?? 0)) + 1;
+        return 'SVI-' . str_pad((string)$next, 5, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -139,6 +142,34 @@ class ServiceInvoice extends BaseModel {
             (new SpecializedStaff())->payCommission($orgId, (int) $invoice['specialized_staff_id'], (float) $invoice['staff_commission_amount']);
         }
         return $ok;
+    }
+
+    /** Removes the invoice, its lines and payments for good. Stock and staff commission are put back first
+     * (unless it was already cancelled, which did that). */
+    public function deleteInvoice(int $orgId, int $id): bool {
+        $invoice = $this->find($orgId, $id);
+        if (!$invoice) return false;
+        $this->db->beginTransaction();
+        try {
+            if (($invoice['status'] ?? '') !== 'CANCELLED') {
+                $itemModel = new ServiceItem();
+                foreach ($invoice['items'] ?? [] as $line) {
+                    if (!empty($line['service_id'])) $itemModel->adjustStock($orgId, (int) $line['service_id'], (float) $line['quantity']);
+                }
+                if (!empty($invoice['specialized_staff_id']) && (float) $invoice['staff_commission_amount'] > 0) {
+                    (new SpecializedStaff())->payCommission($orgId, (int) $invoice['specialized_staff_id'], (float) $invoice['staff_commission_amount']);
+                }
+            }
+            $this->execute('DELETE FROM service_invoice_items WHERE invoice_id = ?', [$id]);
+            $this->execute('DELETE FROM service_payments WHERE invoice_id = ?', [$id]);
+            $this->execute('DELETE FROM service_invoices WHERE org_id = ? AND id = ?', [$orgId, $id]);
+            $this->db->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            error_log('ServiceInvoice::deleteInvoice failed: ' . $e->getMessage());
+            return false;
+        }
     }
 
     /** Descriptive fields only (see Sale::updateDetails) — amounts, tax and payments are not editable. */

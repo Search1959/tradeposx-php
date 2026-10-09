@@ -200,6 +200,19 @@ class ServiceInvoiceController {
         redirect($org['slug'] . '/service-invoices/view/' . (int) $id);
     }
 
+    public function deleteAction(?string $id = null): void {
+        $org = Tenant::current();
+        Auth::requireRole(['owner', 'admin']);
+        Auth::requireOrgAccess($org['id']);
+        CsrfHelper::validate();
+        $invoice = $this->model->find($org['id'], (int) $id);
+        if ($invoice && $this->model->deleteInvoice($org['id'], (int) $id)) {
+            logActivity($org['id'], 'service_invoice_deleted', 'service_invoice', (int) $id, $invoice['invoice_no'] . ' · ₹' . $invoice['grand_total']);
+            $_SESSION['flash_success'] = 'Invoice ' . $invoice['invoice_no'] . ' deleted. Stock was put back.';
+        }
+        redirect($org['slug'] . '/service-invoices');
+    }
+
     public function editAction(?string $id = null): void {
         $org = Tenant::current();
         Auth::requireOrgAccess($org['id']);

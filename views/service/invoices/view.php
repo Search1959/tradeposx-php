@@ -20,10 +20,10 @@ $gstBreakdown = $isGst ? gstBreakdownByRate($invoice['items'], $invoice['tax_typ
         <button type="button" data-msg="<?= h($billMsg) ?>" onclick="sendBillOnWhatsApp(this)"
                 class="bg-green-600 text-white text-sm px-3 py-1.5 rounded hover:bg-green-700">💬 WhatsApp</button>
       <?php endif; ?>
-      <?php if ($invoice['status'] !== 'CANCELLED'): ?>
-      <form method="POST" action="<?= $base ?>/service-invoices/cancel/<?= (int)$invoice['id'] ?>" onsubmit="return confirm('Cancel this invoice?') && (this.reason.value = prompt('Reason?') || 'No reason given');">
-        <?= CsrfHelper::getField() ?><input type="hidden" name="reason" value="">
-        <button class="bg-red-600 text-white text-sm px-3 py-1.5 rounded">Cancel Invoice</button>
+      <?php if ($isAdmin): ?>
+      <form method="POST" action="<?= $base ?>/service-invoices/delete/<?= (int)$invoice['id'] ?>" onsubmit="return confirm('Delete invoice <?= h($invoice['invoice_no']) ?> permanently?\n\nStock is put back. This cannot be undone.');">
+        <?= CsrfHelper::getField() ?>
+        <button class="bg-red-600 text-white text-sm px-3 py-1.5 rounded">Delete Invoice</button>
       </form>
       <?php endif; ?>
     </div>

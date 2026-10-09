@@ -42,12 +42,12 @@
           <a href="<?= $base ?>/sales/receipt/<?= (int)$s['id'] ?>" class="text-indigo-600 hover:underline text-xs">View</a>
           <?php if ($s['status'] !== 'CANCELLED'): ?>
             <a href="<?= $base ?>/sales/edit/<?= (int)$s['id'] ?>" class="text-slate-600 hover:underline text-xs ml-2">Edit</a>
-            <?php if ($isAdmin): ?>
-            <form method="POST" action="<?= $base ?>/sales/void/<?= (int)$s['id'] ?>" class="inline" onsubmit="return confirm('Void this sale? Stock and Udhaar will be reversed.') && (this.reason.value = prompt('Reason for voiding?') || 'No reason given');">
-              <?= CsrfHelper::getField() ?><input type="hidden" name="reason" value="">
-              <button class="text-red-600 hover:underline text-xs ml-2">Void</button>
-            </form>
-            <?php endif; ?>
+          <?php endif; ?>
+          <?php if ($isAdmin): ?>
+          <form method="POST" action="<?= $base ?>/sales/delete/<?= (int)$s['id'] ?>" class="inline" onsubmit="return confirm('Delete invoice <?= h($s['sale_number']) ?> permanently?\n\nStock and Udhaar are put back. This cannot be undone.');">
+            <?= CsrfHelper::getField() ?>
+            <button class="text-red-600 hover:underline text-xs ml-2">Delete</button>
+          </form>
           <?php endif; ?>
         </td>
       </tr>

@@ -32,12 +32,12 @@
           <a href="<?= $base ?>/service-invoices/view/<?= (int)$i['id'] ?>" class="text-indigo-600 hover:underline text-xs ml-2">View</a>
           <?php if ($i['status'] !== 'CANCELLED'): ?>
             <a href="<?= $base ?>/service-invoices/edit/<?= (int)$i['id'] ?>" class="text-slate-600 hover:underline text-xs ml-2">Edit</a>
-            <?php if ($isAdmin): ?>
-            <form method="POST" action="<?= $base ?>/service-invoices/cancel/<?= (int)$i['id'] ?>" class="inline" onsubmit="return confirm('Cancel this invoice?') && (this.reason.value = prompt('Reason?') || 'No reason given');">
-              <?= CsrfHelper::getField() ?><input type="hidden" name="reason" value="">
-              <button class="text-red-600 hover:underline text-xs ml-2">Cancel</button>
-            </form>
-            <?php endif; ?>
+          <?php endif; ?>
+          <?php if ($isAdmin): ?>
+          <form method="POST" action="<?= $base ?>/service-invoices/delete/<?= (int)$i['id'] ?>" class="inline" onsubmit="return confirm('Delete invoice <?= h($i['invoice_no']) ?> permanently?\n\nStock is put back. This cannot be undone.');">
+            <?= CsrfHelper::getField() ?>
+            <button class="text-red-600 hover:underline text-xs ml-2">Delete</button>
+          </form>
           <?php endif; ?>
         </td>
       </tr>

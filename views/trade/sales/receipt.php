@@ -29,11 +29,10 @@ $gstBreakdown = $isGst ? gstBreakdownByRate($sale['items'], $sale['tax_type'] ==
         <button type="button" data-msg="<?= h($billMsg) ?>" onclick="sendBillOnWhatsApp(this)"
                 class="bg-green-600 text-white text-sm px-3 py-1.5 rounded hover:bg-green-700">💬 WhatsApp</button>
       <?php endif; ?>
-      <?php if (!$sale['status']): ?>
-      <form method="POST" action="<?= $base ?>/sales/void/<?= (int)$sale['id'] ?>" onsubmit="return confirm('Void this sale? Stock and Udhaar will be reversed.') && (this.reason.value = prompt('Reason for voiding?') || 'No reason given');">
+      <?php if ($isAdmin): ?>
+      <form method="POST" action="<?= $base ?>/sales/delete/<?= (int)$sale['id'] ?>" onsubmit="return confirm('Delete invoice <?= h($sale['sale_number']) ?> permanently?\n\nStock and Udhaar are put back. This cannot be undone.');">
         <?= CsrfHelper::getField() ?>
-        <input type="hidden" name="reason" value="">
-        <button class="bg-red-600 text-white text-sm px-3 py-1.5 rounded">Void Sale</button>
+        <button class="bg-red-600 text-white text-sm px-3 py-1.5 rounded">Delete Invoice</button>
       </form>
       <?php endif; ?>
     </div>

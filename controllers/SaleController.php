@@ -200,6 +200,19 @@ class SaleController {
         redirect($org['slug'] . '/sales/receipt/' . (int) $id);
     }
 
+    public function deleteAction(?string $id = null): void {
+        $org = Tenant::current();
+        Auth::requireRole(['owner', 'admin']);
+        Auth::requireOrgAccess($org['id']);
+        CsrfHelper::validate();
+        $sale = $this->model->find($org['id'], (int) $id);
+        if ($sale && $this->model->deleteSale($org['id'], (int) $id)) {
+            logActivity($org['id'], 'sale_deleted', 'sale', (int) $id, $sale['sale_number'] . ' · ₹' . $sale['grand_total']);
+            $_SESSION['flash_success'] = 'Invoice ' . $sale['sale_number'] . ' deleted. Stock and Udhaar were put back.';
+        }
+        redirect($org['slug'] . '/sales/list');
+    }
+
     public function editAction(?string $id = null): void {
         $org = Tenant::current();
         Auth::requireOrgAccess($org['id']);

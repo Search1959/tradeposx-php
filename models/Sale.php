@@ -20,8 +20,11 @@ class Sale extends BaseModel {
     }
 
     public function nextSaleNumber(int $orgId): string {
+        // Highest existing SL- number (not just the row count) so numbers stay unique after an invoice is deleted.
         $count = $this->count('sales', 'org_id = ?', [$orgId]);
-        return 'SL-' . str_pad((string)($count + 1), 5, '0', STR_PAD_LEFT);
+        $row = $this->queryOne("SELECT MAX(CAST(SUBSTRING(sale_number, 4) AS UNSIGNED)) AS m FROM sales WHERE org_id = ? AND sale_number LIKE 'SL-%'", [$orgId]);
+        $next = max($count, (int) ($row['m'] ?? 0)) + 1;
+        return 'SL-' . str_pad((string)$next, 5, '0', STR_PAD_LEFT);
     }
 
     public function todayTotal(int $orgId): float {
@@ -126,37 +129,13 @@ class Sale extends BaseModel {
         }
     }
 
-    /** Reverses stock and any Udhaar this sale created — never hard-deletes a sale
-     * (GST/tax records must stay intact), just marks it CANCELLED. */
+    /** Marks the sale CANCELLED and reverses its stock, Udhaar and broker commission (the record stays). */
     public function voidSale(int $orgId, int $id, string $reason): bool {
         $sale = $this->find($orgId, $id);
         if (!$sale || $sale['status'] === 'CANCELLED') return false;
-
-        $productModel = new Product();
-        $invModel = new InventoryTransaction();
-
         $this->db->beginTransaction();
         try {
-            foreach ($sale['items'] as $item) {
-                if ($item['product_id']) {
-                    $productModel->adjustStock($orgId, (int) $item['product_id'], (float) $item['quantity']);
-                    $invModel->record($orgId, (int) $item['product_id'], 'SALE_CANCELLED', (float) $item['quantity'], $sale['sale_number']);
-                }
-            }
-
-            $amountOwed = max(0, (float) $sale['grand_total'] - (float) $sale['received_amount']);
-            if ($amountOwed > 0 && $sale['customer_id']) {
-                $customerModel = new Customer();
-                $txnModel = new CustomerTransaction();
-                $balanceAfter = $customerModel->adjustBalance($orgId, (int) $sale['customer_id'], -$amountOwed);
-                $txnModel->record($orgId, (int) $sale['customer_id'], 'RETURN_CREDIT', $amountOwed, $balanceAfter,
-                    null, $sale['sale_number'], 'Voided: ' . $reason);
-            }
-
-            if (!empty($sale['broker_id']) && (float) $sale['broker_commission_amount'] > 0) {
-                (new Broker())->payCommission($orgId, (int) $sale['broker_id'], (float) $sale['broker_commission_amount']);
-            }
-
+            $this->reverseEffects($orgId, $sale, 'Voided: ' . $reason, 'SALE_CANCELLED');
             $this->execute(
                 "UPDATE sales SET status = 'CANCELLED', cancel_reason = ?, cancelled_at = NOW() WHERE org_id = ? AND id = ?",
                 [$reason, $orgId, $id]
@@ -170,6 +149,49 @@ class Sale extends BaseModel {
         }
     }
 
+    /** Removes the sale and its lines for good. Stock, Udhaar and broker commission are put back first
+     * (unless a void already did that). */
+    public function deleteSale(int $orgId, int $id): bool {
+        $sale = $this->find($orgId, $id);
+        if (!$sale) return false;
+        $this->db->beginTransaction();
+        try {
+            if ($sale['status'] !== 'CANCELLED') $this->reverseEffects($orgId, $sale, 'Deleted invoice ' . $sale['sale_number'], 'SALE_CANCELLED');
+            $this->execute('DELETE FROM sale_items WHERE sale_id = ?', [$id]);
+            $this->execute('DELETE FROM sales WHERE org_id = ? AND id = ?', [$orgId, $id]);
+            $this->db->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            error_log('Sale::deleteSale failed: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /** Puts back what the sale took: stock, the Udhaar it created, the broker commission. The caller owns the transaction. */
+    private function reverseEffects(int $orgId, array $sale, string $note, string $stockReason): void {
+        $productModel = new Product();
+        $invModel = new InventoryTransaction();
+        foreach ($sale['items'] as $item) {
+            if ($item['product_id']) {
+                $productModel->adjustStock($orgId, (int) $item['product_id'], (float) $item['quantity']);
+                $invModel->record($orgId, (int) $item['product_id'], $stockReason, (float) $item['quantity'], $sale['sale_number']);
+            }
+        }
+
+        $amountOwed = max(0, (float) $sale['grand_total'] - (float) $sale['received_amount']);
+        if ($amountOwed > 0 && $sale['customer_id']) {
+            $customerModel = new Customer();
+            $txnModel = new CustomerTransaction();
+            $balanceAfter = $customerModel->adjustBalance($orgId, (int) $sale['customer_id'], -$amountOwed);
+            $txnModel->record($orgId, (int) $sale['customer_id'], 'RETURN_CREDIT', $amountOwed, $balanceAfter,
+                null, $sale['sale_number'], $note);
+        }
+
+        if (!empty($sale['broker_id']) && (float) $sale['broker_commission_amount'] > 0) {
+            (new Broker())->payCommission($orgId, (int) $sale['broker_id'], (float) $sale['broker_commission_amount']);
+        }
+    }
     /** Corrects the descriptive bits of a finished sale — never amounts or line items (void and
      * re-bill for those so stock, Udhaar and tax stay consistent). Customer name/mobile are only
      * editable on walk-in sales; a linked customer's details live on the Customers screen. */
