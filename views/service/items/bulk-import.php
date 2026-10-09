@@ -51,6 +51,18 @@
   </form>
 </div>
 
+<div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 max-w-xl mb-4" x-data="{ sector: '<?= h($org['trading_sector'] ?? '') ?>' }">
+  <h2 class="text-sm font-semibold text-slate-900 mb-1">Start with a ready-made list</h2>
+  <p class="text-sm text-slate-600 mb-3">Download a sample service list for your type of business, edit the prices in Excel, then upload it above. Every business type has one.</p>
+  <div class="flex gap-2">
+    <select x-model="sector" class="flex-1 rounded border border-slate-300 px-3 py-2 text-sm">
+      <option value="">— Choose your business type —</option>
+      <?php foreach (SectorHelper::serviceSectors() as $code => $label): ?><option value="<?= h($code) ?>"><?= h($label) ?></option><?php endforeach; ?>
+    </select>
+    <a :href="sector ? '<?= $base ?>/service-items/demo/' + sector : '#'" :class="sector ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-slate-200 text-slate-400 pointer-events-none'"
+       class="text-sm font-medium px-4 py-2 rounded whitespace-nowrap">⬇ Download</a>
+  </div>
+</div>
 <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 max-w-xl">
   <h2 class="text-sm font-semibold text-slate-900 mb-1">No menu/price list as a CSV?</h2>
   <p class="text-sm text-slate-600 mb-4">

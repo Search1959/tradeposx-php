@@ -14,18 +14,7 @@ $tradeSectors = [
     'CCTV & Security Equipment','Gym & Fitness Equipment','Ayurvedic & Herbal Products','Party & Event Supplies',
     'Paints & Hardware','Tyres & Batteries',
 ];
-$serviceSectors = [
-    'Healthcare Clinic','Doctor Clinic','Diagnostic Centre','Dental Clinic','Hospital',
-    'Salon & Beauty','Spa & Wellness','Gym & Fitness','Yoga Centre','Legal Services / Lawyer',
-    'CA & Accounting','Business Consultant','Tuition & Home Tutor','Coaching Centre','Repair Shop',
-    'AC Service & Repair','RO & Water Purifier Service','Automobile Garage','Car Wash & Detailing','Electrician Services',
-    'Plumbing Services','Pest Control','Software & IT Services','Digital Marketing Agency','Advertising & Creative Agency',
-    'Computer AMC & Support','Photography & Videography','Printing Press','Event Management','Hotel & Guesthouse',
-    'Restaurant & Cafe','Travel Agency','Real Estate','Construction & Contractor','Laundry & Dry Cleaning',
-    'Security Agency','Agriculture Services','Courier & Logistics','Finance & Loans','Govt CSC / e-Seva Centre',
-    'Religious Trust / Temple Services','Entertainment & Sports','General Service','Interior Design','Architecture Services',
-    'Tailoring & Boutique','Driving School','Veterinary Clinic','Home Cleaning Services','Catering Services',
-];
+$serviceSectors = array_values(SectorHelper::serviceSectors());
 
 // Only real, shipped capabilities below — every line here maps to an actual
 // screen/feature in the app, never a placeholder or aspirational claim.
