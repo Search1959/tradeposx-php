@@ -21,7 +21,7 @@
          x-text="interim ? '“' + interim + '”' : 'Say the item … pause … quantity … pause … rate'"></div>
     <p x-show="!listening" class="text-xs text-slate-500 mt-2">Say each item in one breath — “Coffee 2 50” (item, quantity, rate) — then pause and say the next item. Item, quantity and rate can also be said one by one. Short words work too: “q 2”, “r 50”, “2 kg”.</p>
     <div x-show="voiceError" x-cloak class="text-xs text-red-600 mt-2" x-text="voiceError"></div>
-    <span class="block text-[10px] text-slate-300 mt-1">memo v5</span>
+    <span class="block text-[10px] text-slate-300 mt-1">memo v6</span>
     <button type="button" @click="typeOpen = !typeOpen" class="mt-2 text-xs text-indigo-600 hover:underline" x-text="typeOpen ? 'Hide typing box' : 'Type instead'"></button>
   </div>
 
@@ -45,10 +45,14 @@
           <div class="grid grid-cols-[4rem_1fr_4.75rem_1.5rem] xl:grid-cols-[1fr_4rem_5rem_5rem_1.5rem] gap-2 items-center">
             <input type="text" list="memoItems" data-memo-item x-model="r.item" @change="matchRow(r)" @blur="matchRow(r)" placeholder="Item name"
                    class="col-span-4 xl:col-span-1 min-w-0 rounded border border-slate-300 px-2 py-1.5 text-sm">
-            <input type="number" step="any" min="0" x-model.number="r.qty" placeholder="1" class="w-full rounded border border-slate-300 px-2 py-1.5 text-sm text-right">
-            <input type="number" step="0.01" min="0" x-model.number="r.rate" @keydown.enter.prevent="memoEnter(i)" placeholder="0.00" class="w-full rounded border border-slate-300 px-2 py-1.5 text-sm text-right">
+            <input type="number" step="any" min="0" x-model.number="r.qty" @input="r.guess = null" placeholder="1" class="w-full rounded border border-slate-300 px-2 py-1.5 text-sm text-right">
+            <input type="number" step="0.01" min="0" x-model.number="r.rate" @input="r.guess = null" @keydown.enter.prevent="memoEnter(i)" placeholder="0.00" class="w-full rounded border border-slate-300 px-2 py-1.5 text-sm text-right">
             <div class="text-sm font-semibold text-right" x-text="memoAmount(r) > 0 ? '₹' + memoAmount(r).toFixed(2) : ''"></div>
             <button type="button" @click="memoRemove(i)" class="text-red-400 hover:text-red-600 text-sm" aria-label="Remove row">✕</button>
+          </div>
+          <div class="mt-1 text-[11px] text-amber-700 bg-amber-50 rounded px-2 py-1" x-show="r.guess" x-cloak>
+            Heard “<span x-text="r.guess"></span>” — split as <b x-text="r.qty"></b> × ₹<b x-text="r.rate"></b>.
+            <button type="button" class="underline font-medium ml-1" @click="r.qty = 1; r.rate = r.guess; r.guess = null">Use <span x-text="r.guess"></span> as the rate instead</button>
           </div>
           <div class="flex items-center gap-2 mt-1 text-[11px]" x-show="r.item.trim() !== ''">
             <template x-if="r.pid">

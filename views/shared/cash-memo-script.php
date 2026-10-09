@@ -49,7 +49,7 @@ function cashMemoMixin() {
     voiceSupported: !!(window.SpeechRecognition || window.webkitSpeechRecognition),
 
     memoInit() { this.memoAddRows(5); if (!this.voiceSupported) this.typeOpen = true; },
-    blankRow() { return { k: ++this.memoSeq, item: '', qty: '', rate: '', pid: null, gst: 18, stock: null, error: '' }; },
+    blankRow() { return { k: ++this.memoSeq, item: '', qty: '', rate: '', pid: null, gst: 18, stock: null, error: '', guess: null, step: 0 }; },
     memoAddRows(n) { for (let i = 0; i < n; i++) this.memoRows.push(this.blankRow()); },
     memoRemove(i) { this.memoRows.splice(i, 1); if (this.memoRows.length === 0) this.memoAddRows(1); },
     memoClear() { this.memoRows = []; this.memoAddRows(5); this.memoMsg = ''; this.heard = []; },
@@ -104,7 +104,8 @@ function cashMemoMixin() {
         }
         // A label was spoken but its number was not heard ("quantity date 50"): the lone number is then the other value.
         // One lone number of 100+ ( "biscuit 610" ) is far more likely a rate than a quantity.
-        if (qty === undefined && rate === undefined && !hasQ && loose.length === 1 && loose[0] >= 100) rate = loose.shift();
+        let joined;
+        if (qty === undefined && rate === undefined && !hasQ && loose.length === 1 && loose[0] >= 100) joined = loose.shift();
         if (qty === undefined && !hasQ) qty = loose.shift();
         if (rate === undefined) rate = loose.shift();
         const nums = [qty === undefined ? 1 : qty, rate];
@@ -115,6 +116,11 @@ function cashMemoMixin() {
         const p = this.bestMatch(name);
         row.item = p ? p.name : name.replace(/\b\w/g, c => c.toUpperCase());
         if (p) { row.pid = p.id; row.gst = p.gst; row.stock = p.stock; }
+        if (joined !== undefined) {
+          const sp = this.splitJoined(joined, p ? p.price : null);
+          if (sp) { qty = sp.qty; rate = sp.rate; row.guess = joined; } else { rate = joined; }
+          nums[0] = qty === undefined ? 1 : qty; nums[1] = rate;
+        }
         row.qty = nums[0] > 0 ? nums[0] : 1;
         row.rate = nums[1] !== undefined ? nums[1] : (p ? p.price : '');
         // step = what the next spoken number fills: 0 quantity, 1 rate, 2 nothing (row complete).
@@ -132,6 +138,19 @@ function cashMemoMixin() {
       this.memoText = '';
       this.memoMsg = n ? n + ' row' + (n === 1 ? '' : 's') + ' filled — check them, then Add to cart.' : 'Nothing understood — say or type "item, quantity, rate".';
     },
+    // The engine often joins "6 ... 10" into "610". Split it back: by the item's saved price when it fits, else 3 digits = 1+2, 4 digits = 2+2.
+    splitJoined(n, price) {
+      const s = String(n);
+      if (!Number.isInteger(n) || s.length < 3) return null;
+      if (price) {
+        const ps = String(Math.round(price));
+        if (s.length > ps.length && s.endsWith(ps)) return { qty: Number(s.slice(0, -ps.length)), rate: price };
+      }
+      if (s.length > 4) return null;
+      const k = s.length === 3 ? 1 : 2;
+      const rate = Number(s.slice(k));
+      return s[k] === '0' || !rate ? null : { qty: Number(s.slice(0, k)), rate };
+    },
     // One spoken phrase (the engine ends a phrase at each pause): "Coffee" ... "2" ... "50" fills item, quantity, rate in turn.
     // A phrase with words starts a new row; a phrase of only numbers goes to the next empty slot of the current row.
     voiceChunk(raw) {
@@ -142,7 +161,12 @@ function cashMemoMixin() {
       const row = this.memoRows.find(r => r.k === this.lastK);
       if (!row || row.step >= 2) { this.memoMsg = 'Say the item name first, then the quantity and rate.'; return 0; }
       for (const n of digits.split(' ').map(Number)) {
-        if (row.step === 0 && n >= 100 && !digits.includes(' ')) { row.rate = n; row.step = 2; }   // lone 100+ after the item = its rate
+        if (row.step === 0 && n >= 100 && !digits.includes(' ')) {      // lone 100+ right after the item: quantity and rate joined together
+          const known = row.pid ? this.memoItems().find(x => x.id === row.pid) : null;
+          const sp = this.splitJoined(n, known ? known.price : null);
+          if (sp) { row.qty = sp.qty; row.rate = sp.rate; row.guess = n; } else { row.rate = n; }
+          row.step = 2;
+        }
         else if (row.step === 0) { row.qty = n > 0 ? n : 1; row.step = 1; }
         else if (row.step === 1) { row.rate = n; row.step = 2; }
       }
