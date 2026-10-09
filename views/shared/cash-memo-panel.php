@@ -2,35 +2,33 @@
 <div x-show="leftTab === 'memo'" x-cloak>
   <datalist id="memoItems"><template x-for="p in memoItems()" :key="p.id"><option :value="p.name"></option></template></datalist>
 
-  <!-- Voice first: tap, speak "item, quantity, rate", say "next" for the following item. Rows fill in as you speak. -->
-  <div class="rounded-xl border border-indigo-200 bg-gradient-to-b from-indigo-50 to-white p-4 mb-3 text-center">
-    <button type="button" x-show="voiceSupported" @click="toggleVoice()"
-            :class="listening ? 'bg-red-600 animate-pulse' : 'bg-indigo-600 hover:bg-indigo-700'"
-            class="mx-auto w-full sm:w-auto sm:px-10 flex items-center justify-center gap-3 text-white font-semibold text-base rounded-full py-4 shadow-md transition">
-      <span class="text-2xl leading-none" x-text="listening ? '⏹' : '🎤'"></span>
-      <span x-text="listening ? 'Listening… tap to stop' : 'Tap and speak your list'"></span>
-    </button>
-    <p x-show="!voiceSupported" class="text-sm text-amber-700">Voice works in Chrome or Edge. You can type below instead.</p>
-    <div class="flex items-center justify-center gap-2 mt-3 text-xs text-slate-600">
-      Language
-      <select x-model="voiceLang" class="rounded border border-slate-300 px-2 py-1 bg-white text-xs">
-        <option value="en-IN">English</option><option value="hi-IN">हिन्दी</option><option value="bn-IN">বাংলা</option>
-      </select>
+  <!-- Speak one item → it appears in the box → check/edit → press Add → repeat for the next item. -->
+  <div class="rounded-xl border border-indigo-200 bg-gradient-to-b from-indigo-50 to-white p-4 mb-3">
+    <div class="flex items-stretch gap-2">
+      <button type="button" x-show="voiceSupported" @click="toggleVoice()"
+              :class="listening ? 'bg-red-600 animate-pulse' : 'bg-indigo-600 hover:bg-indigo-700'"
+              class="shrink-0 flex items-center justify-center gap-2 text-white font-semibold text-sm rounded-lg px-4 py-3 shadow transition"
+              :aria-label="listening ? 'Stop listening' : 'Speak an item'">
+        <span class="text-xl leading-none" x-text="listening ? '⏹' : '🎤'"></span>
+        <span class="hidden sm:inline" x-text="listening ? 'Listening…' : 'Speak'"></span>
+      </button>
+      <input id="memoSayBox" type="text" x-model="memoText" @keydown.enter.prevent="parseMemoText()"
+             :placeholder="listening ? 'Listening… say the item, quantity and rate' : 'What you say appears here — e.g. Coffee 2 50'"
+             class="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-3 py-3 text-sm">
+      <button type="button" @click="parseMemoText()" class="shrink-0 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm px-4 py-3 shadow">Add</button>
     </div>
-    <div x-show="listening" x-cloak class="mt-3 min-h-[1.5rem] text-sm italic text-indigo-700"
-         x-text="interim ? '“' + interim + '”' : 'Say the item … pause … quantity … pause … rate'"></div>
-    <p x-show="!listening" class="text-xs text-slate-500 mt-2">Say each item in one breath — “Coffee 2 50” (item, quantity, rate) — then pause and say the next item. Item, quantity and rate can also be said one by one. Short words work too: “q 2”, “r 50”, “2 kg”.</p>
+    <div class="flex items-center justify-between gap-2 mt-2 text-xs text-slate-600">
+      <span>Say <b>item, quantity, rate</b> in one breath — “Coffee 2 50” — then tap <b>Add</b>.</span>
+      <label class="shrink-0 flex items-center gap-1">
+        <select x-model="voiceLang" class="rounded border border-slate-300 px-1.5 py-1 bg-white text-xs">
+          <option value="en-IN">English</option><option value="hi-IN">हिन्दी</option><option value="bn-IN">বাংলা</option>
+        </select>
+      </label>
+    </div>
+    <p x-show="!voiceSupported" class="text-xs text-amber-700 mt-2">Voice works in Chrome or Edge — you can type in the box instead.</p>
     <div x-show="voiceError" x-cloak class="text-xs text-red-600 mt-2" x-text="voiceError"></div>
-    <span class="block text-[10px] text-slate-300 mt-1">memo v6</span>
-    <button type="button" @click="typeOpen = !typeOpen" class="mt-2 text-xs text-indigo-600 hover:underline" x-text="typeOpen ? 'Hide typing box' : 'Type instead'"></button>
+    <span class="block text-[10px] text-slate-300 mt-1 text-right">memo v7</span>
   </div>
-
-  <div x-show="typeOpen" x-cloak class="mb-3">
-    <textarea x-model="memoText" rows="2" placeholder="e.g.  Basin mixer 2 2500, Granite 10 180, Wall tile 50 68"
-              class="w-full rounded border border-slate-300 px-3 py-2 text-sm"></textarea>
-    <button type="button" @click="parseMemoText()" class="mt-2 text-sm font-medium px-3 py-1.5 rounded bg-indigo-600 text-white hover:bg-indigo-700">Fill rows</button>
-  </div>
-
   <div x-show="memoMsg" x-cloak class="mb-2 text-sm text-emerald-700" x-text="memoMsg"></div>
 
   <!-- The memo: heading + as many rows as needed -->

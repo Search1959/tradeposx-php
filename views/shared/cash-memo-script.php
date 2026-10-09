@@ -134,9 +134,12 @@ function cashMemoMixin() {
       return added;
     },
     parseMemoText() {
-      const n = this.parseChunk(this.memoText);
-      this.memoText = '';
-      this.memoMsg = n ? n + ' row' + (n === 1 ? '' : 's') + ' filled — check them, then Add to cart.' : 'Nothing understood — say or type "item, quantity, rate".';
+      if (this.listening) this.stopVoice();
+      const text = this.memoText.trim();
+      if (!text) { this.memoMsg = 'Tap the mic and speak, or type an item first.'; return; }
+      const n = this.parseChunk(text);
+      if (n) { this.memoText = ''; this.memoMsg = 'Added: "' + text + '" — speak the next item, or press Add to cart when done.'; }
+      else this.memoMsg = 'Could not understand "' + text + '" — edit it in the box like: Coffee 2 50';
     },
     // The engine often joins "6 ... 10" into "610". Split it back: by the item's saved price when it fits, else 3 digits = 1+2, 4 digits = 2+2.
     splitJoined(n, price) {
@@ -151,71 +154,29 @@ function cashMemoMixin() {
       const rate = Number(s.slice(k));
       return s[k] === '0' || !rate ? null : { qty: Number(s.slice(0, k)), rate };
     },
-    // One spoken phrase (the engine ends a phrase at each pause): "Coffee" ... "2" ... "50" fills item, quantity, rate in turn.
-    // A phrase with words starts a new row; a phrase of only numbers goes to the next empty slot of the current row.
-    voiceChunk(raw) {
-      raw = splitGlued(raw);
-      const digits = wordsToDigits(raw.trim().toLowerCase().replace(new RegExp('\\b(' + HOMO_RE + ')\\b', 'g'), w => HOMO[w]))
-        .replace(new RegExp('\\b(' + QTY_WORDS + '|' + UNIT_WORDS + '|' + RATE_WORDS + ')\\b|[₹@.,:;!?]', 'g'), ' ').replace(/\s+/g, ' ').trim();
-      if (!/^\d+(\s+\d+)?$/.test(digits)) return this.parseChunk(raw);        // has an item name -> new row (or a full "item 2 50" phrase)
-      const row = this.memoRows.find(r => r.k === this.lastK);
-      if (!row || row.step >= 2) { this.memoMsg = 'Say the item name first, then the quantity and rate.'; return 0; }
-      for (const n of digits.split(' ').map(Number)) {
-        if (row.step === 0 && n >= 100 && !digits.includes(' ')) {      // lone 100+ right after the item: quantity and rate joined together
-          const known = row.pid ? this.memoItems().find(x => x.id === row.pid) : null;
-          const sp = this.splitJoined(n, known ? known.price : null);
-          if (sp) { row.qty = sp.qty; row.rate = sp.rate; row.guess = n; } else { row.rate = n; }
-          row.step = 2;
-        }
-        else if (row.step === 0) { row.qty = n > 0 ? n : 1; row.step = 1; }
-        else if (row.step === 1) { row.rate = n; row.step = 2; }
-      }
-      this.heard.push(raw.trim());
-      return 1;
-    },
+    // Voice -> text box (visible, editable). The person then taps "Add" to put ONE entry into the memo, and repeats for the next item.
     toggleVoice() { this.listening ? this.stopVoice() : this.startVoice(); },
     startVoice() {
       const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SR) { this.voiceError = 'Voice input needs Chrome or Edge.'; this.typeOpen = true; return; }
-      this.voiceError = ''; this.memoMsg = ''; this.wantListening = true;
-      let failed = false, handled = -1;
+      if (!SR) { this.voiceError = 'Voice input needs Chrome or Edge — type in the box instead.'; return; }
+      this.voiceError = ''; this.memoMsg = ''; this.memoText = '';
       const rec = new SR();
-      rec.lang = this.voiceLang; rec.continuous = true; rec.interimResults = true;
+      rec.lang = this.voiceLang; rec.continuous = false; rec.interimResults = true;
       rec.onresult = (e) => {
-        let interim = '';
-        for (let i = e.resultIndex; i < e.results.length; i++) {
-          const res = e.results[i];
-          if (res.isFinal) {
-            if (i <= handled) continue;           // already processed in this listening session
-            handled = i;
-            const said = res[0].transcript.trim();
-            const now = Date.now();
-            if (said && said === this.lastSaid && now - this.lastSaidAt < 2000) continue;   // engine repeated itself
-            this.lastSaid = said; this.lastSaidAt = now;
-            let n = 0;
-            try { n = this.voiceChunk(said); }
-            catch (err) { this.voiceError = 'Could not read that phrase (' + err.message + '). Please type it instead.'; }
-            // Always show what the microphone heard, so a miss is visible instead of silent.
-            this.memoMsg = n ? 'Heard: "' + said + '"' : (this.memoMsg && this.memoMsg.indexOf('Say the item') === 0 ? this.memoMsg : 'Heard "' + said + '" — not understood. Say it like: Coffee 2 50');
-          } else { interim += res[0].transcript; }
-        }
-        this.interim = interim;
+        let t = '';
+        for (let i = 0; i < e.results.length; i++) t += e.results[i][0].transcript + ' ';
+        this.memoText = t.trim();            // shows in the box while speaking; stays there to check or edit
       };
       rec.onerror = (e) => {
-        if (e.error === 'no-speech' || e.error === 'aborted') return;
-        failed = true; this.wantListening = false;
+        if (e.error === 'no-speech') { this.voiceError = 'Did not hear anything — tap the mic and speak again.'; return; }
+        if (e.error === 'aborted') return;
         this.voiceError = e.error === 'not-allowed' ? 'Microphone is blocked — allow it in the browser address bar, then tap again.' : 'Voice error: ' + e.error;
       };
-      // Chrome ends continuous recognition after a pause — keep listening until the user taps Stop.
-      rec.onend = () => {
-        this.interim = ''; handled = -1;      // a restarted session numbers its results from 0 again
-        if (this.wantListening && !failed) { try { rec.start(); return; } catch (err) { /* fall through */ } }
-        this.listening = false;
-      };
+      rec.onend = () => { this.listening = false; this.interim = ''; const box = document.getElementById('memoSayBox'); if (box && this.memoText) box.focus(); };
       this.rec = rec;
-      try { rec.start(); this.listening = true; } catch (err) { this.voiceError = 'Could not start the microphone.'; this.wantListening = false; }
+      try { rec.start(); this.listening = true; } catch (err) { this.voiceError = 'Could not start the microphone.'; }
     },
-    stopVoice() { this.wantListening = false; this.listening = false; if (this.rec) { try { this.rec.stop(); } catch (e) {} } this.interim = ''; },
+    stopVoice() { this.listening = false; if (this.rec) { try { this.rec.stop(); } catch (e) {} } },
     // Submit: every filled row goes to the cart (catalogue items at the memo rate, the rest as free items).
     memoSubmit() {
       if (this.listening) this.stopVoice();
