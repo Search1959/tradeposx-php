@@ -141,4 +141,10 @@ class ServiceInvoice extends BaseModel {
         }
         array_push($params, $orgId, $id);
         return $this->execute("UPDATE service_invoices SET {$set} WHERE org_id = ? AND id = ?", $params);
+    }
+    public function forExport(int $orgId, ?string $from, ?string $to): array {
+        $sql = 'SELECT * FROM service_invoices WHERE org_id = ?'; $p = [$orgId];
+        if ($from) { $sql .= ' AND invoice_date >= ?'; $p[] = $from; }
+        if ($to)   { $sql .= ' AND invoice_date <= ?'; $p[] = $to; }
+        return $this->query($sql . ' ORDER BY invoice_date, id', $p);
     }}

@@ -179,4 +179,11 @@ class Sale extends BaseModel {
         }
         array_push($params, $orgId, $id);
         return $this->execute("UPDATE sales SET {$set} WHERE org_id = ? AND id = ?", $params);
+    }
+    /** Every sale in the (optional) date range, oldest first, for the accountant export. */
+    public function forExport(int $orgId, ?string $from, ?string $to): array {
+        $sql = 'SELECT * FROM sales WHERE org_id = ?'; $p = [$orgId];
+        if ($from) { $sql .= ' AND DATE(created_at) >= ?'; $p[] = $from; }
+        if ($to)   { $sql .= ' AND DATE(created_at) <= ?'; $p[] = $to; }
+        return $this->query($sql . ' ORDER BY created_at, id', $p);
     }}

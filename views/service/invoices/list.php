@@ -2,7 +2,10 @@
 
 <div class="flex items-center justify-between mb-4">
   <h1 class="text-xl font-semibold text-slate-900">Service Invoices</h1>
-  <a href="<?= $base ?>/service-invoices/new" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">+ New Invoice</a>
+  <div class="flex items-center gap-2">
+    <?php if ($isAdmin): $exportUrl = $base . '/service-invoices/export'; require __DIR__ . '/../../shared/export-menu.php'; endif; ?>
+    <a href="<?= $base ?>/service-invoices/new" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">+ New Invoice</a>
+  </div>
 </div>
 
 <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">

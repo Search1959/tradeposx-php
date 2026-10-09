@@ -226,4 +226,34 @@ class SaleController {
             ['name' => 'notes', 'label' => 'Notes', 'type' => 'textarea'],
         ];
         require __DIR__ . '/../views/shared/doc-edit.php';
+    }
+    /** GET /sales/export?from=&to= — invoice register as CSV (owner/admin only: it's the whole sales book). */
+    public function exportAction(): void {
+        $org = Tenant::current();
+        Auth::requireRole(['owner', 'admin']);
+        Auth::requireOrgAccess($org['id']);
+        $from = CsvExport::dateParam($_GET['from'] ?? null);
+        $to = CsvExport::dateParam($_GET['to'] ?? null);
+
+        $rows = [];
+        foreach ($this->model->forExport($org['id'], $from, $to) as $s) {
+            $cancelled = $s['status'] === 'CANCELLED';
+            $tax = (float) $s['total_tax_amount'];
+            $grand = (float) $s['grand_total'];
+            $taxable = $s['taxable_amount'] !== null ? (float) $s['taxable_amount'] : round($grand - $tax, 2);
+            $received = (float) $s['received_amount'];
+            $cgst = $s['cgst_amount'] !== null ? (float) $s['cgst_amount'] : round($tax / 2, 2);
+            $rows[] = [
+                $s['sale_number'], substr($s['created_at'], 0, 10), $s['customer_name'] ?: 'Walk-in', $s['customer_mobile'], $s['customer_gstin'],
+                (float) $s['subtotal'], (float) $s['discount'], $taxable, $cgst, $tax - $cgst, $tax, $grand,
+                $s['payment_method'], $s['payment_status'], $received, $cancelled ? 0 : max(0, round($grand - $received, 2)),
+                $cancelled ? 'Cancelled' : 'Active', $s['notes'],
+            ];
+        }
+        $label = ($from ?: 'all') . '_' . ($to ?: 'all');
+        logActivity($org['id'], 'invoices_exported', 'sale', 0, "{$label} rows=" . count($rows));
+        CsvExport::send("invoices_{$org['slug']}_{$label}.csv", [
+            'Invoice No', 'Date', 'Customer', 'Mobile', 'Customer GSTIN', 'Items Total', 'Discount', 'Taxable Amount', 'CGST', 'SGST', 'Total GST',
+            'Grand Total', 'Payment Method', 'Payment Status', 'Received', 'Balance', 'Status', 'Notes',
+        ], $rows);
     }}

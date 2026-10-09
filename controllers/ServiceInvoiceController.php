@@ -218,4 +218,32 @@ class ServiceInvoiceController {
             ['name' => 'notes', 'label' => 'Notes', 'type' => 'textarea'],
         ];
         require __DIR__ . '/../views/shared/doc-edit.php';
+    }
+    /** GET /service-invoices/export?from=&to= — invoice register as CSV (owner/admin only). */
+    public function exportAction(): void {
+        $org = Tenant::current();
+        Auth::requireRole(['owner', 'admin']);
+        Auth::requireOrgAccess($org['id']);
+        $from = CsvExport::dateParam($_GET['from'] ?? null);
+        $to = CsvExport::dateParam($_GET['to'] ?? null);
+
+        $rows = [];
+        foreach ($this->model->forExport($org['id'], $from, $to) as $i) {
+            $cancelled = $i['status'] === 'CANCELLED';
+            $tax = (float) $i['gst_amount'];
+            $grand = (float) $i['grand_total'];
+            $taxable = $i['taxable_amount'] !== null ? (float) $i['taxable_amount'] : round($grand - $tax, 2);
+            $cgst = $i['cgst_amount'] !== null ? (float) $i['cgst_amount'] : round($tax / 2, 2);
+            $rows[] = [
+                $i['invoice_no'], $i['invoice_date'], $i['customer_name'] ?: 'Walk-in', $i['mobile'],
+                (float) $i['labour_charges'], (float) $i['discount'], $taxable, $cgst, $tax - $cgst, $tax, $grand,
+                (float) $i['paid_amount'], $cancelled ? 0 : (float) $i['balance_amount'], $i['payment_method'], $cancelled ? 'Cancelled' : $i['status'], $i['notes'],
+            ];
+        }
+        $label = ($from ?: 'all') . '_' . ($to ?: 'all');
+        logActivity($org['id'], 'invoices_exported', 'service_invoice', 0, "{$label} rows=" . count($rows));
+        CsvExport::send("service_invoices_{$org['slug']}_{$label}.csv", [
+            'Invoice No', 'Date', 'Customer', 'Mobile', 'Labour Charges', 'Discount', 'Taxable Amount', 'CGST', 'SGST', 'Total GST',
+            'Grand Total', 'Paid', 'Balance', 'Payment Method', 'Status', 'Notes',
+        ], $rows);
     }}
