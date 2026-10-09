@@ -252,7 +252,7 @@ function posScreen() {
     },
 
     // ── hooks used by the shared cash memo (views/shared/cash-memo-script.php) ──
-    memoItems() { return this.products.map(p => ({ id: p.id, name: p.name, price: p.selling_price, gst: p.gst_percent, stock: Number(p.current_stock) })); },
+    memoItems() { return this.products.map(p => ({ id: p.id, name: p.name, price: p.selling_price, gst: p.gst_percent, stock: Number(p.current_stock), unit: p.unit })); },
     memoPushCatalog(p, qty, rate) {
       const existing = this.cart.find(l => l.id === p.id);
       if (existing) { existing.qty += qty; existing.price = rate; }

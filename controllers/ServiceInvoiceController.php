@@ -66,7 +66,7 @@ class ServiceInvoiceController {
                     if (!$service) continue;
                     $itemName = $service['name'];
                     $serviceId = $service['id'];
-                    $qty = max(1, (float) ($line['qty'] ?? 1));
+                    $qty = max(0.001, (float) ($line['qty'] ?? 1));
                     // A bargained price typed into the cart overrides the item's own price for this invoice
                     // only — floored at 0; the item's own master price is never touched by this.
                     $unitPrice = isset($line['price']) ? max(0, (float) $line['price']) : (float) $service['price'];

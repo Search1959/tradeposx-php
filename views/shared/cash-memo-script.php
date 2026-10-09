@@ -35,7 +35,19 @@ function cashMemoMixin() {
 
   // Short forms are understood too: "q 2", "qty 2", "2 pc", "2 kg" for quantity; "r 50", "rs 50", "@ 50" for rate.
   const QTY_WORDS = 'quantity|qty|qt|q|pieces?|pcs|pc|nos';
-  const UNIT_WORDS = 'kgs?|gms?|g|ltrs?|litres?|liters?|dozen|dz|packets?|pkt|box(?:es)?|bags?|strips?';
+  const UNIT_WORDS = 'kgs?|kilos?|kilograms?|gms?|g|grams?|grammes?|ltrs?|litres?|liters?|ml|mls|dozen|dz|packets?|pkt|box(?:es)?|bags?|strips?|sets?|meters?|metres?|mtrs?|cm|ft|feet';
+  // Measuring units. Weight, volume and length convert to a base unit (the rate is "per kg", "per ltr", "per m"); counted units stand alone.
+  const UNIT_DEF = {
+    pcs: { base: 'pcs', f: 1 }, dozen: { base: 'dozen', f: 1 }, box: { base: 'box', f: 1 }, pkt: { base: 'pkt', f: 1 }, bag: { base: 'bag', f: 1 }, strip: { base: 'strip', f: 1 }, set: { base: 'set', f: 1 },
+    kg: { base: 'kg', f: 1 }, g: { base: 'kg', f: 0.001 }, ltr: { base: 'ltr', f: 1 }, ml: { base: 'ltr', f: 0.001 },
+    m: { base: 'm', f: 1 }, cm: { base: 'm', f: 0.01 }, ft: { base: 'm', f: 0.3048 },
+  };
+  const UNIT_ALIAS = { pc: 'pcs', pcs: 'pcs', piece: 'pcs', pieces: 'pcs', nos: 'pcs', no: 'pcs', unit: 'pcs', units: 'pcs', dozen: 'dozen', dz: 'dozen', box: 'box', boxes: 'box', pkt: 'pkt', packet: 'pkt', packets: 'pkt', pack: 'pkt',
+    bag: 'bag', bags: 'bag', strip: 'strip', strips: 'strip', set: 'set', sets: 'set',
+    kg: 'kg', kgs: 'kg', kilo: 'kg', kilos: 'kg', kilogram: 'kg', kilograms: 'kg', g: 'g', gm: 'g', gms: 'g', gram: 'g', grams: 'g', gramme: 'g', grammes: 'g',
+    ltr: 'ltr', ltrs: 'ltr', l: 'ltr', lt: 'ltr', litre: 'ltr', litres: 'ltr', liter: 'ltr', liters: 'ltr', ml: 'ml', mls: 'ml',
+    m: 'm', mtr: 'm', mtrs: 'm', meter: 'm', meters: 'm', metre: 'm', metres: 'm', cm: 'cm', ft: 'ft', feet: 'ft', foot: 'ft' };
+  const normUnit = w => UNIT_ALIAS[String(w || '').trim().toLowerCase().replace(/\.$/, '')] || null;
   const RATE_WORDS = 'rate|price|rs|rupees?|rupee|each|r|at';
   const HOMO = { to: 2, too: 2, tu: 2, won: 1, tree: 3, free: 3, fore: 4, for: 4, fife: 5, ate: 8 };
   /** Engines often glue the short words to their numbers ("Q2 R50", "2kg", "₹50") — split them apart first. */
@@ -49,11 +61,14 @@ function cashMemoMixin() {
     voiceSupported: !!(window.SpeechRecognition || window.webkitSpeechRecognition),
 
     memoInit() { this.memoAddRows(5); if (!this.voiceSupported) this.typeOpen = true; },
-    blankRow() { return { k: ++this.memoSeq, item: '', qty: '', rate: '', pid: null, gst: 18, stock: null, error: '', guess: null, step: 0 }; },
+    blankRow() { return { k: ++this.memoSeq, item: '', qty: '', rate: '', pid: null, gst: 18, stock: null, error: '', guess: null, step: 0, unit: 'pcs' }; },
+    unitInfo(r) { return UNIT_DEF[r.unit] || UNIT_DEF.pcs; },
+    // Quantity in the unit the rate is quoted in (500 g at a per-kg rate -> 0.5).
+    baseQty(r) { const q = Number(r.qty) || (r.item.trim() ? 1 : 0); return Math.round(q * this.unitInfo(r).f * 1000) / 1000; },
     memoAddRows(n) { for (let i = 0; i < n; i++) this.memoRows.push(this.blankRow()); },
     memoRemove(i) { this.memoRows.splice(i, 1); if (this.memoRows.length === 0) this.memoAddRows(1); },
     memoClear() { this.memoRows = []; this.memoAddRows(5); this.memoMsg = ''; this.heard = []; },
-    memoAmount(r) { return (Number(r.qty) || (r.item.trim() ? 1 : 0)) * (Number(r.rate) || 0); },
+    memoAmount(r) { return this.baseQty(r) * (Number(r.rate) || 0); },
     memoTotal() { return this.memoRows.reduce((s, r) => s + this.memoAmount(r), 0); },
     memoEnter(i) {
       if (i === this.memoRows.length - 1) this.memoAddRows(1);
@@ -63,7 +78,7 @@ function cashMemoMixin() {
     matchRow(r) {
       const name = r.item.trim().toLowerCase();
       const p = name ? this.memoItems().find(x => x.name.toLowerCase() === name) : null;
-      if (p) { r.pid = p.id; r.gst = p.gst; r.stock = p.stock; if (r.rate === '' || r.rate === null) r.rate = p.price; }
+      if (p) { r.pid = p.id; r.gst = p.gst; r.stock = p.stock; if (r.rate === '' || r.rate === null) r.rate = p.price; if (r.unit === 'pcs' && normUnit(p.unit)) r.unit = normUnit(p.unit); }
       else { r.pid = null; r.stock = null; }
       r.error = '';
     },
@@ -91,13 +106,14 @@ function cashMemoMixin() {
         const NUM = /(?<![\w.])\d+(?:\.\d+)?(?![\w])/g; // standalone numbers only, so "10000mAh" stays part of the name
         // The spoken labels decide which number is which: "quantity 2", "rate 50", "2 pieces", "50 rupees".
         const hasQ = new RegExp('\\b(' + QTY_WORDS + ')\\b', 'i').test(seg);
-        const qBefore = new RegExp('^(quantity|qty|qt|q)$'), qAfter = new RegExp('^(' + QTY_WORDS.replace('|q|', '|') + '|' + UNIT_WORDS + ')$');
+        const qBefore = new RegExp('^(quantity|qty|qt|q)$'), qAfter = new RegExp('^(' + QTY_WORDS.replace('|q|', '|') + '|' + UNIT_WORDS + ')$', 'i');
         const rBefore = /^(rate|price|rs|rupees?|at|r|@|₹)$/, rAfter = /^(rupees?|rs|each)$/;
-        let qty, rate; const loose = [];
+        let qty, rate, unit; const loose = [];
         for (const m of seg.matchAll(NUM)) {
           const before = (seg.slice(0, m.index).match(/(\S+)\s*$/) || [, ''])[1].toLowerCase();
           const after = (seg.slice(m.index + m[0].length).match(/^\s*(\S+)/) || [, ''])[1].toLowerCase();
           const v = Number(m[0]);
+          if (!unit && normUnit(after)) unit = normUnit(after);      // "500 gram", "2 kg", "3 dozen"
           if (qBefore.test(before) || qAfter.test(after)) { if (qty === undefined) qty = v; else loose.push(v); }
           else if (rBefore.test(before) || (rAfter.test(after) && !/^\s*\S+\s+[\d₹]/.test(seg.slice(m.index + m[0].length)))) { if (rate === undefined) rate = v; else loose.push(v); }
           else loose.push(v);
@@ -122,6 +138,7 @@ function cashMemoMixin() {
           nums[0] = qty === undefined ? 1 : qty; nums[1] = rate;
         }
         row.qty = nums[0] > 0 ? nums[0] : 1;
+        row.unit = unit || (p && normUnit(p.unit)) || 'pcs';
         row.rate = nums[1] !== undefined ? nums[1] : (p ? p.price : '');
         // step = what the next spoken number fills: 0 quantity, 1 rate, 2 nothing (row complete).
         row.step = rate !== undefined ? 2 : (qty !== undefined ? 1 : 0);
@@ -220,10 +237,12 @@ function cashMemoMixin() {
         return;
       }
       for (const r of used) {
-        const qty = Number(r.qty) > 0 ? Number(r.qty) : 1;
+        const qty = this.baseQty({ ...r, qty: Number(r.qty) > 0 ? Number(r.qty) : 1 });
         const rate = Number(r.rate);
         const p = r.pid ? this.memoItems().find(x => x.id === r.pid) : null;
-        if (p) this.memoPushCatalog(p, qty, rate); else this.memoPushFree(r.item.trim(), qty, rate, Number(r.gst) || 0);
+        const base = this.unitInfo(r).base;
+        if (p) this.memoPushCatalog(p, qty, rate);
+        else this.memoPushFree(r.item.trim() + (base !== 'pcs' ? ' (' + base + ')' : ''), qty, rate, Number(r.gst) || 0);
       }
       this.memoErr = '';
       this.memoMsg = used.length + ' item' + (used.length === 1 ? '' : 's') + ' added to the cart.';

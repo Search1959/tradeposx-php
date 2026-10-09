@@ -27,7 +27,7 @@
     </div>
     <p x-show="!voiceSupported" class="text-xs text-amber-700 mt-2">Voice works in Chrome or Edge — you can type in the box instead.</p>
     <div x-show="voiceError" x-cloak class="text-xs text-red-600 mt-2" x-text="voiceError"></div>
-    <span class="block text-[10px] text-slate-300 mt-1 text-right">memo v9</span>
+    <span class="block text-[10px] text-slate-300 mt-1 text-right">memo v10</span>
   </div>
   <div x-show="memoMsg" x-cloak class="mb-2 text-sm text-emerald-700" x-text="memoMsg"></div>
 
@@ -52,7 +52,7 @@
             Heard “<span x-text="r.guess"></span>” — split as <b x-text="r.qty"></b> × ₹<b x-text="r.rate"></b>.
             <button type="button" class="underline font-medium ml-1" @click="r.qty = 1; r.rate = r.guess; r.guess = null">Use <span x-text="r.guess"></span> as the rate instead</button>
           </div>
-          <div class="flex items-center gap-2 mt-1 text-[11px]" x-show="r.item.trim() !== ''">
+          <div class="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1 text-[11px]" x-show="r.item.trim() !== ''">
             <template x-if="r.pid">
               <span :class="r.stock !== null && (r.qty || 1) > r.stock ? 'text-amber-600 font-medium' : 'text-slate-400'"
                     x-text="r.stock === null ? 'From your list · GST ' + r.gst + '%' : ((r.qty || 1) > r.stock ? 'Only ' + Math.max(0, r.stock) + ' in stock' : r.stock + ' in stock · GST ' + r.gst + '%')"></span>
@@ -63,6 +63,16 @@
                   <option value="0">0%</option><option value="5">5%</option><option value="12">12%</option><option value="18">18%</option><option value="28">28%</option>
                 </select></span>
             </template>
+            <span class="flex items-center gap-1 text-slate-500 ml-auto">Unit
+              <select x-model="r.unit" class="rounded border border-slate-300 px-1 py-0.5 text-[11px] bg-white">
+                <optgroup label="Count"><option value="pcs">pcs</option><option value="dozen">dozen</option><option value="box">box</option><option value="pkt">packet</option><option value="bag">bag</option><option value="strip">strip</option><option value="set">set</option></optgroup>
+                <optgroup label="Weight"><option value="kg">kg</option><option value="g">gram</option></optgroup>
+                <optgroup label="Volume"><option value="ltr">litre</option><option value="ml">ml</option></optgroup>
+                <optgroup label="Length"><option value="m">metre</option><option value="cm">cm</option><option value="ft">feet</option></optgroup>
+              </select>
+              <span x-show="unitInfo(r).base !== 'pcs'" class="text-slate-400" x-text="'· rate per ' + unitInfo(r).base"></span>
+              <span x-show="unitInfo(r).f !== 1" class="text-indigo-600 font-medium" x-text="'= ' + baseQty(r) + ' ' + unitInfo(r).base"></span>
+            </span>
             <span x-show="r.error" class="text-red-600 font-medium" x-text="r.error"></span>
           </div>
         </div>

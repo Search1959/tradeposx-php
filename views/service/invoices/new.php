@@ -77,7 +77,7 @@
         <div class="py-2">
           <div class="flex items-center gap-2">
             <div class="flex-1 min-w-0 text-sm font-medium text-slate-900 truncate" x-text="line.name"></div>
-            <input type="number" step="1" min="1" x-model.number="line.qty" @blur="clampQty(line)" class="w-14 rounded border border-slate-300 px-2 py-1 text-sm text-right">
+            <input type="number" step="0.001" min="0.001" x-model.number="line.qty" @blur="clampQty(line)" class="w-16 rounded border border-slate-300 px-2 py-1 text-sm text-right">
             <span class="text-sm font-semibold w-20 text-right" x-text="'₹' + (line.qty * line.price).toFixed(2)"></span>
             <button type="button" @click="cart.splice(idx,1)" class="text-red-500 text-xs">✕</button>
           </div>
@@ -252,7 +252,7 @@ function invoiceScreen() {
     },
     memoPushFree(name, qty, rate, gst) { this.cart.push({ id: -(++this.customSeq), custom: true, name, price: rate, originalPrice: rate, gst, qty, staff_id: 0, stock: null }); },
     memoDone() { this.activeTab = 'invoice'; },
-    clampQty(line) { if (!line.qty || line.qty < 1) line.qty = 1; },
+    clampQty(line) { if (!line.qty || line.qty < 0.001) line.qty = 1; },
     // Only clamps a negative/blank price back to 0 on blur (not on every
     // keystroke) — ₹0 itself is left alone since giving a service away is a
     // legitimate bargain outcome.
