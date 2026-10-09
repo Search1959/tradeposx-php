@@ -72,20 +72,37 @@ function cashMemoMixin() {
     // "Basin mixer 2 2500, granite 10 180" or "basin mixer two twenty five hundred next ..." -> rows. First number = quantity, second = rate.
     parseChunk(raw) {
       const filler = /\b(quantity|qty|pieces|piece|pcs|nos|number|at|rate|price|rs|rupees|rupee|each|of|x|for)\b|@|₹/gi;
-      const text = wordsToDigits(raw);
+      // Speech engines often hear "two" as "to/too" and "four" as "for" right after the words quantity / rate.
+      const HOMO = { to: 2, too: 2, tu: 2, won: 1, tree: 3, free: 3, fore: 4, for: 4, fife: 5, ate: 8 };
+      const fixed = raw.replace(/\b(quantity|qty|rate|price|rupees|rs|at|pieces|nos)\s+(to|too|tu|won|tree|free|fore|for|fife|ate)\b/gi, (m, k, w) => k + ' ' + HOMO[w.toLowerCase()]);
+      const text = wordsToDigits(fixed);
       const segs = text.replace(/\b(next|then|aur|and next)\b/gi, '\n').split(/[\n;,]+/).map(t => t.trim()).filter(Boolean);
       let added = 0;
       for (const seg of segs) {
         const NUM = /(?<![\w.])\d+(?:\.\d+)?(?![\w])/g; // standalone numbers only, so "10000mAh" stays part of the name
-        const nums = [...seg.matchAll(NUM)].map(m => Number(m[0]));
-        const name = seg.replace(NUM, ' ').replace(filler, ' ').replace(/\s+/g, ' ').trim();
+        // The spoken labels decide which number is which: "quantity 2", "rate 50", "2 pieces", "50 rupees".
+        const hasQ = /\b(quantity|qty|pieces|piece|pcs|nos)\b/i.test(seg);
+        let qty, rate; const loose = [];
+        for (const m of seg.matchAll(NUM)) {
+          const before = (seg.slice(0, m.index).match(/(\S+)\s*$/) || [, ''])[1].toLowerCase();
+          const after = (seg.slice(m.index + m[0].length).match(/^\s*(\S+)/) || [, ''])[1].toLowerCase();
+          const v = Number(m[0]);
+          if (/^(quantity|qty)$/.test(before) || /^(pieces?|pcs|nos)$/.test(after)) { if (qty === undefined) qty = v; else loose.push(v); }
+          else if (/^(rate|price|rs|rupees?|at|@|₹)$/.test(before) || /^(rupees?|rs|each)$/.test(after)) { if (rate === undefined) rate = v; else loose.push(v); }
+          else loose.push(v);
+        }
+        // A label was spoken but its number was not heard ("quantity date 50"): the lone number is then the other value.
+        if (qty === undefined && !hasQ) qty = loose.shift();
+        if (rate === undefined) rate = loose.shift();
+        const nums = [qty === undefined ? 1 : qty, rate];
+        const name = seg.replace(/\b(quantity|qty)\s+[a-z]+(?=\s+\d)/gi, ' ').replace(NUM, ' ').replace(filler, ' ').replace(/\s+/g, ' ').trim();
         if (!name) continue;
         const row = this.blankRow();
         const p = this.bestMatch(name);
         row.item = p ? p.name : name.replace(/\b\w/g, c => c.toUpperCase());
         if (p) { row.pid = p.id; row.gst = p.gst; row.stock = p.stock; }
-        row.qty = nums.length ? nums[0] : 1;
-        row.rate = nums.length > 1 ? nums[1] : (p ? p.price : '');
+        row.qty = nums[0];
+        row.rate = nums[1] !== undefined ? nums[1] : (p ? p.price : '');
         const blank = this.memoRows.findIndex(r => r.item.trim() === '' && r.qty === '' && r.rate === '');
         if (blank >= 0) this.memoRows.splice(blank, 1, row); else this.memoRows.push(row);
         added++;
