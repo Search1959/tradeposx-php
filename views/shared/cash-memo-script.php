@@ -45,7 +45,7 @@ function cashMemoMixin() {
   return {
     leftTab: 'stock',
     memoRows: [], memoSeq: 0, memoText: '', memoMsg: '', voiceError: '', voiceLang: 'en-IN',
-    memoErr: '', lastK: 0, listening: false, wantListening: false, rec: null, interim: '', heard: [], typeOpen: false,
+    memoErr: '', lastSaid: '', lastSaidAt: 0, lastK: 0, listening: false, wantListening: false, rec: null, interim: '', heard: [], typeOpen: false,
     voiceSupported: !!(window.SpeechRecognition || window.webkitSpeechRecognition),
 
     memoInit() { this.memoAddRows(5); if (!this.voiceSupported) this.typeOpen = true; },
@@ -103,6 +103,8 @@ function cashMemoMixin() {
           else loose.push(v);
         }
         // A label was spoken but its number was not heard ("quantity date 50"): the lone number is then the other value.
+        // One lone number of 100+ ( "biscuit 610" ) is far more likely a rate than a quantity.
+        if (qty === undefined && rate === undefined && !hasQ && loose.length === 1 && loose[0] >= 100) rate = loose.shift();
         if (qty === undefined && !hasQ) qty = loose.shift();
         if (rate === undefined) rate = loose.shift();
         const nums = [qty === undefined ? 1 : qty, rate];
@@ -140,7 +142,8 @@ function cashMemoMixin() {
       const row = this.memoRows.find(r => r.k === this.lastK);
       if (!row || row.step >= 2) { this.memoMsg = 'Say the item name first, then the quantity and rate.'; return 0; }
       for (const n of digits.split(' ').map(Number)) {
-        if (row.step === 0) { row.qty = n > 0 ? n : 1; row.step = 1; }
+        if (row.step === 0 && n >= 100 && !digits.includes(' ')) { row.rate = n; row.step = 2; }   // lone 100+ after the item = its rate
+        else if (row.step === 0) { row.qty = n > 0 ? n : 1; row.step = 1; }
         else if (row.step === 1) { row.rate = n; row.step = 2; }
       }
       this.heard.push(raw.trim());
@@ -151,7 +154,7 @@ function cashMemoMixin() {
       const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SR) { this.voiceError = 'Voice input needs Chrome or Edge.'; this.typeOpen = true; return; }
       this.voiceError = ''; this.memoMsg = ''; this.wantListening = true;
-      let failed = false;
+      let failed = false, handled = -1;
       const rec = new SR();
       rec.lang = this.voiceLang; rec.continuous = true; rec.interimResults = true;
       rec.onresult = (e) => {
@@ -159,7 +162,12 @@ function cashMemoMixin() {
         for (let i = e.resultIndex; i < e.results.length; i++) {
           const res = e.results[i];
           if (res.isFinal) {
+            if (i <= handled) continue;           // already processed in this listening session
+            handled = i;
             const said = res[0].transcript.trim();
+            const now = Date.now();
+            if (said && said === this.lastSaid && now - this.lastSaidAt < 2000) continue;   // engine repeated itself
+            this.lastSaid = said; this.lastSaidAt = now;
             let n = 0;
             try { n = this.voiceChunk(said); }
             catch (err) { this.voiceError = 'Could not read that phrase (' + err.message + '). Please type it instead.'; }
@@ -176,7 +184,7 @@ function cashMemoMixin() {
       };
       // Chrome ends continuous recognition after a pause — keep listening until the user taps Stop.
       rec.onend = () => {
-        this.interim = '';
+        this.interim = ''; handled = -1;      // a restarted session numbers its results from 0 again
         if (this.wantListening && !failed) { try { rec.start(); return; } catch (err) { /* fall through */ } }
         this.listening = false;
       };
