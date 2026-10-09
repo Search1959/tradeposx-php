@@ -33,10 +33,17 @@ function cashMemoMixin() {
     return out.join(' ');
   }
 
+  // Short forms are understood too: "q 2", "qty 2", "2 pc", "2 kg" for quantity; "r 50", "rs 50", "@ 50" for rate.
+  const QTY_WORDS = 'quantity|qty|qt|q|pieces?|pcs|pc|nos';
+  const UNIT_WORDS = 'kgs?|gms?|g|ltrs?|litres?|liters?|dozen|dz|packets?|pkt|box(?:es)?|bags?|strips?';
+  const RATE_WORDS = 'rate|price|rs|rupees?|rupee|each|r|at';
+  const HOMO = { to: 2, too: 2, tu: 2, won: 1, tree: 3, free: 3, fore: 4, for: 4, fife: 5, ate: 8 };
+  const HOMO_RE = 'to|too|tu|won|tree|free|fore|for|fife|ate';
+
   return {
     leftTab: 'stock',
     memoRows: [], memoSeq: 0, memoText: '', memoMsg: '', voiceError: '', voiceLang: 'en-IN',
-    lastK: 0, listening: false, wantListening: false, rec: null, interim: '', heard: [], typeOpen: false,
+    memoErr: '', lastK: 0, listening: false, wantListening: false, rec: null, interim: '', heard: [], typeOpen: false,
     voiceSupported: !!(window.SpeechRecognition || window.webkitSpeechRecognition),
 
     memoInit() { this.memoAddRows(5); if (!this.voiceSupported) this.typeOpen = true; },
@@ -71,37 +78,39 @@ function cashMemoMixin() {
     },
     // "Basin mixer 2 2500, granite 10 180" or "basin mixer two twenty five hundred next ..." -> rows. First number = quantity, second = rate.
     parseChunk(raw) {
-      const filler = /\b(quantity|qty|pieces|piece|pcs|nos|number|at|rate|price|rs|rupees|rupee|each|of|x|for)\b|@|₹/gi;
+      const filler = new RegExp('\\b(' + QTY_WORDS + '|' + UNIT_WORDS + '|' + RATE_WORDS + '|number|of|x|for|per)\\b|@|₹', 'gi');
       // Speech engines often hear "two" as "to/too" and "four" as "for" right after the words quantity / rate.
-      const HOMO = { to: 2, too: 2, tu: 2, won: 1, tree: 3, free: 3, fore: 4, for: 4, fife: 5, ate: 8 };
-      const fixed = raw.replace(/\b(quantity|qty|rate|price|rupees|rs|at|pieces|nos)\s+(to|too|tu|won|tree|free|fore|for|fife|ate)\b/gi, (m, k, w) => k + ' ' + HOMO[w.toLowerCase()]);
+      const fixed = raw.replace(new RegExp('\\b(' + QTY_WORDS + '|' + RATE_WORDS + ')\\s+(' + HOMO_RE + ')\\b', 'gi'), (m, k, w) => k + ' ' + HOMO[w.toLowerCase()]);
       const text = wordsToDigits(fixed);
       const segs = text.replace(/\b(next|then|aur|and next)\b/gi, '\n').split(/[\n;,]+/).map(t => t.trim()).filter(Boolean);
       let added = 0;
       for (const seg of segs) {
         const NUM = /(?<![\w.])\d+(?:\.\d+)?(?![\w])/g; // standalone numbers only, so "10000mAh" stays part of the name
         // The spoken labels decide which number is which: "quantity 2", "rate 50", "2 pieces", "50 rupees".
-        const hasQ = /\b(quantity|qty|pieces|piece|pcs|nos)\b/i.test(seg);
+        const hasQ = new RegExp('\\b(' + QTY_WORDS + ')\\b', 'i').test(seg);
+        const qBefore = new RegExp('^(quantity|qty|qt|q)$'), qAfter = new RegExp('^(' + QTY_WORDS.replace('|q|', '|') + '|' + UNIT_WORDS + ')$');
+        const rBefore = /^(rate|price|rs|rupees?|at|r|@|₹)$/, rAfter = /^(rupees?|rs|each)$/;
         let qty, rate; const loose = [];
         for (const m of seg.matchAll(NUM)) {
           const before = (seg.slice(0, m.index).match(/(\S+)\s*$/) || [, ''])[1].toLowerCase();
           const after = (seg.slice(m.index + m[0].length).match(/^\s*(\S+)/) || [, ''])[1].toLowerCase();
           const v = Number(m[0]);
-          if (/^(quantity|qty)$/.test(before) || /^(pieces?|pcs|nos)$/.test(after)) { if (qty === undefined) qty = v; else loose.push(v); }
-          else if (/^(rate|price|rs|rupees?|at|@|₹)$/.test(before) || /^(rupees?|rs|each)$/.test(after)) { if (rate === undefined) rate = v; else loose.push(v); }
+          if (qBefore.test(before) || qAfter.test(after)) { if (qty === undefined) qty = v; else loose.push(v); }
+          else if (rBefore.test(before) || rAfter.test(after)) { if (rate === undefined) rate = v; else loose.push(v); }
           else loose.push(v);
         }
         // A label was spoken but its number was not heard ("quantity date 50"): the lone number is then the other value.
         if (qty === undefined && !hasQ) qty = loose.shift();
         if (rate === undefined) rate = loose.shift();
         const nums = [qty === undefined ? 1 : qty, rate];
-        const name = seg.replace(/\b(quantity|qty)\s+[a-z]+(?=\s+\d)/gi, ' ').replace(NUM, ' ').replace(filler, ' ').replace(/\s+/g, ' ').trim();
-        if (!name) continue;
+        let name = seg.replace(/\b(quantity|qty)\s+[a-z]+(?=\s+\d)/gi, ' ').replace(NUM, ' ').replace(filler, ' ');
+        name = name.replace(/[:;!?"'`()\[\]{}\-–—_*#\/\\|=+<>~^%&$]+/g, ' ').replace(/\s+/g, ' ').trim();
+        if (!/\p{L}/u.test(name)) continue;          // stray punctuation / noise is not an item
         const row = this.blankRow();
         const p = this.bestMatch(name);
         row.item = p ? p.name : name.replace(/\b\w/g, c => c.toUpperCase());
         if (p) { row.pid = p.id; row.gst = p.gst; row.stock = p.stock; }
-        row.qty = nums[0];
+        row.qty = nums[0] > 0 ? nums[0] : 1;
         row.rate = nums[1] !== undefined ? nums[1] : (p ? p.price : '');
         // step = what the next spoken number fills: 0 quantity, 1 rate, 2 nothing (row complete).
         row.step = rate !== undefined ? 2 : (qty !== undefined ? 1 : 0);
@@ -121,13 +130,13 @@ function cashMemoMixin() {
     // One spoken phrase (the engine ends a phrase at each pause): "Coffee" ... "2" ... "50" fills item, quantity, rate in turn.
     // A phrase with words starts a new row; a phrase of only numbers goes to the next empty slot of the current row.
     voiceChunk(raw) {
-      const HOMO = { to: 2, too: 2, tu: 2, won: 1, tree: 3, free: 3, fore: 4, for: 4, fife: 5, ate: 8 };
-      const digits = wordsToDigits(raw.trim().toLowerCase().replace(/\b(to|too|tu|won|tree|free|fore|for|fife|ate)\b/g, w => HOMO[w])).replace(/\b(rupees?|rs|pieces?|pcs|nos|quantity|qty|rate|price|each|at|₹|@)\b|[₹@.,]/g, ' ').replace(/\s+/g, ' ').trim();
+      const digits = wordsToDigits(raw.trim().toLowerCase().replace(new RegExp('\\b(' + HOMO_RE + ')\\b', 'g'), w => HOMO[w]))
+        .replace(new RegExp('\\b(' + QTY_WORDS + '|' + UNIT_WORDS + '|' + RATE_WORDS + ')\\b|[₹@.,:;!?]', 'g'), ' ').replace(/\s+/g, ' ').trim();
       if (!/^\d+(\s+\d+)?$/.test(digits)) return this.parseChunk(raw);        // has an item name -> new row (or a full "item 2 50" phrase)
       const row = this.memoRows.find(r => r.k === this.lastK);
       if (!row || row.step >= 2) { this.memoMsg = 'Say the item name first, then the quantity and rate.'; return 0; }
       for (const n of digits.split(' ').map(Number)) {
-        if (row.step === 0) { row.qty = n; row.step = 1; }
+        if (row.step === 0) { row.qty = n > 0 ? n : 1; row.step = 1; }
         else if (row.step === 1) { row.rate = n; row.step = 2; }
       }
       this.heard.push(raw.trim());
@@ -172,20 +181,27 @@ function cashMemoMixin() {
       if (this.listening) this.stopVoice();
       const used = this.memoRows.filter(r => r.item.trim() !== '' || r.qty !== '' || r.rate !== '');
       if (!used.length) { this.memoMsg = 'Say or write at least one item first.'; return; }
-      let bad = false;
+      let bad = 0;
+      this.memoErr = '';
       for (const r of used) {
         r.error = '';
-        if (r.item.trim() === '') { r.error = 'Item name missing'; bad = true; continue; }
+        if (!/\p{L}/u.test(r.item)) { r.error = 'Item name missing'; bad++; continue; }
         if (!r.pid) this.matchRow(r);
-        if (r.rate === '' || r.rate === null || !(Number(r.rate) >= 0)) { r.error = 'Enter a rate'; bad = true; }
+        if (r.rate === '' || r.rate === null || !(Number(r.rate) >= 0)) { r.error = 'Enter a rate'; bad++; }
       }
-      if (bad) { this.memoMsg = ''; return; }
+      if (bad) {
+        this.memoMsg = '';
+        this.memoErr = bad + ' row' + (bad === 1 ? ' needs' : 's need') + ' fixing (shown in red) — add the missing rate/name, or tap ✕ to remove the row.';
+        this.$nextTick(() => { const el = document.querySelector('[data-memo-err="1"]'); if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' }); });
+        return;
+      }
       for (const r of used) {
         const qty = Number(r.qty) > 0 ? Number(r.qty) : 1;
         const rate = Number(r.rate);
         const p = r.pid ? this.memoItems().find(x => x.id === r.pid) : null;
         if (p) this.memoPushCatalog(p, qty, rate); else this.memoPushFree(r.item.trim(), qty, rate, Number(r.gst) || 0);
       }
+      this.memoErr = '';
       this.memoMsg = used.length + ' item' + (used.length === 1 ? '' : 's') + ' added to the cart.';
       this.memoRows = []; this.memoAddRows(5); this.heard = [];
       this.memoDone();

@@ -19,7 +19,7 @@
     </div>
     <div x-show="listening" x-cloak class="mt-3 min-h-[1.5rem] text-sm italic text-indigo-700"
          x-text="interim ? '“' + interim + '”' : 'Say the item … pause … quantity … pause … rate'"></div>
-    <p x-show="!listening" class="text-xs text-slate-500 mt-2">Say the item, pause, the quantity, pause, the rate — then the next item. No need to say “quantity” or “rate”.</p>
+    <p x-show="!listening" class="text-xs text-slate-500 mt-2">Say the item, pause, the quantity, pause, the rate — then the next item. No need to say “quantity” or “rate” (short words like “q 2”, “r 50”, “2 kg” also work).</p>
     <div x-show="voiceError" x-cloak class="text-xs text-red-600 mt-2" x-text="voiceError"></div>
     <button type="button" @click="typeOpen = !typeOpen" class="mt-2 text-xs text-indigo-600 hover:underline" x-text="typeOpen ? 'Hide typing box' : 'Type instead'"></button>
   </div>
@@ -40,7 +40,7 @@
     <div class="xl:hidden px-3 py-2 bg-slate-50 text-[11px] font-semibold uppercase tracking-wide text-slate-500">Item · Qty · Rate · Amount</div>
     <div class="max-h-[42vh] overflow-y-auto divide-y divide-slate-100">
       <template x-for="(r, i) in memoRows" :key="r.k">
-        <div class="px-3 py-2" :class="r.error ? 'bg-red-50' : ''">
+        <div class="px-3 py-2" :class="r.error ? 'bg-red-50' : ''" :data-memo-err="r.error ? '1' : null">
           <div class="grid grid-cols-[4rem_1fr_4.75rem_1.5rem] xl:grid-cols-[1fr_4rem_5rem_5rem_1.5rem] gap-2 items-center">
             <input type="text" list="memoItems" data-memo-item x-model="r.item" @change="matchRow(r)" @blur="matchRow(r)" placeholder="Item name"
                    class="col-span-4 xl:col-span-1 min-w-0 rounded border border-slate-300 px-2 py-1.5 text-sm">
@@ -73,5 +73,6 @@
       <div class="text-sm text-slate-600">Memo total <span class="font-bold text-slate-900" x-text="'₹' + memoTotal().toFixed(2)"></span></div>
     </div>
   </div>
+  <div x-show="memoErr" x-cloak class="mt-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2" x-text="memoErr"></div>
   <button type="button" @click="memoSubmit()" class="mt-3 w-full bg-indigo-600 text-white font-semibold py-2.5 rounded-lg hover:bg-indigo-700">Add to cart →</button>
 </div>
