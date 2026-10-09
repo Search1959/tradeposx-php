@@ -156,14 +156,14 @@ ob_start();
       <button type="button" @click="mobileNavOpen = false" class="md:hidden p-1 text-slate-400 hover:text-white" aria-label="Close menu"><?= uiIcon('x', 'w-6 h-6') ?></button>
     </div>
     <nav class="flex-1 px-3 py-3 overflow-y-auto text-sm">
-      <?php foreach ($navGroups as $groupLabel => $items): ?>
-        <div class="px-2 pt-4 pb-1.5 text-[10px] font-semibold uppercase tracking-widest text-slate-500"><?= h($groupLabel) ?></div>
-        <?php foreach ($items as $it):
-          $isActive = in_array($currentModule, $it[3], true)
-              && match ($it[4] ?? '') { 'new' => $seg2 === 'new', 'list' => $seg2 !== 'new', 'inv' => in_array($seg2, ['list', 'receipt'], true), 'notinv' => !in_array($seg2, ['list', 'receipt'], true), default => true }; ?>
-          <a href="<?= $base . $it[1] ?>" class="relative flex items-center gap-3 px-3 py-2.5 rounded-lg mb-0.5 <?= $isActive ? 'bg-white/10 text-white font-medium' : 'text-slate-400 hover:bg-white/5 hover:text-white' ?>">
+      <?php foreach ($navGroups as $navGroupLabel => $navGroupItems): ?>
+        <div class="px-2 pt-4 pb-1.5 text-[10px] font-semibold uppercase tracking-widest text-slate-500"><?= h($navGroupLabel) ?></div>
+        <?php foreach ($navGroupItems as $navItem):
+          $isActive = in_array($currentModule, $navItem[3], true)
+              && match ($navItem[4] ?? '') { 'new' => $seg2 === 'new', 'list' => $seg2 !== 'new', 'inv' => in_array($seg2, ['list', 'receipt'], true), 'notinv' => !in_array($seg2, ['list', 'receipt'], true), default => true }; ?>
+          <a href="<?= $base . $navItem[1] ?>" class="relative flex items-center gap-3 px-3 py-2.5 rounded-lg mb-0.5 <?= $isActive ? 'bg-white/10 text-white font-medium' : 'text-slate-400 hover:bg-white/5 hover:text-white' ?>">
             <?php if ($isActive): ?><span class="absolute left-0 top-2 bottom-2 w-1 rounded-r <?= $accentBar ?>"></span><?php endif; ?>
-            <?= uiIcon($it[2], 'w-5 h-5') ?><span><?= h($it[0]) ?></span>
+            <?= uiIcon($navItem[2], 'w-5 h-5') ?><span><?= h($navItem[0]) ?></span>
           </a>
         <?php endforeach; ?>
       <?php endforeach; ?>

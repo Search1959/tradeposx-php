@@ -36,6 +36,7 @@ class ServiceInvoice extends BaseModel {
 
         $staffModel = new ServiceStaff();
         $customerModel = new ServiceCustomer();
+        $itemModel = new ServiceItem();
 
         $itemsTaxable = array_reduce($items, fn($sum, $i) => $sum + (float) $i['total'], 0.0);
         $labourCharges = (float) ($data['labour_charges'] ?? 0);
@@ -85,6 +86,9 @@ class ServiceInvoice extends BaseModel {
                         $item['staff_id'] ?: null,
                     ]
                 );
+                if (!empty($item['service_id'])) {
+                    $itemModel->adjustStock($orgId, (int) $item['service_id'], -(float) $item['quantity']);
+                }
                 if (!empty($item['staff_id'])) {
                     $staff = $staffModel->find($orgId, (int) $item['staff_id']);
                     if ($staff && (float) $staff['commission_percent'] > 0) {
@@ -125,6 +129,12 @@ class ServiceInvoice extends BaseModel {
             "UPDATE service_invoices SET status = 'CANCELLED', cancel_reason = ?, cancelled_at = NOW() WHERE org_id = ? AND id = ?",
             [$reason, $orgId, $id]
         );
+        if ($ok && $invoice && ($invoice['status'] ?? '') !== 'CANCELLED') {
+            $itemModel = new ServiceItem();
+            foreach ($invoice['items'] ?? [] as $line) {
+                if (!empty($line['service_id'])) $itemModel->adjustStock($orgId, (int) $line['service_id'], (float) $line['quantity']);
+            }
+        }
         if ($ok && $invoice && !empty($invoice['specialized_staff_id']) && (float) $invoice['staff_commission_amount'] > 0) {
             (new SpecializedStaff())->payCommission($orgId, (int) $invoice['specialized_staff_id'], (float) $invoice['staff_commission_amount']);
         }

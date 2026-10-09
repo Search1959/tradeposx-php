@@ -705,3 +705,7 @@ UPDATE expense_heads SET demo_amount = 800  WHERE name = 'Wi-Fi & Telecom';
 UPDATE expense_heads SET demo_amount = 1000 WHERE name = 'Taxes & Licenses';
 UPDATE expense_heads SET demo_amount = 600  WHERE name = 'Pest Control & Cleaning';
 UPDATE expense_heads SET demo_amount = 1500 WHERE name = 'Marketing & Signboard';
+
+-- Reference migration: stock items on a service bill (applied automatically by ServiceItem::__construct on first use).
+-- ALTER TABLE service_items ADD COLUMN item_type VARCHAR(10) NOT NULL DEFAULT 'SERVICE';
+-- ALTER TABLE service_items ADD COLUMN stock_qty DECIMAL(12,3) NULL;

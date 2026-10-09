@@ -34,10 +34,56 @@
       </template>
     </div>
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[65vh] overflow-y-auto">
+      <!-- Custom / stock item: hidden until tapped. Lets the counter bill anything that isn't in the
+           service list (a charger, a spare part) by typing a name and price, and optionally keep it
+           as a stock item that counts down with every sale. -->
+      <div :class="customOpen ? 'col-span-2 sm:col-span-3' : ''">
+        <button type="button" x-show="!customOpen" @click="customOpen = true"
+                class="w-full h-full min-h-[84px] text-left border-2 border-dashed border-indigo-300 rounded-lg p-3 text-indigo-700 hover:bg-indigo-50 transition">
+          <div class="font-semibold text-sm">＋ Custom / stock item</div>
+          <div class="text-xs text-indigo-500 mt-1">Type any item and price</div>
+        </button>
+        <div x-show="customOpen" x-cloak class="border-2 border-indigo-300 rounded-lg p-3 bg-indigo-50/50 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <div class="font-semibold text-sm text-indigo-800">Custom / stock item</div>
+            <button type="button" @click="customOpen = false" class="text-slate-400 hover:text-slate-600 text-lg leading-none" aria-label="Close">✕</button>
+          </div>
+          <input type="text" x-model="custom.name" @keydown.enter.prevent="addCustom()" placeholder="Item name (e.g. Type-C Charger)" maxlength="150"
+                 class="w-full rounded border border-slate-300 px-3 py-2 text-sm bg-white">
+          <div class="grid grid-cols-3 gap-2">
+            <label class="text-xs text-slate-600">Price (₹)
+              <input type="number" step="0.01" min="0" x-model.number="custom.price" @keydown.enter.prevent="addCustom()" class="mt-1 w-full rounded border border-slate-300 px-2 py-1.5 text-sm bg-white"></label>
+            <label class="text-xs text-slate-600">Qty
+              <input type="number" step="1" min="1" x-model.number="custom.qty" @keydown.enter.prevent="addCustom()" class="mt-1 w-full rounded border border-slate-300 px-2 py-1.5 text-sm bg-white"></label>
+            <label class="text-xs text-slate-600">GST %
+              <select x-model.number="custom.gst" class="mt-1 w-full rounded border border-slate-300 px-2 py-1.5 text-sm bg-white">
+                <option value="0">0%</option><option value="5">5%</option><option value="12">12%</option><option value="18">18%</option><option value="28">28%</option>
+              </select></label>
+          </div>
+          <label class="flex items-center gap-2 text-sm text-slate-700">
+            <input type="checkbox" x-model="custom.keep" class="rounded"> Keep in my stock list
+          </label>
+          <div x-show="custom.keep" x-cloak>
+            <label class="text-xs text-slate-600">How many do you have in stock (before this sale)?
+              <input type="number" step="1" min="0" x-model.number="custom.stock" class="mt-1 w-full rounded border border-slate-300 px-2 py-1.5 text-sm bg-white"></label>
+            <p class="text-[11px] text-slate-500 mt-1">It will appear in the list below with its stock count, and each bill reduces it.</p>
+          </div>
+          <div x-show="customError" x-cloak class="text-xs text-red-600" x-text="customError"></div>
+          <div class="flex gap-2">
+            <button type="button" @click="addCustom()" class="flex-1 bg-indigo-600 text-white text-sm font-medium py-2 rounded hover:bg-indigo-700">Add to bill</button>
+            <button type="button" @click="customOpen = false" class="px-4 text-sm text-slate-500">Cancel</button>
+          </div>
+        </div>
+      </div>
       <template x-for="s in filteredServices()" :key="s.id">
         <button type="button" @click="addToCart(s)" class="text-left border border-slate-200 rounded-lg p-3 hover:border-indigo-400 hover:bg-indigo-50 transition">
           <div class="font-medium text-sm text-slate-900 truncate" x-text="s.name"></div>
-          <div class="text-xs text-slate-500 mt-1" x-text="s.category"></div>
+          <div class="flex items-center justify-between gap-1 mt-1">
+            <span class="text-xs text-slate-500 truncate" x-text="s.category"></span>
+            <span x-show="s.type === 'STOCK'" class="text-[11px] px-1.5 py-0.5 rounded whitespace-nowrap"
+                  :class="s.stock > 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'"
+                  x-text="s.stock > 0 ? s.stock + ' in stock' : 'Out of stock'"></span>
+          </div>
           <div class="flex items-center justify-between mt-2">
             <span class="text-sm font-semibold text-indigo-700" x-text="'₹' + Number(s.price).toFixed(2)"></span>
             <!-- GST% shown right on the card — so a 0% item (often just a blank
@@ -76,6 +122,13 @@
                  the resulting "no tax line at all") would otherwise look
                  indistinguishable from a bug. -->
             <span class="ml-auto" :class="line.gst > 0 ? 'text-slate-400' : 'text-amber-700 font-medium'" x-text="'GST ' + (line.gst || 0) + '%'"></span>
+          </div>
+          <div class="flex items-center gap-1.5 flex-wrap mt-1" x-show="line.custom || (line.stock !== null && line.stock !== undefined)">
+            <span x-show="line.custom" class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700">Custom item</span>
+            <span x-show="line.custom && line.keep" class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700">Saved to stock</span>
+            <span x-show="line.stock !== null && line.stock !== undefined && !line.custom" class="text-[10px] px-1.5 py-0.5 rounded"
+                  :class="line.qty > line.stock ? 'bg-amber-50 text-amber-700 font-semibold' : 'bg-slate-100 text-slate-500'"
+                  x-text="line.qty > line.stock ? 'Only ' + Math.max(0, line.stock) + ' in stock' : line.stock + ' in stock'"></span>
           </div>
           <select x-model.number="line.staff_id" class="mt-1 w-full text-xs rounded border border-slate-200 px-2 py-1">
             <option value="0">No staff assigned</option>
@@ -129,7 +182,7 @@
 
     <form method="POST" class="mt-3 space-y-2" @submit="onSubmit">
       <?= CsrfHelper::getField() ?>
-      <input type="hidden" name="cart_json" :value="JSON.stringify(cart.map(l => ({id: l.id, qty: l.qty, staff_id: l.staff_id || null, price: l.price})))">
+      <input type="hidden" name="cart_json" :value="JSON.stringify(cart.map(l => ({id: l.custom ? null : l.id, custom: !!l.custom, name: l.custom ? l.name : undefined, qty: l.qty, staff_id: l.staff_id || null, price: l.price, gst: l.gst, keep: !!l.keep, stock: l.custom ? l.stock : undefined})))">
       <input type="hidden" name="labour_charges" :value="labour">
       <input type="hidden" name="discount" :value="discountAmount()">
       <input type="hidden" name="discount_percent" :value="['5','10'].includes(discountMode) ? discountMode : ''">
@@ -194,9 +247,10 @@
 <script>
 function invoiceScreen() {
   return {
-    services: <?= json_encode(array_map(fn($s) => ['id'=>(int)$s['id'],'name'=>$s['name'],'category'=>$s['category'],'price'=>(float)$s['price'],'gst'=>(float)$s['gst_percent']], $services)) ?>,
+    services: <?= json_encode(array_map(fn($s) => ['id'=>(int)$s['id'],'name'=>$s['name'],'category'=>$s['category'],'price'=>(float)$s['price'],'gst'=>(float)$s['gst_percent'],'type'=>($s['item_type'] ?? 'SERVICE'),'stock'=>isset($s['stock_qty']) ? (float)$s['stock_qty'] : null], $services)) ?>,
     specializedStaff: <?= json_encode(array_map(fn($sp) => ['id'=>(int)$sp['id'],'name'=>$sp['name'],'default_commission_percent'=>(float)$sp['default_commission_percent']], $specializedStaff)) ?>,
-    search: '', category: '', activeTab: 'services', cart: [], labour: 0, discountMode: '0', customDiscount: 0, taxType: 'EXCLUSIVE', customerId: '', walkinMobile: '', paymentStatus: 'FULL', paidAmount: 0,
+    search: '', category: '', activeTab: 'services', cart: [], customOpen: false, customSeq: 0, customError: '',
+    custom: { name: '', price: '', qty: 1, gst: 18, keep: false, stock: '' }, labour: 0, discountMode: '0', customDiscount: 0, taxType: 'EXCLUSIVE', customerId: '', walkinMobile: '', paymentStatus: 'FULL', paidAmount: 0,
     specializedStaffId: '', specializedStaffCommissionMode: 'default', specializedStaffCustomCommission: 0,
     categories() {
       return [...new Set(this.services.map(s => s.category).filter(c => c))].sort();
@@ -211,7 +265,20 @@ function invoiceScreen() {
     addToCart(s) {
       const existing = this.cart.find(l => l.id === s.id);
       if (existing) existing.qty += 1;
-      else this.cart.push({ id: s.id, name: s.name, price: s.price, originalPrice: s.price, gst: s.gst, qty: 1, staff_id: 0 });
+      else this.cart.push({ id: s.id, name: s.name, price: s.price, originalPrice: s.price, gst: s.gst, qty: 1, staff_id: 0, stock: s.type === 'STOCK' ? s.stock : null });
+    },
+    addCustom() {
+      const c = this.custom;
+      const name = (c.name || '').trim();
+      const price = Number(c.price);
+      if (name === '') { this.customError = 'Enter the item name.'; return; }
+      if (!isFinite(price) || price < 0 || c.price === '') { this.customError = 'Enter the price.'; return; }
+      this.customError = '';
+      this.cart.push({ id: -(++this.customSeq), custom: true, name, price, originalPrice: price, gst: Number(c.gst) || 0, qty: Math.max(1, Number(c.qty) || 1),
+                       keep: !!c.keep, stock: c.keep ? Math.max(0, Number(c.stock) || 0) : null, staff_id: 0 });
+      this.custom = { name: '', price: '', qty: 1, gst: 18, keep: false, stock: '' };
+      this.customOpen = false;
+      this.activeTab = 'invoice';
     },
     clampQty(line) { if (!line.qty || line.qty < 1) line.qty = 1; },
     // Only clamps a negative/blank price back to 0 on blur (not on every

@@ -38,17 +38,41 @@ class ServiceInvoiceController {
             $items = [];
             $taxableTotal = 0.0;
             $taxTotal = 0.0;
+            $allowedGst = [0.0, 5.0, 12.0, 18.0, 28.0];
             foreach ($cart as $line) {
-                $service = $this->itemModel->find($org['id'], (int) $line['id']);
-                if (!$service) continue;
-                $qty = max(1, (float) ($line['qty'] ?? 1));
-                // A bargained price typed into the cart overrides the service
-                // item's own price for this invoice only — floored at 0 so a cart
-                // edit can never produce a negative line; the service item's own
-                // master price is never touched by this.
-                $unitPrice = isset($line['price']) ? max(0, (float) $line['price']) : (float) $service['price'];
+                $isCustom = !empty($line['custom']);
+                $service = null;
+                if ($isCustom) {
+                    // A one-off item typed on the bill (a charger, a spare part…). The shop owner's own price and
+                    // GST choice are trusted here the same way an edited price is; the GST list is still whitelisted.
+                    $itemName = mb_substr(trim((string) ($line['name'] ?? '')), 0, 150);
+                    if ($itemName === '') continue;
+                    $qty = max(0.001, (float) ($line['qty'] ?? 1));
+                    $unitPrice = max(0, (float) ($line['price'] ?? 0));
+                    $gstPick = (float) ($line['gst'] ?? 18);
+                    $gstPick = in_array($gstPick, $allowedGst, true) ? $gstPick : 18.0;
+                    $serviceId = null;
+                    if (!empty($line['keep'])) {
+                        // "Keep in my stock list": from now on it's a real stock item that shows up on the grid and counts down.
+                        $serviceId = $this->itemModel->create($org['id'], [
+                            'name' => $itemName, 'category' => 'Stock items', 'price' => $unitPrice, 'gst_percent' => $gstPick,
+                            'sector' => 'General', 'duration_minutes' => null, 'warranty_days' => 0,
+                            'item_type' => 'STOCK', 'stock_qty' => max(0, (float) ($line['stock'] ?? 0)),
+                        ]);
+                    }
+                    $gstRate = $taxType === 'EXEMPT' ? 0.0 : $gstPick;
+                } else {
+                    $service = $this->itemModel->find($org['id'], (int) ($line['id'] ?? 0));
+                    if (!$service) continue;
+                    $itemName = $service['name'];
+                    $serviceId = $service['id'];
+                    $qty = max(1, (float) ($line['qty'] ?? 1));
+                    // A bargained price typed into the cart overrides the item's own price for this invoice
+                    // only — floored at 0; the item's own master price is never touched by this.
+                    $unitPrice = isset($line['price']) ? max(0, (float) $line['price']) : (float) $service['price'];
+                    $gstRate = $taxType === 'EXEMPT' ? 0.0 : (float) $service['gst_percent'];
+                }
                 $lineAmount = round($qty * $unitPrice, 2);
-                $gstRate = $taxType === 'EXEMPT' ? 0.0 : (float) $service['gst_percent'];
 
                 if ($taxType === 'INCLUSIVE' && $gstRate > 0) {
                     $lineTaxable = round($lineAmount / (1 + $gstRate / 100), 2);
@@ -60,13 +84,13 @@ class ServiceInvoiceController {
                 $taxableTotal += $lineTaxable;
                 $taxTotal += $gstAmount;
 
+                $isGoods = $isCustom || (($service['item_type'] ?? 'SERVICE') === 'STOCK');
                 $items[] = [
-                    'service_id' => $service['id'], 'name' => $service['name'], 'item_type' => 'SERVICE',
+                    'service_id' => $serviceId, 'name' => $itemName, 'item_type' => $isGoods ? 'MATERIAL' : 'SERVICE',
                     'price' => $unitPrice, 'quantity' => $qty, 'total' => $lineAmount,
-                    'gst_rate' => $gstRate, 'gst_amount' => $gstAmount, 'staff_id' => $line['staff_id'] ?: null,
+                    'gst_rate' => $gstRate, 'gst_amount' => $gstAmount, 'staff_id' => ($line['staff_id'] ?? null) ?: null,
                 ];
             }
-
             if (empty($items)) {
                 $error = 'Cart is empty.';
             } else {

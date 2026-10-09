@@ -31,7 +31,7 @@ class ServiceItemController {
                 $error = 'Name is required.';
                 $item = $_POST;
             } else {
-                $this->model->create($org['id'], $_POST);
+                $this->model->create($org['id'], $this->withStockFields($_POST));
                 redirect($org['slug'] . '/service-items');
                 return;
             }
@@ -55,7 +55,7 @@ class ServiceItemController {
                 $error = 'Name is required.';
                 $item = array_merge($item, $_POST);
             } else {
-                $this->model->update($org['id'], (int) $id, $_POST);
+                $this->model->update($org['id'], (int) $id, $this->withStockFields($_POST));
                 redirect($org['slug'] . '/service-items');
                 return;
             }
@@ -112,8 +112,9 @@ class ServiceItemController {
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="service_item_import_template.csv"');
         $out = fopen('php://output', 'w');
-        fputcsv($out, ['name', 'category', 'sector', 'price', 'duration_minutes', 'gst_percent', 'warranty_days', 'description']);
-        fputcsv($out, ['Haircut (Men)', 'Hair', 'SALON', '200', '30', '18', '0', 'Standard men\'s haircut']);
+        fputcsv($out, ['name', 'category', 'sector', 'price', 'duration_minutes', 'gst_percent', 'warranty_days', 'description', 'stock_qty']);
+        fputcsv($out, ['Haircut (Men)', 'Hair', 'SALON', '200', '30', '18', '0', 'Standard men\'s haircut', '']);
+        fputcsv($out, ['Type-C Charger', 'Accessories', 'REPAIR_SHOP', '399', '', '18', '30', 'A stock item: fill stock_qty to track it', '25']);
         fclose($out);
     }
 
@@ -191,6 +192,7 @@ class ServiceItemController {
                         $durationRaw = $row['duration_minutes'] ?? '';
                         $gstRaw = $row['gst_percent'] ?? '';
                         $warrantyRaw = $row['warranty_days'] ?? '';
+                        $stockRaw = $row['stock_qty'] ?? '';
                         $data = [
                             'name' => $name,
                             'category' => $row['category'] ?? '',
@@ -205,6 +207,7 @@ class ServiceItemController {
                         $existing = $this->model->findForImportMatch($org['id'], $name);
                         if ($existing) {
                             $this->model->updateFromImportMerge($org['id'], (int) $existing['id'], $existing, $data);
+                            if ($stockRaw !== '') $this->model->setStock($org['id'], (int) $existing['id'], (float) $stockRaw);
                             $updated++;
                         } else {
                             // A blank gst_percent cell on a brand-new row silently becomes 0%
@@ -223,6 +226,8 @@ class ServiceItemController {
                                 'gst_percent' => $data['gst_percent'] ?? 0,
                                 'warranty_days' => $data['warranty_days'] ?? 0,
                                 'description' => $data['description'] ?: null,
+                                'item_type' => $stockRaw !== '' ? 'STOCK' : 'SERVICE',
+                                'stock_qty' => $stockRaw !== '' ? (float) $stockRaw : null,
                             ]);
                             $created++;
                         }
@@ -323,5 +328,13 @@ class ServiceItemController {
         }
 
         redirect($org['slug'] . '/service-items/scan');
+    }
+
+    /** The edit form's "This is a stock item" checkbox + quantity → the item_type / stock_qty columns. */
+    private function withStockFields(array $post): array {
+        $isStock = !empty($post['is_stock']);
+        $post['item_type'] = $isStock ? 'STOCK' : 'SERVICE';
+        $post['stock_qty'] = $isStock ? (float) ($post['stock_qty'] ?? 0) : null;
+        return $post;
     }
 }

@@ -41,7 +41,7 @@
   <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
     <table class="w-full text-sm sticky-actions">
       <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
-        <tr><th class="px-4 py-2 w-8"></th><th class="text-left px-4 py-2">Name</th><th class="text-left px-4 py-2">Category</th><th class="text-right px-4 py-2">Price</th><th class="text-right px-4 py-2">Duration</th><th class="text-center px-4 py-2">GST%</th><th class="px-4 py-2"></th></tr>
+        <tr><th class="px-4 py-2 w-8"></th><th class="text-left px-4 py-2">Name</th><th class="text-left px-4 py-2">Category</th><th class="text-right px-4 py-2">Price</th><th class="text-right px-4 py-2">Duration</th><th class="text-center px-4 py-2">GST%</th><th class="text-right px-4 py-2">Stock</th><th class="px-4 py-2"></th></tr>
       </thead>
       <tbody class="divide-y divide-slate-100">
         <?php foreach ($items as $i): ?>
@@ -54,6 +54,7 @@
           <td class="px-4 py-2 text-right"><?= formatCurrency((float)$i['price']) ?></td>
           <td class="px-4 py-2 text-right text-slate-500"><?= $i['duration_minutes'] ? $i['duration_minutes'].' min' : '—' ?></td>
           <td class="px-4 py-2 text-center text-slate-500"><?= h((string)$i['gst_percent']) ?>%</td>
+          <td class="px-4 py-2 text-right"><?php if (($i['item_type'] ?? 'SERVICE') === 'STOCK'): $q = (float)$i['stock_qty']; ?><span class="text-xs font-medium px-2 py-0.5 rounded-full <?= $q > 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600' ?>"><?= rtrim(rtrim(number_format($q, 3, '.', ''), '0'), '.') ?: '0' ?> in stock</span><?php else: ?><span class="text-slate-300">—</span><?php endif; ?></td>
           <td class="px-4 py-2 text-right whitespace-nowrap">
             <a href="<?= $base ?>/service-items/edit/<?= (int)$i['id'] ?>" class="text-indigo-600 hover:underline text-xs">Edit</a>
             <a href="#" onclick="deleteOne(<?= (int)$i['id'] ?>, <?= h(json_encode($i['name'])) ?>); return false;" class="text-red-600 hover:underline text-xs ml-2">Delete</a>
@@ -61,7 +62,7 @@
         </tr>
         <?php endforeach; ?>
         <?php if (empty($items)): ?>
-        <tr><td colspan="7" class="px-4 py-8 text-center text-slate-400">No service items yet.</td></tr>
+        <tr><td colspan="8" class="px-4 py-8 text-center text-slate-400">No service items yet.</td></tr>
         <?php endif; ?>
       </tbody>
     </table>

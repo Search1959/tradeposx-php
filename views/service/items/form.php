@@ -57,6 +57,17 @@
     <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
     <textarea name="description" rows="2" class="w-full rounded border border-slate-300 px-3 py-2 text-sm"><?= h($i['description'] ?? '') ?></textarea>
   </div>
+  <!-- Goods (chargers, spares…) sold on a service bill are tracked as stock items: the quantity drops with every bill
+       and comes back if an invoice is cancelled. Plain services leave this off. -->
+  <div x-data="{ stock: <?= ($i['item_type'] ?? 'SERVICE') === 'STOCK' ? 'true' : 'false' ?> }" class="rounded border border-slate-200 bg-slate-50 p-3">
+    <label class="flex items-center gap-2 text-sm font-medium text-slate-700">
+      <input type="checkbox" name="is_stock" value="1" x-model="stock"> This is a stock item (goods I sell and count)
+    </label>
+    <div x-show="stock" x-cloak class="mt-2">
+      <label class="block text-sm font-medium text-slate-700 mb-1">Quantity in stock</label>
+      <input type="number" step="1" name="stock_qty" value="<?= h((string)($i['stock_qty'] ?? '0')) ?>" class="w-full rounded border border-slate-300 px-3 py-2 text-sm max-w-[10rem]">
+    </div>
+  </div>
   <label class="flex items-center gap-2 text-sm text-slate-700">
     <input type="checkbox" name="is_popular" value="1" <?= !empty($i['is_popular']) ? 'checked' : '' ?>> Mark as popular
   </label>

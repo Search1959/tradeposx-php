@@ -1,5 +1,23 @@
 <?php
 class ServiceItem extends BaseModel {
+    private static bool $stockColumnsChecked = false;
+
+    /** Goods sold on a service bill (chargers, spares, accessories) are tracked as item_type STOCK with a
+     * stock_qty; plain services keep item_type SERVICE and a NULL stock_qty. Columns are added on first use
+     * so a live database needs no manual migration. */
+    public function __construct() {
+        parent::__construct();
+        if (!self::$stockColumnsChecked) {
+            self::$stockColumnsChecked = true;
+            $cols = array_column($this->query('SHOW COLUMNS FROM service_items'), 'Field');
+            if (!in_array('item_type', $cols, true)) {
+                $this->db->exec("ALTER TABLE service_items ADD COLUMN item_type VARCHAR(10) NOT NULL DEFAULT 'SERVICE'");
+            }
+            if (!in_array('stock_qty', $cols, true)) {
+                $this->db->exec('ALTER TABLE service_items ADD COLUMN stock_qty DECIMAL(12,3) NULL');
+            }
+        }
+    }
     /** $limit stays null (no LIMIT) for every caller needing the full catalog to
      * populate a picker (appointment/invoice/quotation service pickers) — only
      * ServiceItemController::listAction's own paginated screen passes a real limit. */
@@ -19,21 +37,23 @@ class ServiceItem extends BaseModel {
 
     public function create(int $orgId, array $d): int {
         return $this->insert(
-            'INSERT INTO service_items (org_id, name, category, price, duration_minutes, warranty_days, gst_percent, sector, description, is_popular)
-             VALUES (?,?,?,?,?,?,?,?,?,?)',
+            'INSERT INTO service_items (org_id, name, category, price, duration_minutes, warranty_days, gst_percent, sector, description, is_popular, item_type, stock_qty)
+             VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
             [$orgId, $d['name'], $d['category'] ?? null, $d['price'] ?? 0, $d['duration_minutes'] ?: null,
              $d['warranty_days'] ?: 0, $d['gst_percent'] ?? 0, $d['sector'] ?? 'General', $d['description'] ?? null,
-             !empty($d['is_popular']) ? 1 : 0]
+             !empty($d['is_popular']) ? 1 : 0, ($d['item_type'] ?? 'SERVICE') === 'STOCK' ? 'STOCK' : 'SERVICE',
+             ($d['item_type'] ?? 'SERVICE') === 'STOCK' ? (float) ($d['stock_qty'] ?? 0) : null]
         );
     }
 
     public function update(int $orgId, int $id, array $d): bool {
         return $this->execute(
-            'UPDATE service_items SET name=?, category=?, price=?, duration_minutes=?, warranty_days=?, gst_percent=?, sector=?, description=?, is_popular=?
+            'UPDATE service_items SET name=?, category=?, price=?, duration_minutes=?, warranty_days=?, gst_percent=?, sector=?, description=?, is_popular=?, item_type=?, stock_qty=?
              WHERE org_id=? AND id=?',
             [$d['name'], $d['category'] ?? null, $d['price'] ?? 0, $d['duration_minutes'] ?: null,
              $d['warranty_days'] ?: 0, $d['gst_percent'] ?? 0, $d['sector'] ?? 'General', $d['description'] ?? null,
-             !empty($d['is_popular']) ? 1 : 0, $orgId, $id]
+             !empty($d['is_popular']) ? 1 : 0, ($d['item_type'] ?? 'SERVICE') === 'STOCK' ? 'STOCK' : 'SERVICE',
+             ($d['item_type'] ?? 'SERVICE') === 'STOCK' ? (float) ($d['stock_qty'] ?? 0) : null, $orgId, $id]
         );
     }
 
@@ -73,5 +93,17 @@ class ServiceItem extends BaseModel {
             [$merged['name'], $merged['category'], $merged['price'], $merged['duration_minutes'], $merged['warranty_days'],
              $merged['gst_percent'], $merged['sector'], $merged['description'], $orgId, $id]
         );
+    }
+
+    /** Moves stock for a STOCK item (negative delta = sold, positive = returned). Plain services are left alone,
+     * so callers can pass every invoice line without checking the type first. Stock may go below zero —
+     * a counter sale is never blocked; the screen just warns. */
+    public function adjustStock(int $orgId, int $id, float $delta): void {
+        $this->execute("UPDATE service_items SET stock_qty = COALESCE(stock_qty, 0) + ? WHERE org_id = ? AND id = ? AND item_type = 'STOCK'", [$delta, $orgId, $id]);
+    }
+
+    /** Turns an item into (or refreshes) a stock item with this quantity on hand. */
+    public function setStock(int $orgId, int $id, float $qty): bool {
+        return $this->execute("UPDATE service_items SET item_type = 'STOCK', stock_qty = ? WHERE org_id = ? AND id = ?", [$qty, $orgId, $id]);
     }
 }
