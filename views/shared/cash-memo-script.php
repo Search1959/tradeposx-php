@@ -154,6 +154,16 @@ function cashMemoMixin() {
       const rate = Number(s.slice(k));
       return s[k] === '0' || !rate ? null : { qty: Number(s.slice(0, k)), rate };
     },
+    // The engine sometimes writes "3 60" as "360" in its first guess but offers "3 60" as an alternative: prefer that one.
+    bestAlternative(result) {
+      const nums = t => (t.match(/(?<![\w.])\d+(?![\w])/g) || []);
+      const top = result[0].transcript, topNums = nums(top);
+      for (let k = 1; k < result.length; k++) {
+        const alt = result[k].transcript, altNums = nums(alt);
+        if (altNums.length > topNums.length && altNums.join('') === topNums.join('') && alt.replace(/[\d\s]/g, '').toLowerCase() === top.replace(/[\d\s]/g, '').toLowerCase()) return alt;
+      }
+      return top;
+    },
     // Voice -> text box (visible, editable). The person then taps "Add" to put ONE entry into the memo, and repeats for the next item.
     toggleVoice() { this.listening ? this.stopVoice() : this.startVoice(); },
     startVoice() {
@@ -161,10 +171,10 @@ function cashMemoMixin() {
       if (!SR) { this.voiceError = 'Voice input needs Chrome or Edge — type in the box instead.'; return; }
       this.voiceError = ''; this.memoMsg = ''; this.memoText = '';
       const rec = new SR();
-      rec.lang = this.voiceLang; rec.continuous = false; rec.interimResults = true;
+      rec.lang = this.voiceLang; rec.continuous = false; rec.interimResults = true; rec.maxAlternatives = 5;
       rec.onresult = (e) => {
         let t = '';
-        for (let i = 0; i < e.results.length; i++) t += e.results[i][0].transcript + ' ';
+        for (let i = 0; i < e.results.length; i++) t += this.bestAlternative(e.results[i]) + ' ';
         this.memoText = t.trim();            // shows in the box while speaking; stays there to check or edit
       };
       rec.onerror = (e) => {
