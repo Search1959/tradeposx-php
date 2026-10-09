@@ -18,8 +18,8 @@
       </select>
     </div>
     <div x-show="listening" x-cloak class="mt-3 min-h-[1.5rem] text-sm italic text-indigo-700"
-         x-text="interim ? '“' + interim + '”' : 'Say: item, quantity, rate … then “next”'"></div>
-    <p x-show="!listening" class="text-xs text-slate-500 mt-2">Example: “Basin mixer, 2, 2500 … next … Granite, 10, 180”. Rows fill in as you speak.</p>
+         x-text="interim ? '“' + interim + '”' : 'Say the item … pause … quantity … pause … rate'"></div>
+    <p x-show="!listening" class="text-xs text-slate-500 mt-2">Say the item, pause, the quantity, pause, the rate — then the next item. No need to say “quantity” or “rate”.</p>
     <div x-show="voiceError" x-cloak class="text-xs text-red-600 mt-2" x-text="voiceError"></div>
     <button type="button" @click="typeOpen = !typeOpen" class="mt-2 text-xs text-indigo-600 hover:underline" x-text="typeOpen ? 'Hide typing box' : 'Type instead'"></button>
   </div>

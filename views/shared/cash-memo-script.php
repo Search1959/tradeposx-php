@@ -36,7 +36,7 @@ function cashMemoMixin() {
   return {
     leftTab: 'stock',
     memoRows: [], memoSeq: 0, memoText: '', memoMsg: '', voiceError: '', voiceLang: 'en-IN',
-    listening: false, wantListening: false, rec: null, interim: '', heard: [], typeOpen: false,
+    lastK: 0, listening: false, wantListening: false, rec: null, interim: '', heard: [], typeOpen: false,
     voiceSupported: !!(window.SpeechRecognition || window.webkitSpeechRecognition),
 
     memoInit() { this.memoAddRows(5); if (!this.voiceSupported) this.typeOpen = true; },
@@ -103,6 +103,9 @@ function cashMemoMixin() {
         if (p) { row.pid = p.id; row.gst = p.gst; row.stock = p.stock; }
         row.qty = nums[0];
         row.rate = nums[1] !== undefined ? nums[1] : (p ? p.price : '');
+        // step = what the next spoken number fills: 0 quantity, 1 rate, 2 nothing (row complete).
+        row.step = rate !== undefined ? 2 : (qty !== undefined ? 1 : 0);
+        this.lastK = row.k;
         const blank = this.memoRows.findIndex(r => r.item.trim() === '' && r.qty === '' && r.rate === '');
         if (blank >= 0) this.memoRows.splice(blank, 1, row); else this.memoRows.push(row);
         added++;
@@ -114,6 +117,21 @@ function cashMemoMixin() {
       const n = this.parseChunk(this.memoText);
       this.memoText = '';
       this.memoMsg = n ? n + ' row' + (n === 1 ? '' : 's') + ' filled — check them, then Add to cart.' : 'Nothing understood — say or type "item, quantity, rate".';
+    },
+    // One spoken phrase (the engine ends a phrase at each pause): "Coffee" ... "2" ... "50" fills item, quantity, rate in turn.
+    // A phrase with words starts a new row; a phrase of only numbers goes to the next empty slot of the current row.
+    voiceChunk(raw) {
+      const HOMO = { to: 2, too: 2, tu: 2, won: 1, tree: 3, free: 3, fore: 4, for: 4, fife: 5, ate: 8 };
+      const digits = wordsToDigits(raw.trim().toLowerCase().replace(/\b(to|too|tu|won|tree|free|fore|for|fife|ate)\b/g, w => HOMO[w])).replace(/\b(rupees?|rs|pieces?|pcs|nos|quantity|qty|rate|price|each|at|₹|@)\b|[₹@.,]/g, ' ').replace(/\s+/g, ' ').trim();
+      if (!/^\d+(\s+\d+)?$/.test(digits)) return this.parseChunk(raw);        // has an item name -> new row (or a full "item 2 50" phrase)
+      const row = this.memoRows.find(r => r.k === this.lastK);
+      if (!row || row.step >= 2) { this.memoMsg = 'Say the item name first, then the quantity and rate.'; return 0; }
+      for (const n of digits.split(' ').map(Number)) {
+        if (row.step === 0) { row.qty = n; row.step = 1; }
+        else if (row.step === 1) { row.rate = n; row.step = 2; }
+      }
+      this.heard.push(raw.trim());
+      return 1;
     },
     toggleVoice() { this.listening ? this.stopVoice() : this.startVoice(); },
     startVoice() {
@@ -128,7 +146,7 @@ function cashMemoMixin() {
         for (let i = e.resultIndex; i < e.results.length; i++) {
           const res = e.results[i];
           if (res.isFinal) {
-            const n = this.parseChunk(res[0].transcript);
+            const n = this.voiceChunk(res[0].transcript);
             this.memoMsg = n ? 'Heard: "' + res[0].transcript.trim() + '"' : '';
           } else { interim += res[0].transcript; }
         }
