@@ -27,7 +27,7 @@
     </div>
     <p x-show="!voiceSupported" class="text-xs text-amber-700 mt-2">Voice works in Chrome or Edge — you can type in the box instead.</p>
     <div x-show="voiceError" x-cloak class="text-xs text-red-600 mt-2" x-text="voiceError"></div>
-    <span class="block text-[10px] text-slate-300 mt-1 text-right">memo v8</span>
+    <span class="block text-[10px] text-slate-300 mt-1 text-right">memo v9</span>
   </div>
   <div x-show="memoMsg" x-cloak class="mb-2 text-sm text-emerald-700" x-text="memoMsg"></div>
 

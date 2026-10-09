@@ -164,6 +164,15 @@ function cashMemoMixin() {
       }
       return top;
     },
+    // "hot coffee 260" (said "2 ... 60") -> "hot coffee 2 60", so the box shows what will be added. Only when it is one bare number and no quantity/rate words.
+    unjoinText(t) {
+      const all = t.match(/(?<![\w.])\d+(?:\.\d+)?(?![\w])/g) || [];
+      if (all.length !== 1 || !/^\d{3,}$/.test(all[0])) return t;
+      if (new RegExp('\b(' + QTY_WORDS + '|' + RATE_WORDS + '|' + UNIT_WORDS + ')\b', 'i').test(t)) return t;
+      const p = this.bestMatch(t.replace(all[0], ' ').replace(/\s+/g, ' ').trim());
+      const sp = this.splitJoined(Number(all[0]), p ? p.price : null);
+      return sp ? t.replace(all[0], sp.qty + ' ' + sp.rate) : t;
+    },
     // Voice -> text box (visible, editable). The person then taps "Add" to put ONE entry into the memo, and repeats for the next item.
     toggleVoice() { this.listening ? this.stopVoice() : this.startVoice(); },
     startVoice() {
@@ -182,7 +191,11 @@ function cashMemoMixin() {
         if (e.error === 'aborted') return;
         this.voiceError = e.error === 'not-allowed' ? 'Microphone is blocked — allow it in the browser address bar, then tap again.' : 'Voice error: ' + e.error;
       };
-      rec.onend = () => { this.listening = false; this.interim = ''; const box = document.getElementById('memoSayBox'); if (box && this.memoText) box.focus(); };
+      rec.onend = () => {
+        this.listening = false; this.interim = '';
+        const fixed = this.unjoinText(this.memoText);
+        if (fixed !== this.memoText) { this.memoMsg = 'Heard "' + this.memoText + '" — shown as quantity and rate. Edit the box if you meant something else.'; this.memoText = fixed; }
+        const box = document.getElementById('memoSayBox'); if (box && this.memoText) box.focus(); };
       this.rec = rec;
       try { rec.start(); this.listening = true; } catch (err) { this.voiceError = 'Could not start the microphone.'; }
     },
