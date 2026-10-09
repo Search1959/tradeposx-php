@@ -51,6 +51,7 @@ class Sale extends BaseModel {
 
         // Validate stock before touching anything.
         foreach ($items as $item) {
+            if (empty($item['product_id'])) continue; // free item from the cash memo — nothing to check
             $product = $productModel->find($orgId, (int) $item['product_id']);
             if (!$product) return ['error' => 'Product not found: ' . ($item['product_name'] ?? '')];
             if ((float) $product['current_stock'] < (float) $item['quantity']) {
@@ -104,8 +105,10 @@ class Sale extends BaseModel {
                         $item['hsn'] ?? null, $item['batch_number'] ?? null, $item['expiry_date'] ?: null,
                     ]
                 );
-                $productModel->adjustStock($orgId, (int) $item['product_id'], -1 * (float) $item['quantity']);
-                $invModel->record($orgId, (int) $item['product_id'], 'STOCK_OUT_SALE', (float) $item['quantity'], $saleNumber);
+                if (!empty($item['product_id'])) {
+                    $productModel->adjustStock($orgId, (int) $item['product_id'], -1 * (float) $item['quantity']);
+                    $invModel->record($orgId, (int) $item['product_id'], 'STOCK_OUT_SALE', (float) $item['quantity'], $saleNumber);
+                }
             }
 
             if ($amountOwed > 0) {

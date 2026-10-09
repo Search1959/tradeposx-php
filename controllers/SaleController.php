@@ -123,17 +123,31 @@ class SaleController {
         $lineTotal = 0.0;
         $taxableAmount = 0.0;
         $taxTotal = 0.0;
+        $allowedGst = [0.0, 5.0, 12.0, 18.0, 28.0];
         foreach ($cart as $line) {
-            $product = $this->productModel->find($orgId, (int) $line['id']);
-            if (!$product) continue;
-            $qty = (float) $line['qty'];
-            // A bargained price typed into the cart overrides the product's own
-            // selling_price for this sale only — floored at 0 so a cart edit can
-            // never produce a negative line; the product record itself (and its
-            // MRP/purchase_price) is never touched by this.
-            $unitPrice = isset($line['price']) ? max(0, (float) $line['price']) : (float) $product['selling_price'];
+            if (!empty($line['custom'])) {
+                // A free item written on the cash memo (not in stock): no product record, no stock movement.
+                // The shop's own price and GST pick are trusted like an edited price; GST is still whitelisted.
+                $name = mb_substr(trim((string) ($line['name'] ?? '')), 0, 200);
+                if ($name === '') continue;
+                $qty = max(0.001, (float) ($line['qty'] ?? 1));
+                $unitPrice = max(0, (float) ($line['price'] ?? 0));
+                $gstPick = (float) ($line['gst'] ?? 18);
+                $gstPick = in_array($gstPick, $allowedGst, true) ? $gstPick : 18.0;
+                $gstRate = $taxType === 'EXEMPT' ? 0.0 : $gstPick;
+                $meta = ['product_id' => null, 'product_name' => $name, 'mrp' => null, 'hsn' => null, 'batch_number' => null, 'expiry_date' => null];
+            } else {
+                $product = $this->productModel->find($orgId, (int) $line['id']);
+                if (!$product) continue;
+                $qty = (float) $line['qty'];
+                // A bargained price typed into the cart overrides the product's own selling_price for this sale
+                // only — floored at 0; the product record itself (and its MRP/purchase_price) is never touched.
+                $unitPrice = isset($line['price']) ? max(0, (float) $line['price']) : (float) $product['selling_price'];
+                $gstRate = $taxType === 'EXEMPT' ? 0.0 : (float) $product['gst_percent'];
+                $meta = ['product_id' => $product['id'], 'product_name' => $product['name'], 'mrp' => $product['mrp'], 'hsn' => $product['hsn'],
+                         'batch_number' => $product['batch_number'], 'expiry_date' => $product['expiry_date']];
+            }
             $lineAmount = round($qty * $unitPrice, 2);
-            $gstRate = $taxType === 'EXEMPT' ? 0.0 : (float) $product['gst_percent'];
 
             if ($taxType === 'INCLUSIVE' && $gstRate > 0) {
                 $lineTaxable = round($lineAmount / (1 + $gstRate / 100), 2);
@@ -146,11 +160,9 @@ class SaleController {
             $lineTotal += $lineAmount;
             $taxableAmount += $lineTaxable;
             $taxTotal += $gstAmount;
-            $items[] = [
-                'product_id' => $product['id'], 'product_name' => $product['name'], 'quantity' => $qty,
-                'unit_price' => $unitPrice, 'mrp' => $product['mrp'], 'total_price' => $lineAmount,
-                'gst_rate' => $gstRate, 'gst_amount' => $gstAmount, 'hsn' => $product['hsn'],
-                'batch_number' => $product['batch_number'], 'expiry_date' => $product['expiry_date'],
+            $items[] = $meta + [
+                'quantity' => $qty, 'unit_price' => $unitPrice, 'total_price' => $lineAmount,
+                'gst_rate' => $gstRate, 'gst_amount' => $gstAmount,
             ];
         }
         return [$items, round($lineTotal, 2), round($taxableAmount, 2), round($taxTotal, 2)];

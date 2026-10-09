@@ -23,6 +23,16 @@
   <!-- Product picker -->
   <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border border-slate-200 p-4"
        :class="activeTab === 'products' ? '' : 'hidden lg:block'">
+    <!-- The picker is split in two: what's in stock (tap to add) and a cash-memo pad for writing/dictating
+         a whole list of items, quantities and rates, then sending it to the cart in one go. -->
+    <div class="flex gap-1 p-1 rounded-lg bg-slate-100 mb-3">
+      <button type="button" @click="leftTab = 'stock'" :class="leftTab === 'stock' ? 'bg-white shadow text-indigo-700' : 'text-slate-500'"
+              class="flex-1 text-sm font-semibold py-2 rounded-md transition">📦 Stock available</button>
+      <button type="button" @click="leftTab = 'memo'" :class="leftTab === 'memo' ? 'bg-white shadow text-indigo-700' : 'text-slate-500'"
+              class="flex-1 text-sm font-semibold py-2 rounded-md transition">🧾 Cash memo</button>
+    </div>
+
+    <div x-show="leftTab === 'stock'">
     <input type="text" x-model="search" placeholder="Search products by name, SKU, barcode…"
            class="w-full rounded border border-slate-300 px-3 py-2 text-sm mb-3" x-ref="searchBox">
     <div class="flex flex-wrap gap-1.5 mb-3">
@@ -49,6 +59,77 @@
         </button>
       </template>
     </div>
+    </div><!-- /stock -->
+
+    <!-- ── Cash memo ── -->
+    <div x-show="leftTab === 'memo'" x-cloak>
+      <datalist id="memoItems"><template x-for="p in products" :key="p.id"><option :value="p.name"></option></template></datalist>
+
+      <!-- Type or speak a whole list: "Basin mixer 2 2500, granite 10 180" (say "next" between items when speaking) -->
+      <div class="rounded-lg border border-indigo-200 bg-indigo-50/50 p-3 mb-3">
+        <div class="flex items-center justify-between gap-2 mb-1.5">
+          <div class="text-xs font-semibold text-indigo-800">Write or speak the list</div>
+          <select x-model="voiceLang" class="text-xs rounded border border-slate-300 px-1.5 py-1 bg-white">
+            <option value="en-IN">English</option><option value="hi-IN">हिन्दी</option><option value="bn-IN">বাংলা</option>
+          </select>
+        </div>
+        <textarea x-model="memoText" rows="2" placeholder="e.g.  Basin mixer 2 2500, Granite 10 180, Wall tile 50 68"
+                  class="w-full rounded border border-slate-300 px-3 py-2 text-sm bg-white"></textarea>
+        <div class="flex items-center gap-2 mt-2">
+          <button type="button" x-show="voiceSupported" @click="listening ? stopVoice() : startVoice()"
+                  :class="listening ? 'bg-red-600 text-white animate-pulse' : 'bg-white border border-slate-300 text-slate-700'"
+                  class="text-sm font-medium px-3 py-1.5 rounded" x-text="listening ? '⏹ Stop' : '🎤 Speak'"></button>
+          <button type="button" @click="parseMemoText()" class="text-sm font-medium px-3 py-1.5 rounded bg-indigo-600 text-white hover:bg-indigo-700">Fill rows</button>
+          <span x-show="!voiceSupported" class="text-[11px] text-slate-500">Voice needs Chrome / Edge — typing works everywhere.</span>
+        </div>
+        <p class="text-[11px] text-slate-500 mt-1.5">Item, then quantity, then rate. Separate items with a comma, a new line, or say "next". You can fix every row below before adding.</p>
+        <div x-show="voiceError" x-cloak class="text-xs text-red-600 mt-1" x-text="voiceError"></div>
+      </div>
+
+      <!-- The memo: heading + as many rows as needed -->
+      <div class="rounded-lg border border-slate-200 overflow-hidden">
+        <div class="hidden xl:grid grid-cols-[1fr_4rem_5rem_5rem_1.5rem] gap-2 px-3 py-2 bg-slate-50 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+          <div>Item</div><div class="text-right">Qty</div><div class="text-right">Rate</div><div class="text-right">Amount</div><div></div>
+        </div>
+        <div class="xl:hidden px-3 py-2 bg-slate-50 text-[11px] font-semibold uppercase tracking-wide text-slate-500">Item · Qty · Rate · Amount</div>
+        <div class="max-h-[42vh] overflow-y-auto divide-y divide-slate-100">
+          <template x-for="(r, i) in memoRows" :key="r.k">
+            <div class="px-3 py-2" :class="r.error ? 'bg-red-50' : ''">
+              <div class="grid grid-cols-[4rem_1fr_4.75rem_1.5rem] xl:grid-cols-[1fr_4rem_5rem_5rem_1.5rem] gap-2 items-center">
+                <input type="text" list="memoItems" data-memo-item x-model="r.item" @change="matchRow(r)" @blur="matchRow(r)" placeholder="Item name"
+                       class="col-span-4 xl:col-span-1 min-w-0 rounded border border-slate-300 px-2 py-1.5 text-sm">
+                <input type="number" step="any" min="0" x-model.number="r.qty" placeholder="1" class="w-full rounded border border-slate-300 px-2 py-1.5 text-sm text-right">
+                <input type="number" step="0.01" min="0" x-model.number="r.rate" @keydown.enter.prevent="memoEnter(i)" placeholder="0.00" class="w-full rounded border border-slate-300 px-2 py-1.5 text-sm text-right">
+                <div class="text-sm font-semibold text-right" x-text="memoAmount(r) > 0 ? '₹' + memoAmount(r).toFixed(2) : ''"></div>
+                <button type="button" @click="memoRemove(i)" class="text-red-400 hover:text-red-600 text-sm" aria-label="Remove row">✕</button>
+              </div>
+              <div class="flex items-center gap-2 mt-1 text-[11px]" x-show="r.item.trim() !== ''">
+                <template x-if="r.pid">
+                  <span :class="(r.qty || 1) > stockOf(r) ? 'text-amber-600 font-medium' : 'text-slate-400'"
+                        x-text="(r.qty || 1) > stockOf(r) ? 'Only ' + stockOf(r) + ' in stock' : stockOf(r) + ' in stock · GST ' + r.gst + '%'"></span>
+                </template>
+                <template x-if="!r.pid">
+                  <span class="flex items-center gap-1 text-slate-500">Free item (not in stock) · GST
+                    <select x-model.number="r.gst" class="rounded border border-slate-300 px-1 py-0.5 text-[11px] bg-white">
+                      <option value="0">0%</option><option value="5">5%</option><option value="12">12%</option><option value="18">18%</option><option value="28">28%</option>
+                    </select></span>
+                </template>
+                <span x-show="r.error" class="text-red-600 font-medium" x-text="r.error"></span>
+              </div>
+            </div>
+          </template>
+        </div>
+        <div class="flex items-center justify-between gap-2 px-3 py-2.5 bg-slate-50 border-t border-slate-200">
+          <div class="flex items-center gap-3 text-sm">
+            <button type="button" @click="memoAddRows(1)" class="text-indigo-600 font-medium hover:underline">+ Add row</button>
+            <button type="button" @click="memoClear()" class="text-slate-500 hover:underline">Clear</button>
+          </div>
+          <div class="text-sm text-slate-600">Memo total <span class="font-bold text-slate-900" x-text="'₹' + memoTotal().toFixed(2)"></span></div>
+        </div>
+      </div>
+      <div x-show="memoMsg" x-cloak class="mt-2 text-sm text-emerald-700" x-text="memoMsg"></div>
+      <button type="button" @click="memoSubmit()" class="mt-3 w-full bg-indigo-600 text-white font-semibold py-2.5 rounded-lg hover:bg-indigo-700">Add to cart →</button>
+    </div><!-- /memo -->
   </div>
 
   <!-- Cart + checkout -->
@@ -59,7 +140,7 @@
       <template x-for="(line, idx) in cart" :key="line.id">
         <div class="py-2 flex items-center gap-2">
           <div class="flex-1 min-w-0">
-            <div class="text-sm font-medium text-slate-900 truncate" x-text="line.name"></div>
+            <div class="text-sm font-medium text-slate-900 truncate"><span x-text="line.name"></span> <span x-show="line.custom" class="text-[10px] font-semibold px-1 rounded bg-indigo-50 text-indigo-700 align-middle">Free item</span></div>
             <!-- Editable per-unit price — for when a customer bargains. Only
                  ever changes what this one sale charges; the product's own
                  selling_price is never touched. -->
@@ -122,7 +203,7 @@
 
     <form method="POST" class="mt-3 space-y-2" @submit="onSubmit">
       <?= CsrfHelper::getField() ?>
-      <input type="hidden" name="cart_json" :value="JSON.stringify(cart.map(l => ({id: l.id, qty: l.qty, price: l.price})))">
+      <input type="hidden" name="cart_json" :value="JSON.stringify(cart.map(l => ({id: l.custom ? null : l.id, custom: !!l.custom, name: l.custom ? l.name : undefined, qty: l.qty, price: l.price, gst: l.gst})))">
       <input type="hidden" name="discount" :value="discountAmount()">
       <input type="hidden" name="discount_percent" :value="['5','10'].includes(discountMode) ? discountMode : ''">
       <input type="hidden" name="tax_type" :value="taxType">
@@ -210,6 +291,10 @@ function posScreen() {
     search: '',
     category: '',
     activeTab: 'products',
+    leftTab: 'stock',
+    // ── cash memo state ──
+    memoRows: [], memoSeq: 0, customSeq: 0, memoText: '', memoMsg: '', voiceError: '', voiceLang: 'en-IN', listening: false, rec: null, memoBase: '',
+    voiceSupported: !!(window.SpeechRecognition || window.webkitSpeechRecognition),
     // A physical-keyboard + barcode-scanner desktop setup wants the search box
     // refocused after every add so scanning can continue uninterrupted; a
     // touchscreen phone doesn't have that workflow, and refocusing there just
@@ -230,7 +315,114 @@ function posScreen() {
     receivedAmount: 0,
 
     init() {
+      this.memoAddRows(5);
       if (!this.isTouchDevice) this.$refs.searchBox.focus();
+    },
+
+    // ───────── Cash memo ─────────
+    blankRow() { return { k: ++this.memoSeq, item: '', qty: '', rate: '', pid: null, gst: 18, error: '' }; },
+    memoAddRows(n) { for (let i = 0; i < n; i++) this.memoRows.push(this.blankRow()); },
+    memoRemove(i) { this.memoRows.splice(i, 1); if (this.memoRows.length === 0) this.memoAddRows(1); },
+    memoClear() { this.memoRows = []; this.memoAddRows(5); this.memoMsg = ''; },
+    memoAmount(r) { return (Number(r.qty) || (r.item.trim() ? 1 : 0)) * (Number(r.rate) || 0); },
+    memoTotal() { return this.memoRows.reduce((s, r) => s + this.memoAmount(r), 0); },
+    stockOf(r) { const p = this.products.find(x => x.id === r.pid); return p ? Number(p.current_stock) : 0; },
+    // Enter on the Rate box adds a fresh row (if this was the last) and jumps to its Item box — fast keyboard entry.
+    memoEnter(i) {
+      if (i === this.memoRows.length - 1) this.memoAddRows(1);
+      this.$nextTick(() => { const boxes = document.querySelectorAll('[data-memo-item]'); if (boxes[i + 1]) boxes[i + 1].focus(); });
+    },
+    // Exact name (from the suggestions) → linked to the stock item with its price and GST; anything else stays a free item.
+    matchRow(r) {
+      const name = r.item.trim().toLowerCase();
+      const p = name ? this.products.find(x => x.name.toLowerCase() === name) : null;
+      if (p) { r.pid = p.id; r.gst = p.gst_percent; if (r.rate === '' || r.rate === null) r.rate = p.selling_price; }
+      else { r.pid = null; }
+      r.error = '';
+    },
+    // Best stock match for spoken/typed words: every word must appear in the product name; shortest name wins.
+    bestMatch(text) {
+      const words = text.toLowerCase().split(/\s+/).filter(w => w.length > 1);
+      if (!words.length) return null;
+      let best = null;
+      for (const p of this.products) {
+        const n = p.name.toLowerCase();
+        if (words.every(w => n.includes(w)) && (!best || p.name.length < best.name.length)) best = p;
+      }
+      return best;
+    },
+    // "Basin mixer 2 2500, granite 10 180" → rows. First number = quantity, second = rate.
+    parseMemoText() {
+      const filler = /\b(quantity|qty|pieces|piece|pcs|nos|number|at|rate|price|rs|rupees|rupee|each|of|x|for)\b|@|₹/gi;
+      const segs = this.memoText.replace(/\b(next|then|aur|and next)\b/gi, '\n').split(/[\n;,]+/).map(t => t.trim()).filter(Boolean);
+      let added = 0;
+      for (const seg of segs) {
+        const nums = [...seg.matchAll(/\d+(?:\.\d+)?/g)].map(m => Number(m[0]));
+        const name = seg.replace(/\d+(?:\.\d+)?/g, ' ').replace(filler, ' ').replace(/\s+/g, ' ').trim();
+        if (!name) continue;
+        const row = this.blankRow();
+        const p = this.bestMatch(name);
+        row.item = p ? p.name : name.replace(/\b\w/g, c => c.toUpperCase());
+        if (p) { row.pid = p.id; row.gst = p.gst_percent; }
+        row.qty = nums.length ? nums[0] : 1;
+        row.rate = nums.length > 1 ? nums[1] : (p ? p.selling_price : '');
+        const blank = this.memoRows.findIndex(r => r.item.trim() === '' && r.qty === '' && r.rate === '');
+        if (blank >= 0) this.memoRows.splice(blank, 1, row); else this.memoRows.push(row);
+        added++;
+      }
+      this.memoText = '';
+      this.memoMsg = added ? added + ' row' + (added === 1 ? '' : 's') + ' filled — check them, then Add to cart.' : 'Nothing understood — try "item quantity rate".';
+    },
+    startVoice() {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) { this.voiceError = 'Voice input is not supported in this browser.'; return; }
+      this.voiceError = '';
+      this.memoBase = this.memoText;
+      this.rec = new SR();
+      this.rec.lang = this.voiceLang;
+      this.rec.continuous = true;
+      this.rec.interimResults = true;
+      this.rec.onresult = (e) => {
+        let t = '';
+        for (let i = 0; i < e.results.length; i++) t += e.results[i][0].transcript + ' ';
+        this.memoText = (this.memoBase + ' ' + t).trim();
+      };
+      this.rec.onerror = (e) => {
+        this.listening = false;
+        this.voiceError = e.error === 'not-allowed' ? 'Microphone is blocked — allow it in the browser address bar.' : 'Voice error: ' + e.error;
+      };
+      this.rec.onend = () => { const was = this.listening; this.listening = false; if (was && this.memoText.trim()) this.parseMemoText(); };
+      try { this.rec.start(); this.listening = true; } catch (err) { this.voiceError = 'Could not start the microphone.'; }
+    },
+    stopVoice() { if (this.rec) this.rec.stop(); },
+    // Submit: every filled row goes to the cart (stock items as normal lines at the memo rate, others as free items).
+    memoSubmit() {
+      const used = this.memoRows.filter(r => r.item.trim() !== '' || r.qty !== '' || r.rate !== '');
+      if (!used.length) { this.memoMsg = 'Write at least one item first.'; return; }
+      let bad = false;
+      for (const r of used) {
+        r.error = '';
+        if (r.item.trim() === '') { r.error = 'Item name missing'; bad = true; continue; }
+        if (!r.pid) this.matchRow(r);
+        const rateOk = r.rate !== '' && r.rate !== null && Number(r.rate) >= 0;
+        if (!rateOk) { r.error = 'Enter a rate'; bad = true; }
+      }
+      if (bad) { this.memoMsg = ''; return; }
+      for (const r of used) {
+        const qty = Number(r.qty) > 0 ? Number(r.qty) : 1;
+        const rate = Number(r.rate);
+        if (r.pid) {
+          const p = this.products.find(x => x.id === r.pid);
+          const existing = this.cart.find(l => l.id === p.id);
+          if (existing) { existing.qty += qty; existing.price = rate; }
+          else this.cart.push({ id: p.id, name: p.name, price: rate, originalPrice: p.selling_price, gst: p.gst_percent, qty });
+        } else {
+          this.cart.push({ id: -(++this.customSeq), custom: true, name: r.item.trim(), price: rate, originalPrice: rate, gst: Number(r.gst) || 0, qty });
+        }
+      }
+      this.memoMsg = used.length + ' item' + (used.length === 1 ? '' : 's') + ' added to the cart.';
+      this.memoRows = []; this.memoAddRows(5);
+      this.activeTab = 'cart';
     },
     categories() {
       return [...new Set(this.products.map(p => p.category).filter(c => c))].sort();
