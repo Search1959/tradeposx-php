@@ -38,6 +38,8 @@ function cashMemoMixin() {
   const UNIT_WORDS = 'kgs?|gms?|g|ltrs?|litres?|liters?|dozen|dz|packets?|pkt|box(?:es)?|bags?|strips?';
   const RATE_WORDS = 'rate|price|rs|rupees?|rupee|each|r|at';
   const HOMO = { to: 2, too: 2, tu: 2, won: 1, tree: 3, free: 3, fore: 4, for: 4, fife: 5, ate: 8 };
+  /** Engines often glue the short words to their numbers ("Q2 R50", "2kg", "₹50") — split them apart first. */
+  const splitGlued = t => t.replace(/\b(q|qt|qty|r|rs|rate|price|at)[.:]?(?=\d)/gi, "$1 ").replace(/(\d)(?=(?:kgs?|gms?|g|ltrs?|litres?|liters?|pcs?|nos|dozen|dz|pkt|packets?|boxe?s?|bags?)\b)/gi, "$1 ").replace(/([₹@])(?=\d)/g, "$1 ");
   const HOMO_RE = 'to|too|tu|won|tree|free|fore|for|fife|ate';
 
   return {
@@ -78,6 +80,7 @@ function cashMemoMixin() {
     },
     // "Basin mixer 2 2500, granite 10 180" or "basin mixer two twenty five hundred next ..." -> rows. First number = quantity, second = rate.
     parseChunk(raw) {
+      raw = splitGlued(raw);
       const filler = new RegExp('\\b(' + QTY_WORDS + '|' + UNIT_WORDS + '|' + RATE_WORDS + '|number|of|x|for|per)\\b|@|₹', 'gi');
       // Speech engines often hear "two" as "to/too" and "four" as "for" right after the words quantity / rate.
       const fixed = raw.replace(new RegExp('\\b(' + QTY_WORDS + '|' + RATE_WORDS + ')\\s+(' + HOMO_RE + ')\\b', 'gi'), (m, k, w) => k + ' ' + HOMO[w.toLowerCase()]);
@@ -96,7 +99,7 @@ function cashMemoMixin() {
           const after = (seg.slice(m.index + m[0].length).match(/^\s*(\S+)/) || [, ''])[1].toLowerCase();
           const v = Number(m[0]);
           if (qBefore.test(before) || qAfter.test(after)) { if (qty === undefined) qty = v; else loose.push(v); }
-          else if (rBefore.test(before) || rAfter.test(after)) { if (rate === undefined) rate = v; else loose.push(v); }
+          else if (rBefore.test(before) || (rAfter.test(after) && !/^\s*\S+\s+[\d₹]/.test(seg.slice(m.index + m[0].length)))) { if (rate === undefined) rate = v; else loose.push(v); }
           else loose.push(v);
         }
         // A label was spoken but its number was not heard ("quantity date 50"): the lone number is then the other value.
@@ -130,6 +133,7 @@ function cashMemoMixin() {
     // One spoken phrase (the engine ends a phrase at each pause): "Coffee" ... "2" ... "50" fills item, quantity, rate in turn.
     // A phrase with words starts a new row; a phrase of only numbers goes to the next empty slot of the current row.
     voiceChunk(raw) {
+      raw = splitGlued(raw);
       const digits = wordsToDigits(raw.trim().toLowerCase().replace(new RegExp('\\b(' + HOMO_RE + ')\\b', 'g'), w => HOMO[w]))
         .replace(new RegExp('\\b(' + QTY_WORDS + '|' + UNIT_WORDS + '|' + RATE_WORDS + ')\\b|[₹@.,:;!?]', 'g'), ' ').replace(/\s+/g, ' ').trim();
       if (!/^\d+(\s+\d+)?$/.test(digits)) return this.parseChunk(raw);        // has an item name -> new row (or a full "item 2 50" phrase)
