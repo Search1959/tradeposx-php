@@ -1,0 +1,91 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+"20W Fast Charger Type-C",MB-001,8904400000001,"Chargers and Adapters",Samsung,pcs,645,899,1199,40,10,18,8504
+"25W Fast Charger Type-C",MB-002,8904400000002,"Chargers and Adapters",Samsung,pcs,790,1099,1499,30,8,18,8504
+"33W Fast Charger",MB-003,8904400000003,"Chargers and Adapters",Realme,pcs,575,799,1099,35,8,18,8504
+"33W Turbo Charger",MB-004,8904400000004,"Chargers and Adapters",Redmi,pcs,540,749,999,35,8,18,8504
+"67W Fast Charger",MB-005,8904400000005,"Chargers and Adapters",Redmi,pcs,935,1299,1799,20,5,18,8504
+"20W PD Charger",MB-006,8904400000006,"Chargers and Adapters",Apple,pcs,1225,1699,1900,25,6,18,8504
+"18W Quick Charger",MB-007,8904400000007,"Chargers and Adapters",Ambrane,pcs,325,449,699,60,15,18,8504
+"65W GaN Charger",MB-008,8904400000008,"Chargers and Adapters",Anker,pcs,1655,2299,2999,12,3,18,8504
+"Dual USB Car Charger",MB-009,8904400000009,"Chargers and Adapters",Ambrane,pcs,250,349,599,45,10,18,8504
+"15W Wireless Charger Pad",MB-010,8904400000010,"Chargers and Adapters",Portronics,pcs,720,999,1499,18,4,18,8504
+"Type-C to Type-C Cable 1m",MB-011,8904400000011,Cables,Ambrane,pcs,180,249,399,80,20,18,8544
+"USB to Type-C Cable 1m",MB-012,8904400000012,Cables,boAt,pcs,145,199,349,90,20,18,8544
+"USB to Micro USB Cable 1m",MB-013,8904400000013,Cables,Ambrane,pcs,105,149,249,70,15,18,8544
+"Lightning Cable 1m MFi",MB-014,8904400000014,Cables,Ambrane,pcs,325,449,699,40,10,18,8544
+"Braided Type-C Cable 1.5m 3A",MB-015,8904400000015,Cables,Portronics,pcs,215,299,499,50,12,18,8544
+"3 in 1 Charging Cable",MB-016,8904400000016,Cables,Ambrane,pcs,215,299,499,40,10,18,8544
+"Wired Earphones with Mic 3.5mm",MB-017,8904400000017,Audio,boAt,pcs,180,249,499,70,15,18,8518
+"Type-C Wired Earphones",MB-018,8904400000018,Audio,Realme,pcs,215,299,499,40,10,18,8518
+"Bluetooth Neckband",MB-019,8904400000019,Audio,boAt,pcs,575,799,1299,45,10,18,8518
+"Bluetooth Neckband Fast Charge",MB-020,8904400000020,Audio,Realme,pcs,720,999,1499,30,8,18,8518
+"True Wireless Earbuds",MB-021,8904400000021,Audio,boAt,pcs,790,1099,1799,50,12,18,8518
+"True Wireless Earbuds ENC",MB-022,8904400000022,Audio,Noise,pcs,935,1299,1999,35,8,18,8518
+"True Wireless Earbuds Gaming",MB-023,8904400000023,Audio,Boult,pcs,720,999,1699,30,8,18,8518
+"Bluetooth Over Ear Headphones",MB-024,8904400000024,Audio,boAt,pcs,935,1299,1999,25,6,18,8518
+"Portable Bluetooth Speaker",MB-025,8904400000025,Audio,JBL,pcs,1800,2499,3499,15,4,18,8518
+"Portable Bluetooth Speaker Mini",MB-026,8904400000026,Audio,Zebronics,pcs,575,799,1299,30,8,18,8518
+"10000mAh Power Bank",MB-027,8904400000027,"Power Banks",Mi,pcs,645,899,1299,40,10,18,8507
+"10000mAh Power Bank Fast Charge",MB-028,8904400000028,"Power Banks",Realme,pcs,790,1099,1599,30,8,18,8507
+"20000mAh Power Bank",MB-029,8904400000029,"Power Banks",Ambrane,pcs,1005,1399,1999,25,6,18,8507
+"20000mAh Power Bank 22.5W",MB-030,8904400000030,"Power Banks",Mi,pcs,1295,1799,2499,20,5,18,8507
+"Tempered Glass Standard",MB-031,8904400000031,"Screen Protection",Assorted,pcs,70,99,149,300,60,18,7007
+"Tempered Glass Full Cover 9D",MB-032,8904400000032,"Screen Protection",Assorted,pcs,95,129,199,250,50,18,7007
+"Privacy Tempered Glass",MB-033,8904400000033,"Screen Protection",Assorted,pcs,145,199,299,120,25,18,7007
+"Camera Lens Protector",MB-034,8904400000034,"Screen Protection",Assorted,pcs,70,99,199,120,25,18,7007
+"Silicone Back Cover Android",MB-035,8904400000035,"Cases and Covers",Assorted,pcs,105,149,249,250,50,18,3926
+"Hard Transparent Case Android",MB-036,8904400000036,"Cases and Covers",Assorted,pcs,130,179,299,200,40,18,3926
+"Flip Cover Android",MB-037,8904400000037,"Cases and Covers",Assorted,pcs,180,249,399,90,20,18,3926
+"iPhone Silicone Case",MB-038,8904400000038,"Cases and Covers",Spigen,pcs,645,899,1199,40,8,18,3926
+"iPhone MagSafe Clear Case",MB-039,8904400000039,"Cases and Covers",Spigen,pcs,865,1199,1499,25,6,18,3926
+"Waterproof Pouch Universal",MB-040,8904400000040,"Cases and Covers",Assorted,pcs,105,149,299,60,12,18,3926
+"Smart Watch Calling",MB-041,8904400000041,Wearables,Noise,pcs,1005,1399,2499,25,6,18,8517
+"Smart Watch AMOLED",MB-042,8904400000042,Wearables,boAt,pcs,1365,1899,3499,20,5,18,8517
+"Fitness Band",MB-043,8904400000043,Wearables,Mi,pcs,865,1199,1799,25,6,18,8517
+"microSD Card 32GB",MB-044,8904400000044,"Memory and Storage",SanDisk,pcs,250,349,599,60,15,18,8523
+"microSD Card 64GB",MB-045,8904400000045,"Memory and Storage",SanDisk,pcs,360,499,799,60,15,18,8523
+"microSD Card 128GB",MB-046,8904400000046,"Memory and Storage",Samsung,pcs,575,799,1299,40,10,18,8523
+"microSD Card 256GB",MB-047,8904400000047,"Memory and Storage",SanDisk,pcs,1080,1499,2299,20,5,18,8523
+"OTG Pen Drive 64GB Dual Port",MB-048,8904400000048,"Memory and Storage",SanDisk,pcs,465,649,999,25,6,18,8523
+"Memory Card Reader",MB-049,8904400000049,"Memory and Storage",Assorted,pcs,145,199,299,50,10,18,8471
+"Car Mobile Holder Dashboard",MB-050,8904400000050,"Holders and Stands",Assorted,pcs,180,249,399,70,15,18,3926
+"Bike Mobile Holder",MB-051,8904400000051,"Holders and Stands",Assorted,pcs,250,349,499,50,10,18,3926
+"Tripod with Bluetooth Remote",MB-052,8904400000052,"Holders and Stands",Assorted,pcs,285,399,599,40,10,18,9006
+"Ring Light with Stand",MB-053,8904400000053,"Holders and Stands",Assorted,pcs,505,699,999,25,6,18,9405
+"Mobile Desk Stand",MB-054,8904400000054,"Holders and Stands",Assorted,pcs,105,149,249,80,15,18,3926
+"Phone Grip Holder",MB-055,8904400000055,"Holders and Stands",Assorted,pcs,55,79,149,150,30,18,3926
+"OTG Adapter Type-C",MB-056,8904400000056,Adapters,Assorted,pcs,70,99,199,100,20,18,8536
+"SIM Ejector Pin Set",MB-057,8904400000057,Adapters,Assorted,pcs,20,29,49,200,40,18,8536
+"Mobile Cleaning Kit",MB-058,8904400000058,Adapters,Assorted,pcs,70,99,149,60,12,18,3402
+"Samsung Galaxy M-Series 4GB 64GB",MB-059,8904400000059,Samsung,Samsung,pcs,8750,9499,10999,8,2,18,8517
+"Samsung Galaxy A-Series 6GB 128GB",MB-060,8904400000060,Samsung,Samsung,pcs,16550,17999,19999,6,2,18,8517
+"Samsung Galaxy S-Series Flagship 8GB 256GB",MB-061,8904400000061,Samsung,Samsung,pcs,57950,62999,69999,3,1,18,8517
+"Redmi A-Series 3GB 64GB",MB-062,8904400000062,Redmi,Redmi,pcs,6000,6499,7499,10,3,18,8517
+"Redmi Note-Series 6GB 128GB",MB-063,8904400000063,Redmi,Redmi,pcs,12900,13999,15999,10,3,18,8517
+"Redmi Note Pro-Series 8GB 256GB",MB-064,8904400000064,Redmi,Redmi,pcs,20250,21999,24999,6,2,18,8517
+"Realme Narzo-Series 6GB 128GB",MB-065,8904400000065,Realme,Realme,pcs,11950,12999,14999,8,2,18,8517
+"Realme Number-Series 8GB 128GB",MB-066,8904400000066,Realme,Realme,pcs,16550,17999,19999,6,2,18,8517
+"Vivo Y-Series 6GB 128GB",MB-067,8904400000067,Vivo,Vivo,pcs,13800,14999,16999,8,2,18,8517
+"Vivo T-Series 8GB 128GB",MB-068,8904400000068,Vivo,Vivo,pcs,20250,21999,24999,5,2,18,8517
+"Vivo V-Series 8GB 256GB",MB-069,8904400000069,Vivo,Vivo,pcs,29450,31999,36999,4,1,18,8517
+"Oppo A-Series 6GB 128GB",MB-070,8904400000070,Oppo,Oppo,pcs,12900,13999,15999,8,2,18,8517
+"Oppo Reno-Series 8GB 256GB",MB-071,8904400000071,Oppo,Oppo,pcs,30350,32999,37999,4,1,18,8517
+"OnePlus Nord-Series 8GB 128GB",MB-072,8904400000072,OnePlus,OnePlus,pcs,23000,24999,27999,5,2,18,8517
+"OnePlus Nord-Series 12GB 256GB",MB-073,8904400000073,OnePlus,OnePlus,pcs,27600,29999,33999,4,1,18,8517
+"OnePlus Flagship 12GB 256GB",MB-074,8904400000074,OnePlus,OnePlus,pcs,59800,64999,69999,3,1,18,8517
+"Apple iPhone 13 128GB",MB-075,8904400000075,Apple,Apple,pcs,48650,52900,59900,4,1,18,8517
+"Apple iPhone 14 128GB",MB-076,8904400000076,Apple,Apple,pcs,57850,62900,69900,4,1,18,8517
+"Apple iPhone 15 128GB",MB-077,8904400000077,Apple,Apple,pcs,64300,69900,79900,4,1,18,8517
+"Apple iPhone 15 Pro 256GB",MB-078,8904400000078,Apple,Apple,pcs,119500,129900,134900,2,1,18,8517
+"Motorola G-Series 6GB 128GB",MB-079,8904400000079,Motorola,Motorola,pcs,11950,12999,14999,6,2,18,8517
+"Motorola Edge-Series 8GB 256GB",MB-080,8904400000080,Motorola,Motorola,pcs,23000,24999,28999,4,1,18,8517
+"Poco M-Series 6GB 128GB",MB-081,8904400000081,Poco,Poco,pcs,10100,10999,12999,8,2,18,8517
+"Poco X-Series 8GB 256GB",MB-082,8904400000082,Poco,Poco,pcs,21150,22999,25999,5,2,18,8517
+"iQOO Z-Series 8GB 128GB",MB-083,8904400000083,iQOO,iQOO,pcs,18400,19999,22999,5,2,18,8517
+"Infinix Hot-Series 4GB 128GB",MB-084,8904400000084,Infinix,Infinix,pcs,8300,8999,10999,8,2,18,8517
+"Tecno Spark-Series 6GB 128GB",MB-085,8904400000085,Tecno,Tecno,pcs,9200,9999,11999,8,2,18,8517
+"Lava Blaze-Series 6GB 128GB",MB-086,8904400000086,Lava,Lava,pcs,9200,9999,11999,6,2,18,8517
+"itel A-Series 3GB 64GB",MB-087,8904400000087,itel,itel,pcs,5800,6299,7499,10,3,18,8517
+"itel Keypad Feature Phone",MB-088,8904400000088,itel,itel,pcs,1200,1299,1499,20,5,18,8517
+"Nokia Keypad Feature Phone",MB-089,8904400000089,Nokia,Nokia,pcs,2100,2299,2599,12,3,18,8517
+"Lava Keypad Feature Phone",MB-090,8904400000090,Lava,Lava,pcs,1100,1199,1399,20,5,18,8517

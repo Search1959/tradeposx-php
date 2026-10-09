@@ -1,0 +1,103 @@
+name,sku,barcode,category,brand,unit,purchase_price,selling_price,mrp,current_stock,min_stock,gst_percent,hsn
+"Screen Replacement Budget Android",MR-001,8904300000001,"Repair Services",Service,service,720,1800,1800,9999,0,18,998713
+"Screen Replacement Samsung",MR-002,8904300000002,"Repair Services",Service,service,1400,3500,3500,9999,0,18,998713
+"Screen Replacement Redmi or Realme",MR-003,8904300000003,"Repair Services",Service,service,1000,2500,2500,9999,0,18,998713
+"Screen Replacement iPhone",MR-004,8904300000004,"Repair Services",Service,service,2600,6500,6500,9999,0,18,998713
+"Battery Replacement Android",MR-005,8904300000005,"Repair Services",Service,service,320,800,800,9999,0,18,998713
+"Battery Replacement iPhone",MR-006,8904300000006,"Repair Services",Service,service,1000,2500,2500,9999,0,18,998713
+"Charging Port Repair",MR-007,8904300000007,"Repair Services",Service,service,240,600,600,9999,0,18,998713
+"Speaker or Earpiece Replacement",MR-008,8904300000008,"Repair Services",Service,service,200,500,500,9999,0,18,998713
+"Microphone Replacement",MR-009,8904300000009,"Repair Services",Service,service,180,450,450,9999,0,18,998713
+"Camera Replacement",MR-010,8904300000010,"Repair Services",Service,service,600,1500,1500,9999,0,18,998713
+"Back Glass Replacement",MR-011,8904300000011,"Repair Services",Service,service,480,1200,1200,9999,0,18,998713
+"Power or Volume Button Repair",MR-012,8904300000012,"Repair Services",Service,service,160,400,400,9999,0,18,998713
+"Vibrator Motor Replacement",MR-013,8904300000013,"Repair Services",Service,service,140,350,350,9999,0,18,998713
+"Fingerprint Sensor Repair",MR-014,8904300000014,"Repair Services",Service,service,360,900,900,9999,0,18,998713
+"Network or Signal Problem Repair",MR-015,8904300000015,"Repair Services",Service,service,280,700,700,9999,0,18,998713
+"Water Damage Treatment",MR-016,8904300000016,"Repair Services",Service,service,600,1500,1500,9999,0,18,998713
+"Motherboard Repair Mobile",MR-017,8904300000017,"Repair Services",Service,service,1200,3000,3000,9999,0,18,998713
+"Software Flashing and Update",MR-018,8904300000018,"Repair Services",Service,service,160,400,400,9999,0,18,998713
+"Hang or Boot Loop Fix",MR-019,8904300000019,"Repair Services",Service,service,200,500,500,9999,0,18,998713
+"Pattern or Password Unlock",MR-020,8904300000020,"Repair Services",Service,service,200,500,500,9999,0,18,998713
+"Data Recovery Mobile",MR-021,8904300000021,"Repair Services",Service,service,600,1500,1500,9999,0,18,998713
+"Data Backup and Transfer",MR-022,8904300000022,"Repair Services",Service,service,120,300,300,9999,0,18,998713
+"Tempered Glass Fitting",MR-023,8904300000023,"Repair Services",Service,service,20,50,50,9999,0,18,998713
+"Phone Cleaning and Dust Removal",MR-024,8904300000024,"Repair Services",Service,service,80,200,200,9999,0,18,998713
+"Laptop Screen Replacement",MR-025,8904300000025,"Laptop Repair",Service,service,1800,4500,4500,9999,0,18,998713
+"Laptop Battery Replacement",MR-026,8904300000026,"Laptop Repair",Service,service,1000,2500,2500,9999,0,18,998713
+"Laptop Keyboard Replacement",MR-027,8904300000027,"Laptop Repair",Service,service,480,1200,1200,9999,0,18,998713
+"Laptop Overheating Service",MR-028,8904300000028,"Laptop Repair",Service,service,320,800,800,9999,0,18,998713
+"Windows Installation",MR-029,8904300000029,"Laptop Repair",Service,service,200,500,500,9999,0,18,998713
+"Virus Removal and Cleanup",MR-030,8904300000030,"Laptop Repair",Service,service,160,400,400,9999,0,18,998713
+"Diagnosis Charge",MR-031,8904300000031,"Repair Services",Service,service,80,200,200,9999,0,18,998713
+"Replacement Battery Samsung Series",MR-032,8904300000032,"Spare Parts",Assorted,pcs,700,1100,1320,20,5,18,8507
+"Replacement Battery Redmi Series",MR-033,8904300000033,"Spare Parts",Assorted,pcs,650,1000,1200,20,5,18,8507
+"Replacement Battery Realme Series",MR-034,8904300000034,"Spare Parts",Assorted,pcs,650,1000,1200,20,5,18,8507
+"Replacement Battery iPhone",MR-035,8904300000035,"Spare Parts",Assorted,pcs,1500,2200,2640,10,3,18,8507
+"Display Combo Budget Android",MR-036,8904300000036,"Spare Parts",Assorted,pcs,1100,1700,2040,12,3,18,8517
+"Display Combo Samsung Series",MR-037,8904300000037,"Spare Parts",Assorted,pcs,2500,3500,4200,8,2,18,8517
+"Display Combo iPhone",MR-038,8904300000038,"Spare Parts",Assorted,pcs,4500,6000,7200,5,2,18,8517
+"Charging Port Board Type-C",MR-039,8904300000039,"Spare Parts",Assorted,pcs,180,350,420,40,10,18,8517
+"Charging Port Board Micro USB",MR-040,8904300000040,"Spare Parts",Assorted,pcs,120,250,300,30,8,18,8517
+"Back Glass Assorted Models",MR-041,8904300000041,"Spare Parts",Assorted,pcs,250,500,600,30,8,18,8517
+"Speaker and Buzzer Assorted",MR-042,8904300000042,"Spare Parts",Assorted,pcs,60,150,180,60,15,18,8518
+"Power Volume Flex Assorted",MR-043,8904300000043,"Spare Parts",Assorted,pcs,80,200,240,50,12,18,8517
+"Screwdriver Opening Tool Kit",MR-044,8904300000044,"Spare Parts",Assorted,set,180,399,480,10,2,18,8205
+"20W Fast Charger Type-C",MR-045,8904300000045,"Chargers and Adapters",Samsung,pcs,645,899,1199,40,10,18,8504
+"25W Fast Charger Type-C",MR-046,8904300000046,"Chargers and Adapters",Samsung,pcs,790,1099,1499,30,8,18,8504
+"33W Fast Charger",MR-047,8904300000047,"Chargers and Adapters",Realme,pcs,575,799,1099,35,8,18,8504
+"33W Turbo Charger",MR-048,8904300000048,"Chargers and Adapters",Redmi,pcs,540,749,999,35,8,18,8504
+"67W Fast Charger",MR-049,8904300000049,"Chargers and Adapters",Redmi,pcs,935,1299,1799,20,5,18,8504
+"20W PD Charger",MR-050,8904300000050,"Chargers and Adapters",Apple,pcs,1225,1699,1900,25,6,18,8504
+"18W Quick Charger",MR-051,8904300000051,"Chargers and Adapters",Ambrane,pcs,325,449,699,60,15,18,8504
+"65W GaN Charger",MR-052,8904300000052,"Chargers and Adapters",Anker,pcs,1655,2299,2999,12,3,18,8504
+"Dual USB Car Charger",MR-053,8904300000053,"Chargers and Adapters",Ambrane,pcs,250,349,599,45,10,18,8504
+"15W Wireless Charger Pad",MR-054,8904300000054,"Chargers and Adapters",Portronics,pcs,720,999,1499,18,4,18,8504
+"Type-C to Type-C Cable 1m",MR-055,8904300000055,Cables,Ambrane,pcs,180,249,399,80,20,18,8544
+"USB to Type-C Cable 1m",MR-056,8904300000056,Cables,boAt,pcs,145,199,349,90,20,18,8544
+"USB to Micro USB Cable 1m",MR-057,8904300000057,Cables,Ambrane,pcs,105,149,249,70,15,18,8544
+"Lightning Cable 1m MFi",MR-058,8904300000058,Cables,Ambrane,pcs,325,449,699,40,10,18,8544
+"Braided Type-C Cable 1.5m 3A",MR-059,8904300000059,Cables,Portronics,pcs,215,299,499,50,12,18,8544
+"3 in 1 Charging Cable",MR-060,8904300000060,Cables,Ambrane,pcs,215,299,499,40,10,18,8544
+"Wired Earphones with Mic 3.5mm",MR-061,8904300000061,Audio,boAt,pcs,180,249,499,70,15,18,8518
+"Type-C Wired Earphones",MR-062,8904300000062,Audio,Realme,pcs,215,299,499,40,10,18,8518
+"Bluetooth Neckband",MR-063,8904300000063,Audio,boAt,pcs,575,799,1299,45,10,18,8518
+"Bluetooth Neckband Fast Charge",MR-064,8904300000064,Audio,Realme,pcs,720,999,1499,30,8,18,8518
+"True Wireless Earbuds",MR-065,8904300000065,Audio,boAt,pcs,790,1099,1799,50,12,18,8518
+"True Wireless Earbuds ENC",MR-066,8904300000066,Audio,Noise,pcs,935,1299,1999,35,8,18,8518
+"True Wireless Earbuds Gaming",MR-067,8904300000067,Audio,Boult,pcs,720,999,1699,30,8,18,8518
+"Bluetooth Over Ear Headphones",MR-068,8904300000068,Audio,boAt,pcs,935,1299,1999,25,6,18,8518
+"Portable Bluetooth Speaker",MR-069,8904300000069,Audio,JBL,pcs,1800,2499,3499,15,4,18,8518
+"Portable Bluetooth Speaker Mini",MR-070,8904300000070,Audio,Zebronics,pcs,575,799,1299,30,8,18,8518
+"10000mAh Power Bank",MR-071,8904300000071,"Power Banks",Mi,pcs,645,899,1299,40,10,18,8507
+"10000mAh Power Bank Fast Charge",MR-072,8904300000072,"Power Banks",Realme,pcs,790,1099,1599,30,8,18,8507
+"20000mAh Power Bank",MR-073,8904300000073,"Power Banks",Ambrane,pcs,1005,1399,1999,25,6,18,8507
+"20000mAh Power Bank 22.5W",MR-074,8904300000074,"Power Banks",Mi,pcs,1295,1799,2499,20,5,18,8507
+"Tempered Glass Standard",MR-075,8904300000075,"Screen Protection",Assorted,pcs,70,99,149,300,60,18,7007
+"Tempered Glass Full Cover 9D",MR-076,8904300000076,"Screen Protection",Assorted,pcs,95,129,199,250,50,18,7007
+"Privacy Tempered Glass",MR-077,8904300000077,"Screen Protection",Assorted,pcs,145,199,299,120,25,18,7007
+"Camera Lens Protector",MR-078,8904300000078,"Screen Protection",Assorted,pcs,70,99,199,120,25,18,7007
+"Silicone Back Cover Android",MR-079,8904300000079,"Cases and Covers",Assorted,pcs,105,149,249,250,50,18,3926
+"Hard Transparent Case Android",MR-080,8904300000080,"Cases and Covers",Assorted,pcs,130,179,299,200,40,18,3926
+"Flip Cover Android",MR-081,8904300000081,"Cases and Covers",Assorted,pcs,180,249,399,90,20,18,3926
+"iPhone Silicone Case",MR-082,8904300000082,"Cases and Covers",Spigen,pcs,645,899,1199,40,8,18,3926
+"iPhone MagSafe Clear Case",MR-083,8904300000083,"Cases and Covers",Spigen,pcs,865,1199,1499,25,6,18,3926
+"Waterproof Pouch Universal",MR-084,8904300000084,"Cases and Covers",Assorted,pcs,105,149,299,60,12,18,3926
+"Smart Watch Calling",MR-085,8904300000085,Wearables,Noise,pcs,1005,1399,2499,25,6,18,8517
+"Smart Watch AMOLED",MR-086,8904300000086,Wearables,boAt,pcs,1365,1899,3499,20,5,18,8517
+"Fitness Band",MR-087,8904300000087,Wearables,Mi,pcs,865,1199,1799,25,6,18,8517
+"microSD Card 32GB",MR-088,8904300000088,"Memory and Storage",SanDisk,pcs,250,349,599,60,15,18,8523
+"microSD Card 64GB",MR-089,8904300000089,"Memory and Storage",SanDisk,pcs,360,499,799,60,15,18,8523
+"microSD Card 128GB",MR-090,8904300000090,"Memory and Storage",Samsung,pcs,575,799,1299,40,10,18,8523
+"microSD Card 256GB",MR-091,8904300000091,"Memory and Storage",SanDisk,pcs,1080,1499,2299,20,5,18,8523
+"OTG Pen Drive 64GB Dual Port",MR-092,8904300000092,"Memory and Storage",SanDisk,pcs,465,649,999,25,6,18,8523
+"Memory Card Reader",MR-093,8904300000093,"Memory and Storage",Assorted,pcs,145,199,299,50,10,18,8471
+"Car Mobile Holder Dashboard",MR-094,8904300000094,"Holders and Stands",Assorted,pcs,180,249,399,70,15,18,3926
+"Bike Mobile Holder",MR-095,8904300000095,"Holders and Stands",Assorted,pcs,250,349,499,50,10,18,3926
+"Tripod with Bluetooth Remote",MR-096,8904300000096,"Holders and Stands",Assorted,pcs,285,399,599,40,10,18,9006
+"Ring Light with Stand",MR-097,8904300000097,"Holders and Stands",Assorted,pcs,505,699,999,25,6,18,9405
+"Mobile Desk Stand",MR-098,8904300000098,"Holders and Stands",Assorted,pcs,105,149,249,80,15,18,3926
+"Phone Grip Holder",MR-099,8904300000099,"Holders and Stands",Assorted,pcs,55,79,149,150,30,18,3926
+"OTG Adapter Type-C",MR-100,8904300000100,Adapters,Assorted,pcs,70,99,199,100,20,18,8536
+"SIM Ejector Pin Set",MR-101,8904300000101,Adapters,Assorted,pcs,20,29,49,200,40,18,8536
+"Mobile Cleaning Kit",MR-102,8904300000102,Adapters,Assorted,pcs,70,99,149,60,12,18,3402
