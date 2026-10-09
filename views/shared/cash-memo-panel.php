@@ -19,8 +19,9 @@
     </div>
     <div x-show="listening" x-cloak class="mt-3 min-h-[1.5rem] text-sm italic text-indigo-700"
          x-text="interim ? '“' + interim + '”' : 'Say the item … pause … quantity … pause … rate'"></div>
-    <p x-show="!listening" class="text-xs text-slate-500 mt-2">Say the item, pause, the quantity, pause, the rate — then the next item. No need to say “quantity” or “rate” (short words like “q 2”, “r 50”, “2 kg” also work).</p>
+    <p x-show="!listening" class="text-xs text-slate-500 mt-2">Say each item in one breath — “Coffee 2 50” (item, quantity, rate) — then pause and say the next item. Item, quantity and rate can also be said one by one. Short words work too: “q 2”, “r 50”, “2 kg”.</p>
     <div x-show="voiceError" x-cloak class="text-xs text-red-600 mt-2" x-text="voiceError"></div>
+    <span class="block text-[10px] text-slate-300 mt-1">memo v5</span>
     <button type="button" @click="typeOpen = !typeOpen" class="mt-2 text-xs text-indigo-600 hover:underline" x-text="typeOpen ? 'Hide typing box' : 'Type instead'"></button>
   </div>
 

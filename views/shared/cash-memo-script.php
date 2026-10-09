@@ -107,7 +107,7 @@ function cashMemoMixin() {
         if (rate === undefined) rate = loose.shift();
         const nums = [qty === undefined ? 1 : qty, rate];
         let name = seg.replace(/\b(quantity|qty)\s+[a-z]+(?=\s+\d)/gi, ' ').replace(NUM, ' ').replace(filler, ' ');
-        name = name.replace(/[:;!?"'`()\[\]{}\-–—_*#\/\\|=+<>~^%&$]+/g, ' ').replace(/\s+/g, ' ').trim();
+        name = name.replace(/\.(?=\s|$)/g, ' ').replace(/[:;!?"'`()\[\]{}\-–—_*#\/\\|=+<>~^%&$]+/g, ' ').replace(/\s+/g, ' ').trim();
         if (!/\p{L}/u.test(name)) continue;          // stray punctuation / noise is not an item
         const row = this.blankRow();
         const p = this.bestMatch(name);
@@ -159,8 +159,12 @@ function cashMemoMixin() {
         for (let i = e.resultIndex; i < e.results.length; i++) {
           const res = e.results[i];
           if (res.isFinal) {
-            const n = this.voiceChunk(res[0].transcript);
-            this.memoMsg = n ? 'Heard: "' + res[0].transcript.trim() + '"' : '';
+            const said = res[0].transcript.trim();
+            let n = 0;
+            try { n = this.voiceChunk(said); }
+            catch (err) { this.voiceError = 'Could not read that phrase (' + err.message + '). Please type it instead.'; }
+            // Always show what the microphone heard, so a miss is visible instead of silent.
+            this.memoMsg = n ? 'Heard: "' + said + '"' : (this.memoMsg && this.memoMsg.indexOf('Say the item') === 0 ? this.memoMsg : 'Heard "' + said + '" — not understood. Say it like: Coffee 2 50');
           } else { interim += res[0].transcript; }
         }
         this.interim = interim;
