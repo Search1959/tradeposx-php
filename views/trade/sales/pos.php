@@ -63,6 +63,7 @@
 
     <!-- ── Cash memo (shared with ServiceERP) ── -->
     <?php require __DIR__ . '/../../shared/cash-memo-panel.php'; ?>
+    <?php require __DIR__ . '/../../shared/upi-modal.php'; ?>
   </div>
 
   <!-- Cart + checkout -->
@@ -134,7 +135,7 @@
       </div>
     </div>
 
-    <form method="POST" class="mt-3 space-y-2" @submit="onSubmit">
+    <form method="POST" class="mt-3 space-y-2" x-ref="checkoutForm" @submit="onSubmit">
       <?= CsrfHelper::getField() ?>
       <input type="hidden" name="cart_json" :value="JSON.stringify(cart.map(l => ({id: l.custom ? null : l.id, custom: !!l.custom, name: l.custom ? l.name : undefined, qty: l.qty, price: l.price, gst: l.gst})))">
       <input type="hidden" name="discount" :value="discountAmount()">
@@ -192,6 +193,7 @@
         </select>
       </div>
 
+      <div x-show="paymentMethod === 'UPI' && !upiId" x-cloak class="text-xs text-amber-600">Add your UPI ID in <a href="<?= $base ?>/settings" class="underline">Settings</a> to show a QR code here.</div>
       <div x-show="paymentStatus === 'PARTIAL'">
         <label class="block text-xs font-medium text-slate-700 mb-1">Amount Received Now</label>
         <input type="number" step="0.01" min="0" name="received_amount" x-model.number="receivedAmount" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
@@ -210,10 +212,12 @@
 </div>
 
 <?php require __DIR__ . '/../../shared/cash-memo-script.php'; ?>
+<?php require __DIR__ . '/../../shared/upi-script.php'; ?>
 <script>
 function posScreen() {
   return {
     ...cashMemoMixin(),
+    ...upiMixin(<?= json_encode((new Organization())->find((int)$org['id'])['upi_id'] ?? '') ?>, <?= json_encode($org['name']) ?>),
     products: <?= json_encode(array_map(fn($p) => [
         'id' => (int)$p['id'], 'name' => $p['name'], 'category' => $p['category'],
         'selling_price' => (float)$p['selling_price'], 'gst_percent' => (float)$p['gst_percent'],
@@ -358,6 +362,7 @@ function posScreen() {
       }
       if (this.paymentStatus === 'FULL') this.receivedAmount = this.grandTotal();
       if (this.paymentStatus === 'CREDIT') this.receivedAmount = 0;
+      if (this.upiNeeded(this.receivedAmount)) { e.preventDefault(); this.upiShow(this.receivedAmount); }   // QR window; the bill is created once "Payment received" is tapped
     },
   };
 }

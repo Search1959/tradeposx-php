@@ -67,6 +67,7 @@
 
     <!-- ── Cash memo (shared with TradeERP) ── -->
     <?php require __DIR__ . '/../../shared/cash-memo-panel.php'; ?>
+    <?php require __DIR__ . '/../../shared/upi-modal.php'; ?>
   </div>
 
   <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-4 flex flex-col"
@@ -153,7 +154,7 @@
       <div class="flex justify-between font-semibold text-base pt-1 border-t border-slate-100"><span>Grand Total</span><span x-text="'₹' + grandTotal().toFixed(2)"></span></div>
     </div>
 
-    <form method="POST" class="mt-3 space-y-2" @submit="onSubmit">
+    <form method="POST" class="mt-3 space-y-2" x-ref="checkoutForm" @submit="onSubmit">
       <?= CsrfHelper::getField() ?>
       <input type="hidden" name="cart_json" :value="JSON.stringify(cart.map(l => ({id: l.custom ? null : l.id, custom: !!l.custom, name: l.custom ? l.name : undefined, qty: l.qty, staff_id: l.staff_id || null, price: l.price, gst: l.gst, keep: !!l.keep, stock: l.custom ? l.stock : undefined})))">
       <input type="hidden" name="labour_charges" :value="labour">
@@ -197,7 +198,7 @@
       <div class="text-xs text-slate-400 text-right" x-show="specializedStaffId" x-text="'Staff earns ₹' + specializedStaffCommissionAmount().toFixed(2) + ' (not deducted from total)'"></div>
 
       <div class="grid grid-cols-2 gap-2">
-        <select name="payment_method" class="rounded border border-slate-300 px-3 py-2 text-sm">
+        <select name="payment_method" x-model="paymentMethod" class="rounded border border-slate-300 px-3 py-2 text-sm">
           <option value="CASH">Cash</option><option value="UPI">UPI</option><option value="BANK">Bank</option><option value="OTHER">Other</option>
         </select>
         <select name="payment_status" x-model="paymentStatus" class="rounded border border-slate-300 px-3 py-2 text-sm">
@@ -206,6 +207,7 @@
           <option value="CREDIT">Unpaid (bill now, collect later)</option>
         </select>
       </div>
+      <div x-show="paymentMethod === 'UPI' && !upiId" x-cloak class="text-xs text-amber-600">Add your UPI ID in <a href="<?= $base ?>/settings" class="underline">Settings</a> to show a QR code here.</div>
       <div x-show="paymentStatus === 'PARTIAL'">
         <label class="block text-xs font-medium text-slate-700 mb-1">Amount Paid Now</label>
         <input type="number" step="0.01" min="0" name="paid_amount" x-model.number="paidAmount" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
@@ -218,13 +220,15 @@
 </div>
 
 <?php require __DIR__ . '/../../shared/cash-memo-script.php'; ?>
+<?php require __DIR__ . '/../../shared/upi-script.php'; ?>
 <script>
 function invoiceScreen() {
   return {
     ...cashMemoMixin(),
+    ...upiMixin(<?= json_encode((new Organization())->find((int)$org['id'])['upi_id'] ?? '') ?>, <?= json_encode($org['name']) ?>),
     services: <?= json_encode(array_map(fn($s) => ['id'=>(int)$s['id'],'name'=>$s['name'],'category'=>$s['category'],'price'=>(float)$s['price'],'gst'=>(float)$s['gst_percent'],'type'=>($s['item_type'] ?? 'SERVICE'),'stock'=>isset($s['stock_qty']) ? (float)$s['stock_qty'] : null], $services)) ?>,
     specializedStaff: <?= json_encode(array_map(fn($sp) => ['id'=>(int)$sp['id'],'name'=>$sp['name'],'default_commission_percent'=>(float)$sp['default_commission_percent']], $specializedStaff)) ?>,
-    search: '', category: '', activeTab: 'services', cart: [], customSeq: 0, labour: 0, discountMode: '0', customDiscount: 0, taxType: 'EXCLUSIVE', customerId: '', walkinMobile: '', paymentStatus: 'FULL', paidAmount: 0,
+    search: '', category: '', activeTab: 'services', cart: [], customSeq: 0, labour: 0, discountMode: '0', customDiscount: 0, taxType: 'EXCLUSIVE', customerId: '', walkinMobile: '', paymentStatus: 'FULL', paymentMethod: 'CASH', paidAmount: 0,
     specializedStaffId: '', specializedStaffCommissionMode: 'default', specializedStaffCustomCommission: 0,
     categories() {
       return [...new Set(this.services.map(s => s.category).filter(c => c))].sort();
@@ -307,6 +311,7 @@ function invoiceScreen() {
       this.cart.forEach(line => { this.clampQty(line); this.clampPrice(line); });
       if (this.paymentStatus === 'FULL') this.paidAmount = this.grandTotal();
       if (this.paymentStatus === 'CREDIT') this.paidAmount = 0;
+      if (this.upiNeeded(this.paidAmount)) { e.preventDefault(); this.upiShow(this.paidAmount); }   // QR window; the invoice is created once "Payment received" is tapped
     },
   };
 }

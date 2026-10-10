@@ -1,5 +1,23 @@
 <?php
 class Organization extends BaseModel {
+    private static bool $upiChecked = false;
+
+    /** The business's own UPI ID (for the pay-by-QR window). Added on first use so a live database needs no manual migration. */
+    public function __construct() {
+        parent::__construct();
+        if (!self::$upiChecked) {
+            self::$upiChecked = true;
+            $cols = array_column($this->query('SHOW COLUMNS FROM organizations'), 'Field');
+            if (!in_array('upi_id', $cols, true)) {
+                $this->db->exec('ALTER TABLE organizations ADD COLUMN upi_id VARCHAR(100) NULL');
+            }
+        }
+    }
+
+    public function updateUpi(int $id, ?string $upiId): bool {
+        return $this->execute('UPDATE organizations SET upi_id = ? WHERE id = ?', [$upiId, $id]);
+    }
+
     public function find(int $id): ?array {
         return $this->queryOne('SELECT * FROM organizations WHERE id = ?', [$id]);
     }

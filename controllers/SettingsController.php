@@ -42,6 +42,15 @@ class SettingsController {
                     $org = $this->orgModel->find($org['id']); // refresh for the view
                     $success = 'Business details updated.';
                 }
+            } elseif (($_POST['form'] ?? '') === 'upi' && in_array(Auth::role(), ['owner', 'admin'], true)) {
+                $upi = trim($_POST['upi_id'] ?? '');
+                if ($upi !== '' && !preg_match('/^[A-Za-z0-9._\-]{2,100}@[A-Za-z][A-Za-z0-9.\-]{1,40}$/', $upi)) {
+                    $error = 'That does not look like a UPI ID. It looks like name@bank, e.g. 9876543210@ybl or shopname@okhdfcbank.';
+                } else {
+                    $this->orgModel->updateUpi($org['id'], $upi !== '' ? $upi : null);
+                    $org = $this->orgModel->find($org['id']);
+                    $success = $upi !== '' ? 'UPI ID saved. Customers can now pay by scanning a QR code at checkout.' : 'UPI ID removed.';
+                }
             } elseif (($_POST['form'] ?? '') === 'tax' && in_array(Auth::role(), ['owner', 'admin'], true)) {
                 $gstin = trim($_POST['gstin'] ?? '') ?: null;
                 if ($gstin !== null && !preg_match('/^[0-9A-Z]{15}$/', $gstin)) {

@@ -75,6 +75,22 @@
   </div>
 
   <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+    <h2 class="font-semibold text-slate-900 mb-1">UPI Payments</h2>
+    <p class="text-sm text-slate-500 mb-4">Enter your UPI ID and the checkout will show a QR code with the bill amount when a customer pays by UPI. The money goes straight to your own account.</p>
+    <form method="POST" class="space-y-3">
+      <?= CsrfHelper::getField() ?>
+      <input type="hidden" name="form" value="upi">
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Your UPI ID</label>
+        <input type="text" name="upi_id" value="<?= h($org['upi_id'] ?? '') ?>" placeholder="e.g. 9876543210@ybl" maxlength="100" autocomplete="off"
+          class="w-full rounded border border-slate-300 px-3 py-2 text-sm font-mono">
+        <p class="text-xs text-slate-400 mt-1">Find it in PhonePe, Google Pay or Paytm under your profile. Leave blank to turn the QR window off. The QR carries the payee name <b><?= h($org['name']) ?></b>.</p>
+      </div>
+      <button type="submit" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">Save</button>
+    </form>
+  </div>
+
+  <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
     <h2 class="font-semibold text-slate-900 mb-1">Backup Your Data</h2>
     <p class="text-sm text-slate-500 mb-4">
       Download every record belonging to your business — products, customers, sales, purchases, appointments,
