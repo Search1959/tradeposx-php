@@ -287,11 +287,52 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
   </section>
 
   <!-- Footer -->
-  <footer class="border-t border-white/5">
-    <div class="max-w-6xl mx-auto px-4 py-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-500">
-      <div class="font-semibold text-slate-300"><?= h(APP_NAME) ?> <span class="font-normal text-slate-500">· POS &amp; business management</span></div>
-      <div class="flex items-center gap-5"><a href="#engines" class="hover:text-slate-300">Engines</a><a href="#features" class="hover:text-slate-300">Features</a><a href="#faq" class="hover:text-slate-300">FAQ</a><a href="/login" class="hover:text-slate-300">Login</a></div>
-      <div>&copy; <?= date('Y') ?> <?= h(APP_NAME) ?></div>
+  <footer class="border-t border-white/10 bg-slate-950">
+    <div class="max-w-6xl mx-auto px-4 pt-12 pb-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+
+        <div>
+          <div class="text-xs font-bold tracking-widest uppercase text-indigo-300">Operated &amp; developed by</div>
+          <div class="mt-3 text-xl font-bold">M/s Deinrim Solutionss (P) Ltd.</div>
+          <div class="mt-3 text-sm text-slate-400">Kolkata, West Bengal (WB), India</div>
+          <div class="mt-4 text-sm"><span class="font-semibold text-white">Corporate Contact:</span> <a href="tel:+919836130393" class="font-semibold text-emerald-300 hover:text-emerald-200">+91 98361-30393</a></div>
+          <div class="mt-1 text-sm"><a href="https://denrinsolutionss.com/" target="_blank" rel="noopener" class="text-slate-400 hover:text-white underline underline-offset-4 decoration-white/20">denrinsolutionss.com</a></div>
+          <div class="mt-5 pt-4 border-t border-white/10 text-[11px] leading-relaxed text-slate-500 uppercase tracking-wide"><?= h(APP_NAME) ?> · TradeERP + ServiceERP · Mobile-first POS &amp; business management with one separate workspace for every business</div>
+        </div>
+
+        <div>
+          <div class="text-xs font-bold tracking-widest uppercase text-indigo-300">Policies &amp; help</div>
+          <p class="mt-3 text-sm text-slate-400 leading-relaxed">How we handle your data, the terms of using <?= h(APP_NAME) ?>, where to get help, and how to ask for your data to be deleted.</p>
+          <div class="mt-4 flex flex-wrap items-center gap-x-1 gap-y-2 text-sm font-semibold">
+            <a href="/privacy" class="text-emerald-300 hover:text-emerald-200 underline underline-offset-4 decoration-emerald-300/30">Privacy Policy</a><span class="text-slate-600">|</span>
+            <a href="/terms" class="text-emerald-300 hover:text-emerald-200 underline underline-offset-4 decoration-emerald-300/30">Terms of Service</a><span class="text-slate-600">|</span>
+            <a href="/support" class="text-emerald-300 hover:text-emerald-200 underline underline-offset-4 decoration-emerald-300/30">App Support Page</a><span class="text-slate-600">|</span>
+            <a href="/deletion" class="text-rose-300 hover:text-rose-200 underline underline-offset-4 decoration-rose-300/30">Data Deletion request</a>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-xs font-bold tracking-widest uppercase text-indigo-300">Your data &amp; security</div>
+          <ul class="mt-3 space-y-3 text-sm text-slate-400 leading-relaxed">
+            <li class="flex gap-2.5"><span class="mt-2 w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span><span><b class="text-white font-semibold">Separate workspace:</b> every business sees only its own products, customers and sales.</span></li>
+            <li class="flex gap-2.5"><span class="mt-2 w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span><span><b class="text-white font-semibold">Role-based access:</b> owner, admin and staff roles, with an activity log of who changed what.</span></li>
+            <li class="flex gap-2.5"><span class="mt-2 w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span><span><b class="text-white font-semibold">Your data stays yours:</b> download a full backup of your business any time from Settings.</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-10 pt-6 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <div class="flex flex-wrap items-center justify-center md:justify-start gap-x-3 gap-y-1">
+          <span>&copy; <?= date('Y') ?> <b class="text-slate-300"><?= h(APP_NAME) ?></b> (tradeposx.com)</span>
+          <span class="hidden sm:inline text-slate-700">&bull;</span>
+          <span class="font-semibold text-indigo-300">Bill faster. Track everything. Grow steadier.</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <span class="flex items-center gap-1.5 font-semibold text-emerald-400"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Encrypted connection (HTTPS)</span>
+          <span class="hidden sm:inline text-slate-700">&bull;</span>
+          <span>Made for Indian businesses</span>
+        </div>
+      </div>
     </div>
   </footer>
 

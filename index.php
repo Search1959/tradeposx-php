@@ -6,11 +6,19 @@ $platformRouteMap = [
     'login'      => 'AuthController',
     'logout'     => 'AuthController',
     'superadmin' => 'SuperAdminController',
+    'privacy'    => 'StaticController',
+    'terms'      => 'StaticController',
+    'support'    => 'StaticController',
+    'deletion'   => 'StaticController',
 ];
 $platformDefaultAction = [
     'login'      => 'index',
     'logout'     => 'logout',
     'superadmin' => 'index',
+    'privacy'    => 'privacy',
+    'terms'      => 'terms',
+    'support'    => 'support',
+    'deletion'   => 'deletion',
 ];
 
 $url = trim($_GET['url'] ?? '', '/');
