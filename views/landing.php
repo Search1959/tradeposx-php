@@ -144,33 +144,353 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
         <p class="mt-4 text-xs text-slate-500">No signup needed to explore — sample business with products, customers and sales.</p>
       </div>
 
-      <!-- Product mock: a phone showing the real dashboard layout -->
-      <div class="relative mx-auto w-full max-w-[19rem] md:max-w-sm">
+      <!-- Product tour: ten real screens of the app in a phone frame (sample data) -->
+      <?php
+        $tour = [
+          ['Dashboard',        'Today’s sales, Udhaar due and low stock at a glance.'],
+          ['Stock',            'Live stock with low-stock alerts — import by CSV or scan a bill.'],
+          ['Cash memo',        'Speak or type each item, check the box, tap Add.'],
+          ['The bill',         'GST split, discounts and part payments in one cart.'],
+          ['Pay by UPI',       'Customer scans the QR, you confirm — the bill is generated.'],
+          ['Final GST bill',   'A proper tax invoice, ready to print or send on WhatsApp.'],
+          ['Udhaar ledger',    'Dues by customer, with one-tap WhatsApp reminders.'],
+          ['Job cards',        'Track every repair from pending to delivered.'],
+          ['Reports & profit', 'Sales, expenses and real profit from your own data.'],
+          ['Quick Sale',       'One-handed mobile POS that keeps working offline.'],
+        ];
+        // Illustrative QR-style graphic for the UPI slide (not a scannable code).
+        mt_srand(11); $qrN = 25; $qr = [];
+        for ($y = 0; $y < $qrN; $y++) for ($x = 0; $x < $qrN; $x++) {
+            $inFinder = ($x < 8 && $y < 8) || ($x >= $qrN - 8 && $y < 8) || ($x < 8 && $y >= $qrN - 8);
+            $qr[$y][$x] = $inFinder ? 0 : (mt_rand(0, 99) < 48 ? 1 : 0);
+        }
+        $finder = function (int $ox, int $oy) {
+            $s = '<rect x="' . $ox . '" y="' . $oy . '" width="7" height="7" fill="#0f172a"/><rect x="' . ($ox + 1) . '" y="' . ($oy + 1) . '" width="5" height="5" fill="#fff"/><rect x="' . ($ox + 2) . '" y="' . ($oy + 2) . '" width="3" height="3" fill="#0f172a"/>';
+            return $s;
+        };
+        $qrSvg = '<svg viewBox="0 0 ' . $qrN . ' ' . $qrN . '" class="w-full h-full" shape-rendering="crispEdges" aria-hidden="true">';
+        for ($y = 0; $y < $qrN; $y++) for ($x = 0; $x < $qrN; $x++) if ($qr[$y][$x]) $qrSvg .= '<rect x="' . $x . '" y="' . $y . '" width="1" height="1" fill="#0f172a"/>';
+        $qrSvg .= $finder(0, 0) . $finder($qrN - 7, 0) . $finder(0, $qrN - 7) . '</svg>';
+      ?>
+      <div class="relative mx-auto w-full max-w-[19rem] md:max-w-sm"
+           x-data="{ i: 0, n: <?= count($tour) ?>, paused: false, timer: null,
+                     go(k) { this.i = (k + this.n) % this.n; },
+                     init() { if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; this.timer = setInterval(() => { if (!this.paused) this.go(this.i + 1); }, 4500); } }"
+           @mouseenter="paused = true" @mouseleave="paused = false" @focusin="paused = true" @focusout="paused = false"
+           @keydown.left.prevent="go(i - 1)" @keydown.right.prevent="go(i + 1)" role="region" aria-roledescription="carousel" aria-label="TradePOSX screens">
         <div class="absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-indigo-500/20 to-emerald-500/10 blur-2xl"></div>
-        <div class="relative rounded-[2.2rem] border-[7px] border-slate-800 bg-slate-100 text-slate-900 shadow-2xl overflow-hidden">
-          <div class="bg-white px-4 pt-4 pb-3 flex items-center justify-between border-b border-slate-200">
-            <div><div class="text-[11px] font-semibold leading-none">Dashboard</div><div class="text-[9px] text-slate-500 mt-1">Sharma Traders</div></div>
-            <div class="w-6 h-6 rounded-full bg-indigo-600 text-white text-[10px] font-bold flex items-center justify-center">S</div>
-          </div>
-          <div class="p-3 space-y-2.5">
-            <div class="flex gap-2"><div class="flex-1 rounded-lg bg-indigo-600 text-white text-[10px] font-semibold text-center py-2">New Sale</div><div class="flex-1 rounded-lg bg-white border border-slate-200 text-[10px] font-semibold text-center py-2">Quick Sale</div></div>
-            <div class="grid grid-cols-2 gap-2">
-              <div class="rounded-xl bg-white border border-slate-200 p-2.5"><div class="text-[8px] font-semibold text-slate-500 tracking-wide">TODAY'S SALES</div><div class="text-base font-bold mt-0.5">₹18,450</div><div class="text-[8px] text-slate-500">24 sales</div></div>
-              <div class="rounded-xl bg-white border border-slate-200 p-2.5"><div class="text-[8px] font-semibold text-slate-500 tracking-wide">UDHAAR PENDING</div><div class="text-base font-bold mt-0.5 text-amber-600">₹42,300</div><div class="text-[8px] text-slate-500">9 customers</div></div>
+
+        <div class="relative rounded-[2.2rem] border-[7px] border-slate-800 bg-slate-100 text-slate-900 shadow-2xl overflow-hidden h-[34rem]">
+
+          <!-- 1 · Dashboard -->
+          <div :class="i === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 0" class="transition-opacity duration-300 absolute inset-0 flex flex-col bg-slate-100">
+            <div class="bg-white px-4 pt-4 pb-3 flex items-center justify-between border-b border-slate-200">
+              <div><div class="text-[11px] font-semibold leading-none">Dashboard</div><div class="text-[9px] text-slate-500 mt-1">Sharma Traders</div></div>
+              <div class="w-6 h-6 rounded-full bg-indigo-600 text-white text-[10px] font-bold flex items-center justify-center">S</div>
             </div>
-            <div class="rounded-xl bg-white border border-slate-200 p-2.5">
-              <div class="text-[9px] font-semibold mb-2">Sales · last 7 days</div>
-              <div class="flex items-end gap-1.5 h-16">
-                <?php foreach ([35, 52, 44, 70, 58, 88, 64] as $i => $v): ?><div class="flex-1 rounded-t bg-indigo-500 <?= $i === 5 ? '' : 'opacity-70' ?>" style="height: <?= $v ?>%"></div><?php endforeach; ?>
+            <div class="flex-1 p-3 space-y-2.5 overflow-hidden">
+              <div class="flex gap-2"><div class="flex-1 rounded-lg bg-indigo-600 text-white text-[10px] font-semibold text-center py-2">New Sale</div><div class="flex-1 rounded-lg bg-white border border-slate-200 text-[10px] font-semibold text-center py-2">Quick Sale</div></div>
+              <div class="grid grid-cols-2 gap-2">
+                <div class="rounded-xl bg-white border border-slate-200 p-2.5"><div class="text-[8px] font-semibold text-slate-500 tracking-wide">TODAY'S SALES</div><div class="text-base font-bold mt-0.5">₹18,450</div><div class="text-[8px] text-slate-500">24 sales</div></div>
+                <div class="rounded-xl bg-white border border-slate-200 p-2.5"><div class="text-[8px] font-semibold text-slate-500 tracking-wide">UDHAAR PENDING</div><div class="text-base font-bold mt-0.5 text-amber-600">₹42,300</div><div class="text-[8px] text-slate-500">9 customers</div></div>
+              </div>
+              <div class="rounded-xl bg-white border border-slate-200 p-2.5">
+                <div class="text-[9px] font-semibold mb-2">Sales · last 7 days</div>
+                <div class="flex items-end gap-1.5 h-20">
+                  <?php foreach ([35, 52, 44, 70, 58, 88, 64] as $k => $v): ?><div class="flex-1 rounded-t bg-indigo-500 <?= $k === 5 ? '' : 'opacity-70' ?>" style="height: <?= $v ?>%"></div><?php endforeach; ?>
+                </div>
+                <div class="flex justify-between text-[7px] text-slate-400 mt-1"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+              </div>
+              <div class="rounded-xl bg-white border border-slate-200 p-2.5 text-[9px] space-y-1.5">
+                <div class="font-semibold">Top sellers today</div>
+                <div class="flex justify-between"><span>Aashirvaad Atta 5kg</span><span class="font-semibold">38 sold</span></div>
+                <div class="flex justify-between"><span>Fortune Oil 1L</span><span class="font-semibold">27 sold</span></div>
+                <div class="flex justify-between"><span>Parle-G 100g</span><span class="font-semibold">24 sold</span></div>
+              </div>
+              <div class="rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-[9px] px-2.5 py-2">3 items low on stock · ₹42,300 Udhaar to collect</div>
+            </div>
+            <div class="bg-white border-t border-slate-200 grid grid-cols-5 text-[8px] text-slate-500 text-center pt-1.5 pb-2 relative">
+              <span class="text-indigo-600 font-semibold">Home</span><span>Products</span><span class="text-indigo-600 font-semibold"><span class="absolute left-1/2 -translate-x-1/2 -top-4 w-9 h-9 rounded-full bg-indigo-600 text-white text-lg flex items-center justify-center shadow">+</span><span class="block pt-4"></span>New Sale</span><span>Customers</span><span>More</span>
+            </div>
+          </div>
+
+          <!-- 2 · Stock -->
+          <div :class="i === 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 1" class="transition-opacity duration-300 absolute inset-0 flex flex-col bg-slate-100">
+            <div class="bg-white px-4 pt-4 pb-3 flex items-center justify-between border-b border-slate-200">
+              <div><div class="text-[11px] font-semibold leading-none">Products &amp; stock</div><div class="text-[9px] text-slate-500 mt-1">128 items · 3 running low</div></div>
+              <div class="rounded-lg bg-indigo-600 text-white text-[9px] font-semibold px-2.5 py-1.5">+ Add</div>
+            </div>
+            <div class="flex-1 p-3 space-y-2.5 overflow-hidden">
+              <div class="rounded-lg bg-white border border-slate-200 px-2.5 py-2 text-[9px] text-slate-400">Search by name, SKU or scan a barcode…</div>
+              <div class="flex gap-1.5 text-[8px] font-semibold"><span class="rounded-full bg-indigo-600 text-white px-2.5 py-1">All</span><span class="rounded-full bg-white border border-slate-200 px-2.5 py-1">Low stock</span><span class="rounded-full bg-white border border-slate-200 px-2.5 py-1">Grocery</span><span class="rounded-full bg-white border border-slate-200 px-2.5 py-1">Dairy</span></div>
+              <div class="rounded-xl bg-white border border-slate-200 divide-y divide-slate-100">
+                <?php foreach ([
+                    ['Aashirvaad Atta 5kg', 'SKU ATA-5 · pack', '42', 'emerald', '₹245'],
+                    ['Fortune Soya Oil 1L', 'SKU OIL-1 · pouch', '8', 'amber', '₹138'],
+                    ['Tata Salt 1kg', 'SKU SLT-1 · pack', '120', 'emerald', '₹28'],
+                    ['Surf Excel 500g', 'SKU SRF-5 · pack', '3', 'rose', '₹118'],
+                    ['Parle-G 100g', 'SKU PLG-1 · pack', '64', 'emerald', '₹10'],
+                    ['Amul Butter 100g', 'SKU AMB-1 · pack', '17', 'emerald', '₹58'],
+                ] as $r): ?>
+                <div class="flex items-center justify-between px-2.5 py-2">
+                  <div><div class="text-[10px] font-semibold"><?= $r[0] ?></div><div class="text-[8px] text-slate-500"><?= $r[1] ?></div></div>
+                  <div class="text-right"><div class="text-[10px] font-semibold"><?= $r[4] ?></div><div class="text-[8px] font-semibold rounded px-1.5 py-0.5 mt-0.5 bg-<?= $r[3] ?>-100 text-<?= $r[3] ?>-700"><?= $r[2] ?> in stock</div></div>
+                </div>
+                <?php endforeach; ?>
+              </div>
+              <div class="rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-[9px] px-2.5 py-2">Surf Excel is almost out — reorder from your supplier.</div>
+            </div>
+          </div>
+
+          <!-- 3 · Cash memo (voice) -->
+          <div :class="i === 2 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 2" class="transition-opacity duration-300 absolute inset-0 flex flex-col bg-slate-100">
+            <div class="bg-white px-4 pt-4 pb-3 flex items-center justify-between border-b border-slate-200">
+              <div><div class="text-[11px] font-semibold leading-none">New Sale</div><div class="text-[9px] text-slate-500 mt-1">Cash memo</div></div>
+              <div class="w-6 h-6 rounded-full bg-indigo-600 text-white text-[10px] font-bold flex items-center justify-center">S</div>
+            </div>
+            <div class="flex-1 p-3 space-y-2.5 overflow-hidden">
+              <div class="flex gap-1.5 text-[9px] font-semibold"><span class="flex-1 text-center rounded-lg bg-white border border-slate-200 py-1.5 text-slate-500">Stock available</span><span class="flex-1 text-center rounded-lg bg-indigo-600 text-white py-1.5">🎤 Cash memo</span></div>
+              <div class="rounded-xl border border-indigo-200 bg-gradient-to-b from-indigo-50 to-white p-2.5">
+                <div class="flex gap-1.5 items-stretch">
+                  <span class="rounded-lg bg-red-600 text-white text-[9px] font-semibold px-2.5 flex items-center">⏹ Listening</span>
+                  <span class="flex-1 rounded-lg bg-white border border-slate-300 px-2 py-2 text-[10px]">Cold coffee 2 50<span class="inline-block w-px h-3 bg-slate-500 align-middle ml-0.5"></span></span>
+                  <span class="rounded-lg bg-emerald-600 text-white text-[9px] font-semibold px-3 flex items-center">Add</span>
+                </div>
+                <div class="text-[8px] text-slate-500 mt-1.5">Say <b>item, quantity, rate</b> — “Coffee 2 50” — then tap Add.</div>
+              </div>
+              <div class="text-[9px] text-emerald-700">Added: “biscuit 12 25” — say the next item, or tap Add to cart when done.</div>
+              <div class="rounded-xl bg-white border border-slate-200 overflow-hidden">
+                <div class="grid grid-cols-[1fr_2rem_2.4rem_3rem] gap-1 px-2.5 py-1.5 bg-slate-50 text-[7px] font-semibold tracking-wide text-slate-500"><span>ITEM</span><span class="text-right">QTY</span><span class="text-right">RATE</span><span class="text-right">AMOUNT</span></div>
+                <?php foreach ([['Rice (kg)', '0.5', '60', '30.00'], ['Biscuit', '12', '25', '300.00'], ['Cold coffee', '2', '50', '100.00'], ['Basin mixer', '2', '2,500', '5,000.00']] as $r): ?>
+                <div class="grid grid-cols-[1fr_2rem_2.4rem_3rem] gap-1 px-2.5 py-1.5 text-[9px] border-t border-slate-100"><span class="font-medium"><?= $r[0] ?></span><span class="text-right"><?= $r[1] ?></span><span class="text-right"><?= $r[2] ?></span><span class="text-right font-semibold">₹<?= $r[3] ?></span></div>
+                <?php endforeach; ?>
+                <div class="flex justify-between px-2.5 py-2 bg-slate-50 border-t border-slate-200 text-[9px]"><span class="text-indigo-600 font-semibold">+ Add row</span><span>Memo total <b>₹5,430.00</b></span></div>
+              </div>
+              <div class="rounded-lg bg-indigo-600 text-white text-[10px] font-semibold text-center py-2.5">Add to cart →</div>
+              <div class="text-[8px] text-slate-500 text-center">Units too: pcs, kg, gram, litre, dozen, metre…</div>
+            </div>
+          </div>
+
+          <!-- 4 · The bill -->
+          <div :class="i === 3 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 3" class="transition-opacity duration-300 absolute inset-0 flex flex-col bg-slate-100">
+            <div class="bg-white px-4 pt-4 pb-3 flex items-center justify-between border-b border-slate-200">
+              <div><div class="text-[11px] font-semibold leading-none">Cart</div><div class="text-[9px] text-slate-500 mt-1">3 items</div></div>
+              <div class="w-6 h-6 rounded-full bg-indigo-600 text-white text-[10px] font-bold flex items-center justify-center">S</div>
+            </div>
+            <div class="flex-1 p-3 space-y-2.5 overflow-hidden">
+              <div class="rounded-xl bg-white border border-slate-200 divide-y divide-slate-100">
+                <?php foreach ([['Aashirvaad Atta 5kg', '2', '245.00', '490.00'], ['Fortune Soya Oil 1L', '1', '138.00', '138.00'], ['Parle-G 100g', '6', '10.00', '60.00']] as $r): ?>
+                <div class="flex items-center justify-between px-2.5 py-2">
+                  <div><div class="text-[10px] font-semibold"><?= $r[0] ?></div><div class="text-[8px] text-slate-500">₹<?= $r[2] ?> each · price editable</div></div>
+                  <div class="flex items-center gap-2"><span class="rounded border border-slate-300 w-8 text-center text-[10px] py-0.5"><?= $r[1] ?></span><span class="text-[10px] font-semibold w-14 text-right">₹<?= $r[3] ?></span></div>
+                </div>
+                <?php endforeach; ?>
+              </div>
+              <div class="rounded-xl bg-white border border-slate-200 p-2.5 text-[9px] space-y-1">
+                <div class="flex justify-between text-slate-600"><span>Taxable amount</span><span>₹688.00</span></div>
+                <div class="flex justify-between text-slate-600"><span>CGST @ 2.5%</span><span>₹17.20</span></div>
+                <div class="flex justify-between text-slate-600"><span>SGST @ 2.5%</span><span>₹17.20</span></div>
+                <div class="flex justify-between text-slate-600"><span>Discount</span><span>– ₹0.00</span></div>
+                <div class="flex justify-between text-[13px] font-bold pt-1.5 border-t border-slate-200"><span>Grand total</span><span>₹722.40</span></div>
+              </div>
+              <div class="grid grid-cols-2 gap-1.5 text-[9px] font-semibold">
+                <span class="rounded-lg border border-slate-300 bg-white px-2 py-2">Ravi Kumar · Walk-in</span><span class="rounded-lg border border-slate-300 bg-white px-2 py-2">Paid in full ▾</span>
+              </div>
+              <div class="flex gap-1.5 text-[9px] font-semibold"><span class="flex-1 text-center rounded-lg border border-slate-300 bg-white py-1.5 text-slate-500">Cash</span><span class="flex-1 text-center rounded-lg bg-indigo-600 text-white py-1.5">UPI</span><span class="flex-1 text-center rounded-lg border border-slate-300 bg-white py-1.5 text-slate-500">Bank</span></div>
+              <div class="rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-[9px] px-2.5 py-1.5">Part payment? Take ₹200 now — the balance goes to Udhaar.</div>
+              <div class="rounded-lg bg-indigo-600 text-white text-[10px] font-semibold text-center py-2.5">Complete Sale</div>
+            </div>
+          </div>
+
+          <!-- 5 · Pay by UPI -->
+          <div :class="i === 4 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 4" class="transition-opacity duration-300 absolute inset-0 flex flex-col bg-slate-300">
+            <div class="bg-white/80 px-4 pt-4 pb-3 border-b border-slate-200 opacity-60"><div class="text-[11px] font-semibold leading-none">Cart</div><div class="text-[9px] text-slate-500 mt-1">UPI selected</div></div>
+            <div class="flex-1 flex items-end justify-center p-2.5">
+              <div class="w-full rounded-2xl bg-white shadow-2xl p-3.5 text-center">
+                <div class="text-[9px] font-medium text-slate-500">Scan to pay with any UPI app</div>
+                <div class="text-[26px] leading-none font-bold mt-1">₹722.40</div>
+                <div class="mx-auto mt-2.5 w-36 h-36 p-1.5 border border-slate-200 rounded-lg"><?= $qrSvg ?></div>
+                <div class="text-[8px] text-slate-500 mt-1.5">Paying <b class="text-slate-700">Sharma Traders</b><br><span class="font-mono">sharmatraders@okhdfcbank</span></div>
+                <div class="mt-2 rounded-lg border border-indigo-300 text-indigo-700 text-[9px] font-medium py-1.5">Open in my UPI app</div>
+                <div class="mt-1.5 rounded-lg bg-emerald-600 text-white text-[10px] font-semibold py-2.5">✓ Payment received — Generate bill</div>
+                <div class="text-[8px] text-slate-400 mt-1.5">Cancel</div>
               </div>
             </div>
-            <div class="rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-[9px] px-2.5 py-2">3 items low on stock · ₹42,300 Udhaar to collect</div>
           </div>
-          <div class="bg-white border-t border-slate-200 grid grid-cols-5 text-[8px] text-slate-500 text-center pt-1.5 pb-2 relative">
-            <span class="text-indigo-600 font-semibold">Home</span><span>Products</span><span class="text-indigo-600 font-semibold"><span class="absolute left-1/2 -translate-x-1/2 -top-4 w-9 h-9 rounded-full bg-indigo-600 text-white text-lg flex items-center justify-center shadow">+</span><span class="block pt-4"></span>New Sale</span><span>Customers</span><span>More</span>
+
+          <!-- 6 · Final GST bill -->
+          <div :class="i === 5 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 5" class="transition-opacity duration-300 absolute inset-0 flex flex-col bg-slate-100">
+            <div class="bg-white px-4 pt-4 pb-3 flex items-center justify-between border-b border-slate-200">
+              <div><div class="text-[11px] font-semibold leading-none">Tax Invoice</div><div class="text-[9px] text-slate-500 mt-1">SL-00034 · 10 Oct 2026</div></div>
+              <div class="rounded-full bg-emerald-100 text-emerald-700 text-[8px] font-bold px-2 py-1">PAID · UPI</div>
+            </div>
+            <div class="flex-1 p-3 overflow-hidden">
+              <div class="rounded-xl bg-white border border-slate-200 p-3 text-[9px] space-y-2">
+                <div class="text-center"><div class="text-[12px] font-bold">Sharma Traders</div><div class="text-[8px] text-slate-500">Bara Bazar, Kolkata · GSTIN 19ABCDE1234F1Z5</div></div>
+                <div class="flex justify-between text-[8px] text-slate-500"><span>Billed to: <b class="text-slate-700">Ravi Kumar</b></span><span>Mode: UPI</span></div>
+                <div class="border-t border-dashed border-slate-300 pt-2 space-y-1">
+                  <div class="flex justify-between"><span>2 × Aashirvaad Atta 5kg</span><span>₹490.00</span></div>
+                  <div class="flex justify-between"><span>1 × Fortune Soya Oil 1L</span><span>₹138.00</span></div>
+                  <div class="flex justify-between"><span>6 × Parle-G 100g</span><span>₹60.00</span></div>
+                </div>
+                <div class="border-t border-dashed border-slate-300 pt-2 space-y-1 text-slate-600">
+                  <div class="flex justify-between"><span>Taxable value</span><span>₹688.00</span></div>
+                  <div class="flex justify-between"><span>CGST 2.5%</span><span>₹17.20</span></div>
+                  <div class="flex justify-between"><span>SGST 2.5%</span><span>₹17.20</span></div>
+                </div>
+                <div class="flex justify-between text-[13px] font-bold border-t border-slate-300 pt-2"><span>Total</span><span>₹722.40</span></div>
+                <div class="flex justify-between text-slate-600"><span>Received via UPI</span><span class="text-emerald-600 font-semibold">₹722.40</span></div>
+                <div class="flex justify-between text-slate-600"><span>Balance due</span><span>₹0.00</span></div>
+                <div class="text-center text-[8px] text-slate-500">Thank you for shopping with us!</div>
+              </div>
+              <div class="grid grid-cols-2 gap-2 mt-2.5 text-[10px] font-semibold">
+                <span class="rounded-lg bg-green-600 text-white text-center py-2.5">💬 WhatsApp bill</span><span class="rounded-lg bg-white border border-slate-300 text-center py-2.5">Print / PDF</span>
+              </div>
+              <div class="text-[8px] text-slate-500 text-center mt-2">Stock updated automatically · Edit or delete from the invoice list</div>
+            </div>
+          </div>
+
+          <!-- 7 · Udhaar -->
+          <div :class="i === 6 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 6" class="transition-opacity duration-300 absolute inset-0 flex flex-col bg-slate-100">
+            <div class="bg-white px-4 pt-4 pb-3 flex items-center justify-between border-b border-slate-200">
+              <div><div class="text-[11px] font-semibold leading-none">Customers · Udhaar</div><div class="text-[9px] text-slate-500 mt-1">9 customers owe you</div></div>
+              <div class="text-[11px] font-bold text-amber-600">₹42,300</div>
+            </div>
+            <div class="flex-1 p-3 space-y-2.5 overflow-hidden">
+              <div class="rounded-xl bg-white border border-slate-200 divide-y divide-slate-100">
+                <?php foreach ([['Ravi Kumar', '12 days overdue', '₹8,400'], ['Meena Stores', 'Due this week', '₹12,950'], ['Anil Sharma', '3 days overdue', '₹4,200'], ['Gupta Traders', 'Due this week', '₹9,800'], ['Sneha Reddy', 'Part-paid', '₹2,430'], ['Pooja Iyer', 'Due in 5 days', '₹3,520']] as $r): ?>
+                <div class="flex items-center justify-between px-2.5 py-2">
+                  <div><div class="text-[10px] font-semibold"><?= $r[0] ?></div><div class="text-[8px] text-slate-500"><?= $r[1] ?></div></div>
+                  <div class="flex items-center gap-2"><span class="text-[10px] font-bold text-amber-600"><?= $r[2] ?></span><span class="rounded-md bg-green-600 text-white text-[8px] font-semibold px-1.5 py-1">💬 Remind</span></div>
+                </div>
+                <?php endforeach; ?>
+              </div>
+              <div class="rounded-xl bg-white border border-slate-200 p-2.5 text-[9px] space-y-1">
+                <div class="font-semibold">Ravi Kumar · statement</div>
+                <div class="flex justify-between text-slate-600"><span>Sale SL-00031 · 28 Sep</span><span>+ ₹5,000</span></div>
+                <div class="flex justify-between text-slate-600"><span>Payment received</span><span class="text-emerald-600">– ₹1,200</span></div>
+                <div class="flex justify-between text-slate-600"><span>Sale SL-00033 · 01 Oct</span><span>+ ₹4,600</span></div>
+              </div>
+              <div class="grid grid-cols-2 gap-2 text-[10px] font-semibold"><span class="rounded-lg bg-white border border-slate-300 text-center py-2.5">Record a payment</span><span class="rounded-lg bg-green-600 text-white text-center py-2.5">💬 Remind all</span></div>
+            </div>
+          </div>
+
+          <!-- 8 · Job cards -->
+          <div :class="i === 7 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 7" class="transition-opacity duration-300 absolute inset-0 flex flex-col bg-slate-100">
+            <div class="bg-white px-4 pt-4 pb-3 flex items-center justify-between border-b border-slate-200">
+              <div><div class="text-[11px] font-semibold leading-none">Job cards</div><div class="text-[9px] text-slate-500 mt-1">ServiceERP · Mobile repair</div></div>
+              <div class="rounded-lg bg-emerald-600 text-white text-[9px] font-semibold px-2.5 py-1.5">+ New job</div>
+            </div>
+            <div class="flex-1 p-3 space-y-2.5 overflow-hidden">
+              <div class="grid grid-cols-4 gap-1.5 text-center">
+                <?php foreach ([['Pending', '4', 'slate'], ['Working', '3', 'sky'], ['Ready', '2', 'emerald'], ['Delivered', '31', 'indigo']] as $r): ?>
+                <div class="rounded-lg bg-white border border-slate-200 py-1.5"><div class="text-[12px] font-bold text-<?= $r[2] ?>-600"><?= $r[1] ?></div><div class="text-[7px] text-slate-500"><?= $r[0] ?></div></div>
+                <?php endforeach; ?>
+              </div>
+              <div class="rounded-xl bg-white border border-slate-200 divide-y divide-slate-100">
+                <?php foreach ([
+                    ['JC-0042', 'Redmi Note 11 · Screen replacement', 'Ready', 'emerald', '₹1,800'],
+                    ['JC-0041', 'Samsung M31 · Battery', 'Working', 'sky', '₹900'],
+                    ['JC-0040', 'iPhone 11 · Charging port', 'Pending', 'slate', '₹600'],
+                    ['JC-0039', 'Vivo Y20 · Water damage', 'Working', 'sky', '₹1,500'],
+                    ['JC-0038', 'OnePlus Nord · Speaker repair', 'Ready', 'emerald', '₹700'],
+                    ['JC-0037', 'Realme 8 · Software reinstall', 'Delivered', 'indigo', '₹500'],
+                ] as $r): ?>
+                <div class="px-2.5 py-2">
+                  <div class="flex items-center justify-between"><span class="text-[9px] font-semibold"><?= $r[0] ?></span><span class="text-[8px] font-bold rounded-full px-2 py-0.5 bg-<?= $r[3] ?>-100 text-<?= $r[3] ?>-700"><?= $r[2] ?></span></div>
+                  <div class="flex items-center justify-between mt-0.5"><span class="text-[9px] text-slate-600"><?= $r[1] ?></span><span class="text-[9px] font-semibold"><?= $r[4] ?></span></div>
+                </div>
+                <?php endforeach; ?>
+              </div>
+              <div class="rounded-xl bg-white border border-slate-200 p-2.5 text-[9px] space-y-1">
+                <div class="font-semibold">JC-0042 · Ready for pickup</div>
+                <div class="text-slate-600">Technician: Imran · 90-day warranty</div>
+                <div class="rounded-md bg-green-600 text-white text-[9px] font-semibold text-center py-1.5 mt-1">💬 Tell customer it is ready</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 9 · Reports -->
+          <div :class="i === 8 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 8" class="transition-opacity duration-300 absolute inset-0 flex flex-col bg-slate-100">
+            <div class="bg-white px-4 pt-4 pb-3 flex items-center justify-between border-b border-slate-200">
+              <div><div class="text-[11px] font-semibold leading-none">Reports</div><div class="text-[9px] text-slate-500 mt-1">This month</div></div>
+              <div class="rounded-full bg-slate-100 text-[8px] font-semibold px-2.5 py-1">Oct 2026 ▾</div>
+            </div>
+            <div class="flex-1 p-3 space-y-2.5 overflow-hidden">
+              <div class="grid grid-cols-3 gap-1.5">
+                <div class="rounded-xl bg-white border border-slate-200 p-2"><div class="text-[7px] font-semibold text-slate-500 tracking-wide">SALES</div><div class="text-[12px] font-bold">₹4.62L</div></div>
+                <div class="rounded-xl bg-white border border-slate-200 p-2"><div class="text-[7px] font-semibold text-slate-500 tracking-wide">EXPENSES</div><div class="text-[12px] font-bold text-rose-600">₹1.08L</div></div>
+                <div class="rounded-xl bg-emerald-50 border border-emerald-200 p-2"><div class="text-[7px] font-semibold text-emerald-700 tracking-wide">PROFIT</div><div class="text-[12px] font-bold text-emerald-700">₹1.94L</div></div>
+              </div>
+              <div class="rounded-xl bg-white border border-slate-200 p-2.5">
+                <div class="text-[9px] font-semibold mb-2">Sales vs expenses</div>
+                <div class="flex items-end gap-2 h-24">
+                  <?php foreach ([[60, 22], [72, 26], [55, 20], [84, 30], [78, 24]] as $k => $p): ?>
+                  <div class="flex-1 flex items-end gap-0.5 h-full"><div class="flex-1 rounded-t bg-indigo-500" style="height: <?= $p[0] ?>%"></div><div class="flex-1 rounded-t bg-rose-400" style="height: <?= $p[1] ?>%"></div></div>
+                  <?php endforeach; ?>
+                </div>
+                <div class="flex justify-between text-[7px] text-slate-400 mt-1 px-1"><span>W1</span><span>W2</span><span>W3</span><span>W4</span><span>W5</span></div>
+              </div>
+              <div class="rounded-xl bg-white border border-slate-200 p-2.5 text-[9px] space-y-1">
+                <div class="font-semibold mb-1">Expenses by head</div>
+                <div class="flex justify-between"><span>Shop rent</span><span class="font-semibold">₹45,000</span></div>
+                <div class="flex justify-between"><span>Staff salary</span><span class="font-semibold">₹38,000</span></div>
+                <div class="flex justify-between"><span>Electricity</span><span class="font-semibold">₹9,400</span></div>
+              </div>
+              <div class="rounded-xl bg-white border border-slate-200 p-2.5 text-[9px] space-y-2">
+                <div class="font-semibold">Top products by profit</div>
+                <?php foreach ([['Aashirvaad Atta 5kg', 88], ['Fortune Soya Oil 1L', 64], ['Amul Butter 100g', 47]] as $r): ?>
+                <div><div class="flex justify-between"><span><?= $r[0] ?></span><span class="font-semibold">₹<?= $r[1] ?>00</span></div><div class="h-1.5 rounded bg-slate-100 mt-0.5"><div class="h-1.5 rounded bg-emerald-500" style="width: <?= $r[1] ?>%"></div></div></div>
+                <?php endforeach; ?>
+              </div>
+            </div>
+          </div>
+
+          <!-- 10 · Quick Sale (offline) -->
+          <div :class="i === 9 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 9" class="transition-opacity duration-300 absolute inset-0 flex flex-col bg-slate-100">
+            <div class="bg-slate-900 text-white px-4 pt-4 pb-3 flex items-center justify-between">
+              <div class="text-[11px] font-semibold">Quick Sale</div>
+              <div class="text-[9px] flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>Offline</div>
+            </div>
+            <div class="flex-1 p-2.5 space-y-2 overflow-hidden">
+              <div class="rounded-lg bg-amber-100 text-amber-800 text-[9px] font-medium px-2.5 py-1.5">No internet — 2 sales saved, they sync automatically.</div>
+              <div class="rounded-lg bg-white border border-slate-300 px-2.5 py-2 text-[10px] text-slate-400">Search items…</div>
+              <div class="grid grid-cols-2 gap-2">
+                <?php foreach ([['Aashirvaad Atta 5kg', '₹245', '42 left'], ['Fortune Soya Oil 1L', '₹138', '8 left'], ['Tata Salt 1kg', '₹28', '120 left'], ['Surf Excel 500g', '₹118', '3 left'], ['Parle-G 100g', '₹10', '64 left'], ['Amul Butter 100g', '₹58', '17 left'], ['Maggi Noodles 70g', '₹14', '52 left'], ['Colgate 100g', '₹55', '30 left'], ['Amul Milk 500ml', '₹29', '24 left'], ['Britannia Bread', '₹45', '11 left']] as $k => $r): ?>
+                <div class="rounded-xl bg-white border <?= $k === 0 ? 'border-indigo-400 ring-2 ring-indigo-200' : 'border-slate-200' ?> p-2.5">
+                  <div class="text-[10px] font-semibold leading-tight"><?= $r[0] ?></div>
+                  <div class="flex items-center justify-between mt-1.5"><span class="text-[11px] font-bold text-indigo-700"><?= $r[1] ?></span><span class="text-[8px] text-slate-500"><?= $r[2] ?></span></div>
+                </div>
+                <?php endforeach; ?>
+              </div>
+            </div>
+            <div class="m-2.5 rounded-xl bg-indigo-600 text-white flex items-center justify-between px-3 py-2.5 shadow-lg">
+              <span class="text-[10px] font-semibold">3 items · ₹411</span><span class="text-[10px] font-bold">View cart →</span>
+            </div>
           </div>
         </div>
+
+        <!-- Caption + controls -->
+        <div class="mt-5 text-center min-h-[3.5rem]" aria-live="polite">
+          <?php foreach ($tour as $k => $t): ?>
+            <div x-show="i === <?= $k ?>" <?= $k ? 'x-cloak' : '' ?>>
+              <div class="text-sm font-semibold"><span class="text-indigo-300"><?= $k + 1 ?>/<?= count($tour) ?></span> · <?= h($t[0]) ?></div>
+              <div class="text-xs text-slate-400 mt-0.5"><?= h($t[1]) ?></div>
+            </div>
+          <?php endforeach; ?>
+        </div>
+        <div class="mt-3 flex items-center justify-center gap-3">
+          <button type="button" @click="go(i - 1)" class="w-8 h-8 rounded-full border border-white/15 hover:bg-white/10 text-slate-300 flex items-center justify-center" aria-label="Previous screen">‹</button>
+          <div class="flex items-center gap-1.5">
+            <?php foreach ($tour as $k => $t): ?>
+              <button type="button" @click="go(<?= $k ?>)" :class="i === <?= $k ?> ? 'w-5 bg-indigo-400' : 'w-1.5 bg-white/25 hover:bg-white/50'" class="h-1.5 rounded-full transition-all" aria-label="Show screen <?= $k + 1 ?>: <?= h($t[0]) ?>"></button>
+            <?php endforeach; ?>
+          </div>
+          <button type="button" @click="go(i + 1)" class="w-8 h-8 rounded-full border border-white/15 hover:bg-white/10 text-slate-300 flex items-center justify-center" aria-label="Next screen">›</button>
+        </div>
+        <div class="mt-2 text-center text-[10px] text-slate-600">Sample business and sample data</div>
       </div>
+
     </div>
   </section>
 
