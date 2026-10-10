@@ -67,7 +67,6 @@
 
     <!-- ── Cash memo (shared with TradeERP) ── -->
     <?php require __DIR__ . '/../../shared/cash-memo-panel.php'; ?>
-    <?php require __DIR__ . '/../../shared/upi-modal.php'; ?>
   </div>
 
   <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-4 flex flex-col"
@@ -217,6 +216,7 @@
       <button type="submit" :disabled="cart.length === 0" class="w-full bg-indigo-600 disabled:bg-slate-300 text-white font-medium py-2.5 rounded hover:bg-indigo-700">Save Invoice</button>
     </form>
   </div>
+  <?php require __DIR__ . '/../../shared/upi-modal.php'; /* top level of the screen so it shows on mobile whichever tab is open */ ?>
 </div>
 
 <?php require __DIR__ . '/../../shared/cash-memo-script.php'; ?>

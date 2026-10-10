@@ -63,7 +63,6 @@
 
     <!-- ── Cash memo (shared with ServiceERP) ── -->
     <?php require __DIR__ . '/../../shared/cash-memo-panel.php'; ?>
-    <?php require __DIR__ . '/../../shared/upi-modal.php'; ?>
   </div>
 
   <!-- Cart + checkout -->
@@ -209,6 +208,7 @@
       </button>
     </form>
   </div>
+  <?php require __DIR__ . '/../../shared/upi-modal.php'; /* top level of the screen so it shows on mobile whichever tab is open */ ?>
 </div>
 
 <?php require __DIR__ . '/../../shared/cash-memo-script.php'; ?>
