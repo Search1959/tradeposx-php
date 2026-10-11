@@ -173,12 +173,32 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
         $qrSvg .= $finder(0, 0) . $finder($qrN - 7, 0) . $finder(0, $qrN - 7) . '</svg>';
       ?>
       <div class="relative mx-auto w-full max-w-[19rem] md:max-w-sm"
-           x-data="{ i: 0, n: <?= count($tour) ?>, paused: false, stopped: false, timer: null,
-                     go(k) { this.i = (k + this.n) % this.n; },
-                     init() { this.timer = setInterval(() => { if (!this.paused && !this.stopped) this.go(this.i + 1); }, 4500); } }"
+           x-data="{ i: 0, n: <?= count($tour) ?>, paused: false, stopped: false, timer: null, dwell: 6500, elapsed: 0,
+                     go(k) { this.i = (k + this.n) % this.n; this.elapsed = 0; },
+                     init() { this.timer = setInterval(() => { if (this.paused || this.stopped) return; this.elapsed += 100; if (this.elapsed >= this.dwell) this.go(this.i + 1); }, 100); } }"
            @keydown.left.prevent="go(i - 1)" @keydown.right.prevent="go(i + 1)" role="region" aria-roledescription="carousel" aria-label="TradePOSX screens">
         <div class="absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-indigo-500/20 to-emerald-500/10 blur-2xl pointer-events-none" aria-hidden="true"></div>
 
+        <!-- Caption + controls -->
+        <div class="relative z-10 text-center min-h-[3.5rem]" aria-live="polite">
+          <?php foreach ($tour as $k => $t): ?>
+            <div x-show="i === <?= $k ?>" <?= $k ? 'x-cloak' : '' ?>>
+              <div class="text-sm font-semibold"><span class="text-indigo-300"><?= $k + 1 ?>/<?= count($tour) ?></span> · <?= h($t[0]) ?></div>
+              <div class="text-xs text-slate-400 mt-0.5"><?= h($t[1]) ?></div>
+            </div>
+          <?php endforeach; ?>
+        </div>
+        <div class="relative z-10 mt-3 flex items-center justify-center gap-3" @focusin="paused = true" @focusout="paused = false">
+          <button type="button" @click="go(i - 1)" class="w-8 h-8 rounded-full border border-white/15 hover:bg-white/10 text-slate-300 flex items-center justify-center" aria-label="Previous screen">‹</button>
+          <div class="flex items-center gap-1.5">
+            <?php foreach ($tour as $k => $t): ?>
+              <button type="button" @click="go(<?= $k ?>)" :class="i === <?= $k ?> ? 'w-5 bg-indigo-400' : 'w-1.5 bg-white/25 hover:bg-white/50'" class="h-1.5 rounded-full transition-all" aria-label="Show screen <?= $k + 1 ?>: <?= h($t[0]) ?>"></button>
+            <?php endforeach; ?>
+          </div>
+          <button type="button" @click="go(i + 1)" class="w-8 h-8 rounded-full border border-white/15 hover:bg-white/10 text-slate-300 flex items-center justify-center" aria-label="Next screen">›</button>
+          <button type="button" @click="stopped = !stopped" :aria-pressed="stopped" :aria-label="stopped ? 'Play slideshow' : 'Pause slideshow'" class="w-8 h-8 rounded-full border border-white/15 hover:bg-white/10 text-slate-300 flex items-center justify-center text-[9px]" x-text="stopped ? '▶' : '❚❚'"></button>
+        </div>
+        <div class="relative z-10 mt-3 mb-5 mx-auto w-44 h-0.5 rounded-full bg-white/10 overflow-hidden" aria-hidden="true"><div class="h-full bg-indigo-400/80" :style="'width:' + (stopped ? 0 : Math.min(100, elapsed / dwell * 100)) + '%'"></div></div>
         <div class="relative rounded-[2.2rem] border-[7px] border-slate-800 bg-slate-100 text-slate-900 shadow-2xl overflow-hidden h-[34rem]" @mouseenter="paused = true" @mouseleave="paused = false">
 
           <!-- 1 · Dashboard -->
@@ -469,26 +489,7 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
           </div>
         </div>
 
-        <!-- Caption + controls -->
-        <div class="mt-5 text-center min-h-[3.5rem]" aria-live="polite">
-          <?php foreach ($tour as $k => $t): ?>
-            <div x-show="i === <?= $k ?>" <?= $k ? 'x-cloak' : '' ?>>
-              <div class="text-sm font-semibold"><span class="text-indigo-300"><?= $k + 1 ?>/<?= count($tour) ?></span> · <?= h($t[0]) ?></div>
-              <div class="text-xs text-slate-400 mt-0.5"><?= h($t[1]) ?></div>
-            </div>
-          <?php endforeach; ?>
-        </div>
-        <div class="relative z-10 mt-3 flex items-center justify-center gap-3" @focusin="paused = true" @focusout="paused = false">
-          <button type="button" @click="go(i - 1)" class="w-8 h-8 rounded-full border border-white/15 hover:bg-white/10 text-slate-300 flex items-center justify-center" aria-label="Previous screen">‹</button>
-          <div class="flex items-center gap-1.5">
-            <?php foreach ($tour as $k => $t): ?>
-              <button type="button" @click="go(<?= $k ?>)" :class="i === <?= $k ?> ? 'w-5 bg-indigo-400' : 'w-1.5 bg-white/25 hover:bg-white/50'" class="h-1.5 rounded-full transition-all" aria-label="Show screen <?= $k + 1 ?>: <?= h($t[0]) ?>"></button>
-            <?php endforeach; ?>
-          </div>
-          <button type="button" @click="go(i + 1)" class="w-8 h-8 rounded-full border border-white/15 hover:bg-white/10 text-slate-300 flex items-center justify-center" aria-label="Next screen">›</button>
-          <button type="button" @click="stopped = !stopped" :aria-pressed="stopped" :aria-label="stopped ? 'Play slideshow' : 'Pause slideshow'" class="w-8 h-8 rounded-full border border-white/15 hover:bg-white/10 text-slate-300 flex items-center justify-center text-[9px]" x-text="stopped ? '▶' : '❚❚'"></button>
-        </div>
-        <div class="mt-2 text-center text-[10px] text-slate-600">Sample business and sample data</div>
+        <div class="mt-3 text-center text-[10px] text-slate-600">Sample business and sample data</div>
       </div>
 
     </div>
