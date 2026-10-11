@@ -173,17 +173,16 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
         $qrSvg .= $finder(0, 0) . $finder($qrN - 7, 0) . $finder(0, $qrN - 7) . '</svg>';
       ?>
       <div class="relative mx-auto w-full max-w-[19rem] md:max-w-sm"
-           x-data="{ i: 0, n: <?= count($tour) ?>, paused: false, timer: null,
+           x-data="{ i: 0, n: <?= count($tour) ?>, paused: false, stopped: false, timer: null,
                      go(k) { this.i = (k + this.n) % this.n; },
-                     init() { if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; this.timer = setInterval(() => { if (!this.paused) this.go(this.i + 1); }, 4500); } }"
-           @mouseenter="paused = true" @mouseleave="paused = false" @focusin="paused = true" @focusout="paused = false"
+                     init() { this.timer = setInterval(() => { if (!this.paused && !this.stopped) this.go(this.i + 1); }, 4500); } }"
            @keydown.left.prevent="go(i - 1)" @keydown.right.prevent="go(i + 1)" role="region" aria-roledescription="carousel" aria-label="TradePOSX screens">
-        <div class="absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-indigo-500/20 to-emerald-500/10 blur-2xl"></div>
+        <div class="absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-indigo-500/20 to-emerald-500/10 blur-2xl pointer-events-none" aria-hidden="true"></div>
 
-        <div class="relative rounded-[2.2rem] border-[7px] border-slate-800 bg-slate-100 text-slate-900 shadow-2xl overflow-hidden h-[34rem]">
+        <div class="relative rounded-[2.2rem] border-[7px] border-slate-800 bg-slate-100 text-slate-900 shadow-2xl overflow-hidden h-[34rem]" @mouseenter="paused = true" @mouseleave="paused = false">
 
           <!-- 1 · Dashboard -->
-          <div :class="i === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 0" class="transition-opacity duration-300 absolute inset-0 flex flex-col bg-slate-100">
+          <div :class="i === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 0" class="transition-opacity motion-reduce:transition-none duration-300 absolute inset-0 flex flex-col bg-slate-100">
             <div class="bg-white px-4 pt-4 pb-3 flex items-center justify-between border-b border-slate-200">
               <div><div class="text-[11px] font-semibold leading-none">Dashboard</div><div class="text-[9px] text-slate-500 mt-1">Sharma Traders</div></div>
               <div class="w-6 h-6 rounded-full bg-indigo-600 text-white text-[10px] font-bold flex items-center justify-center">S</div>
@@ -215,7 +214,7 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
           </div>
 
           <!-- 2 · Stock -->
-          <div :class="i === 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 1" class="transition-opacity duration-300 absolute inset-0 flex flex-col bg-slate-100">
+          <div :class="i === 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 1" class="transition-opacity motion-reduce:transition-none duration-300 absolute inset-0 flex flex-col bg-slate-100">
             <div class="bg-white px-4 pt-4 pb-3 flex items-center justify-between border-b border-slate-200">
               <div><div class="text-[11px] font-semibold leading-none">Products &amp; stock</div><div class="text-[9px] text-slate-500 mt-1">128 items · 3 running low</div></div>
               <div class="rounded-lg bg-indigo-600 text-white text-[9px] font-semibold px-2.5 py-1.5">+ Add</div>
@@ -243,7 +242,7 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
           </div>
 
           <!-- 3 · Cash memo (voice) -->
-          <div :class="i === 2 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 2" class="transition-opacity duration-300 absolute inset-0 flex flex-col bg-slate-100">
+          <div :class="i === 2 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 2" class="transition-opacity motion-reduce:transition-none duration-300 absolute inset-0 flex flex-col bg-slate-100">
             <div class="bg-white px-4 pt-4 pb-3 flex items-center justify-between border-b border-slate-200">
               <div><div class="text-[11px] font-semibold leading-none">New Sale</div><div class="text-[9px] text-slate-500 mt-1">Cash memo</div></div>
               <div class="w-6 h-6 rounded-full bg-indigo-600 text-white text-[10px] font-bold flex items-center justify-center">S</div>
@@ -272,7 +271,7 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
           </div>
 
           <!-- 4 · The bill -->
-          <div :class="i === 3 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 3" class="transition-opacity duration-300 absolute inset-0 flex flex-col bg-slate-100">
+          <div :class="i === 3 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 3" class="transition-opacity motion-reduce:transition-none duration-300 absolute inset-0 flex flex-col bg-slate-100">
             <div class="bg-white px-4 pt-4 pb-3 flex items-center justify-between border-b border-slate-200">
               <div><div class="text-[11px] font-semibold leading-none">Cart</div><div class="text-[9px] text-slate-500 mt-1">3 items</div></div>
               <div class="w-6 h-6 rounded-full bg-indigo-600 text-white text-[10px] font-bold flex items-center justify-center">S</div>
@@ -303,7 +302,7 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
           </div>
 
           <!-- 5 · Pay by UPI -->
-          <div :class="i === 4 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 4" class="transition-opacity duration-300 absolute inset-0 flex flex-col bg-slate-300">
+          <div :class="i === 4 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 4" class="transition-opacity motion-reduce:transition-none duration-300 absolute inset-0 flex flex-col bg-slate-300">
             <div class="bg-white/80 px-4 pt-4 pb-3 border-b border-slate-200 opacity-60"><div class="text-[11px] font-semibold leading-none">Cart</div><div class="text-[9px] text-slate-500 mt-1">UPI selected</div></div>
             <div class="flex-1 flex items-end justify-center p-2.5">
               <div class="w-full rounded-2xl bg-white shadow-2xl p-3.5 text-center">
@@ -319,7 +318,7 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
           </div>
 
           <!-- 6 · Final GST bill -->
-          <div :class="i === 5 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 5" class="transition-opacity duration-300 absolute inset-0 flex flex-col bg-slate-100">
+          <div :class="i === 5 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 5" class="transition-opacity motion-reduce:transition-none duration-300 absolute inset-0 flex flex-col bg-slate-100">
             <div class="bg-white px-4 pt-4 pb-3 flex items-center justify-between border-b border-slate-200">
               <div><div class="text-[11px] font-semibold leading-none">Tax Invoice</div><div class="text-[9px] text-slate-500 mt-1">SL-00034 · 10 Oct 2026</div></div>
               <div class="rounded-full bg-emerald-100 text-emerald-700 text-[8px] font-bold px-2 py-1">PAID · UPI</div>
@@ -351,7 +350,7 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
           </div>
 
           <!-- 7 · Udhaar -->
-          <div :class="i === 6 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 6" class="transition-opacity duration-300 absolute inset-0 flex flex-col bg-slate-100">
+          <div :class="i === 6 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 6" class="transition-opacity motion-reduce:transition-none duration-300 absolute inset-0 flex flex-col bg-slate-100">
             <div class="bg-white px-4 pt-4 pb-3 flex items-center justify-between border-b border-slate-200">
               <div><div class="text-[11px] font-semibold leading-none">Customers · Udhaar</div><div class="text-[9px] text-slate-500 mt-1">9 customers owe you</div></div>
               <div class="text-[11px] font-bold text-amber-600">₹42,300</div>
@@ -376,7 +375,7 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
           </div>
 
           <!-- 8 · Job cards -->
-          <div :class="i === 7 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 7" class="transition-opacity duration-300 absolute inset-0 flex flex-col bg-slate-100">
+          <div :class="i === 7 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 7" class="transition-opacity motion-reduce:transition-none duration-300 absolute inset-0 flex flex-col bg-slate-100">
             <div class="bg-white px-4 pt-4 pb-3 flex items-center justify-between border-b border-slate-200">
               <div><div class="text-[11px] font-semibold leading-none">Job cards</div><div class="text-[9px] text-slate-500 mt-1">ServiceERP · Mobile repair</div></div>
               <div class="rounded-lg bg-emerald-600 text-white text-[9px] font-semibold px-2.5 py-1.5">+ New job</div>
@@ -411,7 +410,7 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
           </div>
 
           <!-- 9 · Reports -->
-          <div :class="i === 8 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 8" class="transition-opacity duration-300 absolute inset-0 flex flex-col bg-slate-100">
+          <div :class="i === 8 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 8" class="transition-opacity motion-reduce:transition-none duration-300 absolute inset-0 flex flex-col bg-slate-100">
             <div class="bg-white px-4 pt-4 pb-3 flex items-center justify-between border-b border-slate-200">
               <div><div class="text-[11px] font-semibold leading-none">Reports</div><div class="text-[9px] text-slate-500 mt-1">This month</div></div>
               <div class="rounded-full bg-slate-100 text-[8px] font-semibold px-2.5 py-1">Oct 2026 ▾</div>
@@ -447,7 +446,7 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
           </div>
 
           <!-- 10 · Quick Sale (offline) -->
-          <div :class="i === 9 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 9" class="transition-opacity duration-300 absolute inset-0 flex flex-col bg-slate-100">
+          <div :class="i === 9 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 9" class="transition-opacity motion-reduce:transition-none duration-300 absolute inset-0 flex flex-col bg-slate-100">
             <div class="bg-slate-900 text-white px-4 pt-4 pb-3 flex items-center justify-between">
               <div class="text-[11px] font-semibold">Quick Sale</div>
               <div class="text-[9px] flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>Offline</div>
@@ -479,7 +478,7 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
             </div>
           <?php endforeach; ?>
         </div>
-        <div class="mt-3 flex items-center justify-center gap-3">
+        <div class="relative z-10 mt-3 flex items-center justify-center gap-3" @focusin="paused = true" @focusout="paused = false">
           <button type="button" @click="go(i - 1)" class="w-8 h-8 rounded-full border border-white/15 hover:bg-white/10 text-slate-300 flex items-center justify-center" aria-label="Previous screen">‹</button>
           <div class="flex items-center gap-1.5">
             <?php foreach ($tour as $k => $t): ?>
@@ -487,6 +486,7 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
             <?php endforeach; ?>
           </div>
           <button type="button" @click="go(i + 1)" class="w-8 h-8 rounded-full border border-white/15 hover:bg-white/10 text-slate-300 flex items-center justify-center" aria-label="Next screen">›</button>
+          <button type="button" @click="stopped = !stopped" :aria-pressed="stopped" :aria-label="stopped ? 'Play slideshow' : 'Pause slideshow'" class="w-8 h-8 rounded-full border border-white/15 hover:bg-white/10 text-slate-300 flex items-center justify-center text-[9px]" x-text="stopped ? '▶' : '❚❚'"></button>
         </div>
         <div class="mt-2 text-center text-[10px] text-slate-600">Sample business and sample data</div>
       </div>
