@@ -194,5 +194,6 @@ $initialBizType = in_array($form['business_type'] ?? '', ['trade', 'service'], t
       <p class="text-xs text-slate-600"><a href="/" class="underline hover:text-slate-400">&larr; Back to home</a></p>
     </div>
   </div>
+<?php require __DIR__ . '/../shared/password-toggle.php'; ?>
 </body>
 </html>

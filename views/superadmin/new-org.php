@@ -83,5 +83,6 @@
       </div>
     </form>
   </div>
+<?php require __DIR__ . '/../shared/password-toggle.php'; ?>
 </body>
 </html>

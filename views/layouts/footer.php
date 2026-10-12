@@ -39,5 +39,6 @@ $tabLink = function (array $t) use ($mobileTab, $accentText) {
 </nav>
 </div>
 
+<?php require __DIR__ . '/../shared/password-toggle.php'; ?>
 </body>
 </html>
