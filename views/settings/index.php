@@ -14,6 +14,27 @@
     <h2 class="font-semibold text-slate-900 mb-1">Your Account</h2>
     <p class="text-sm text-slate-500 mb-4"><?= h($currentUser['name']) ?> · <?= h($currentUser['email'] ?? $currentUser['username'] ?? '') ?> · <?= h(ucfirst($currentUser['role'])) ?></p>
 
+    <form method="POST" class="space-y-3 pb-5 mb-5 border-b border-slate-200" autocomplete="off">
+      <?= CsrfHelper::getField() ?>
+      <input type="hidden" name="form" value="profile">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Your name</label>
+          <input type="text" name="name" required maxlength="120" value="<?= h($currentUser['name']) ?>" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Email (used to log in)</label>
+          <input type="email" name="email" value="<?= h($currentUser['email'] ?? '') ?>" placeholder="name@example.com" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Current password <span class="font-normal text-slate-400">— only needed when you change the email</span></label>
+        <input type="password" name="current_password" autocomplete="current-password" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+      </div>
+      <button type="submit" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">Save name &amp; email</button>
+    </form>
+
+    <h3 class="text-sm font-semibold text-slate-900 mb-3">Change password</h3>
     <form method="POST" class="space-y-3">
       <?= CsrfHelper::getField() ?>
       <input type="hidden" name="form" value="password">

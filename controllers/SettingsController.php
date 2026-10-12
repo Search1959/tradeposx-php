@@ -33,6 +33,34 @@ class SettingsController {
                     $this->userModel->updatePassword($currentUser['id'], $new);
                     $success = 'Password updated.';
                 }
+            } elseif (($_POST['form'] ?? '') === 'profile') {
+                // Name and login email. Changing the email (which is the login) needs the current password.
+                $name = trim($_POST['name'] ?? '');
+                $email = strtolower(trim($_POST['email'] ?? ''));
+                $hasUsername = trim((string) ($currentUser['username'] ?? '')) !== '';
+                $emailChanged = $email !== strtolower((string) ($currentUser['email'] ?? ''));
+                if ($name === '' || mb_strlen($name) > 120) {
+                    $error = 'Please enter your name.';
+                } elseif ($email === '' && !$hasUsername) {
+                    $error = 'An email is needed so you can log in.';
+                } elseif ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $error = 'Please enter a valid email address, like name@example.com.';
+                } elseif ($emailChanged && ($_POST['current_password'] ?? '') === '') {
+                    $error = 'To change your login email, enter your current password.';
+                } elseif ($emailChanged && !$this->userModel->verifyPassword($currentUser, $_POST['current_password'] ?? '')) {
+                    $error = 'Current password is incorrect.';
+                } else {
+                    $taken = ($emailChanged && $email !== '') ? ($this->userModel->findByEmailAcrossOrgs($email) ?: $this->userModel->findSuperAdminByEmail($email)) : null;
+                    if ($taken && (int) $taken['id'] !== (int) $currentUser['id']) {
+                        $error = 'That email is already used by another account.';
+                    } elseif (!$this->userModel->updateOwnProfile((int) $currentUser['id'], $name, $email !== '' ? $email : null)) {
+                        $error = 'Could not save. That email may already be in use.';
+                    } else {
+                        logActivity($org['id'], 'profile_updated', 'user', (int) $currentUser['id'], $emailChanged ? 'name and login email' : 'name');
+                        $currentUser = Auth::user();
+                        $success = $emailChanged ? 'Saved. From now on log in with ' . $email . '.' : 'Your name was updated.';
+                    }
+                }
             } elseif (($_POST['form'] ?? '') === 'business' && in_array(Auth::role(), ['owner', 'admin'], true)) {
                 $name = trim($_POST['name'] ?? '');
                 if ($name === '') {

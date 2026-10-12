@@ -87,6 +87,11 @@ class User extends BaseModel {
         return $this->execute('UPDATE users SET name = ?, email = ?, role = ? WHERE org_id = ? AND id = ?', [$name, $email, $role, $orgId, $id]);
     }
 
+    /** A person editing their own name / login email from Settings. */
+    public function updateOwnProfile(int $id, string $name, ?string $email): bool {
+        return $this->execute('UPDATE users SET name = ?, email = ? WHERE id = ?', [$name, $email, $id]);
+    }
+
     public function countByRole(int $orgId, string $role): int {
         return (int) $this->count('users', 'org_id = ? AND role = ?', [$orgId, $role]);
     }
