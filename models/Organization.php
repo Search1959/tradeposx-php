@@ -63,7 +63,7 @@ class Organization extends BaseModel {
 
     public function slugExists(string $slug): bool {
         // Platform URLs a business must never be able to claim as its own workspace.
-        if (in_array(strtolower($slug), ['login', 'logout', 'superadmin', 'privacy', 'terms', 'support', 'deletion', 'assets', 'api', 'admin', 'uploads'], true)) return true;
+        if (in_array(strtolower($slug), ['login', 'logout', 'superadmin', 'privacy', 'terms', 'support', 'deletion', 'cashmemo', 'assets', 'api', 'admin', 'uploads'], true)) return true;
         return $this->count('organizations', 'slug = ?', [$slug]) > 0;
     }
     /** Every business with its user count and primary owner contact — one query for the System Admin registry. */
