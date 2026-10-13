@@ -54,6 +54,10 @@
     <p class="text-xs text-slate-400 mt-1">A completed job of this type is automatically marked "under warranty" for this many days — a repeat visit for the same issue within that window is easy to spot on the job card.</p>
   </div>
   <div>
+    <label class="block text-sm font-medium text-slate-700 mb-1">Barcode / QR code <span class="font-normal text-slate-400">(optional)</span></label>
+    <input type="text" name="code" maxlength="60" value="<?= h($i['item_code'] ?? '') ?>" placeholder="The number on the item’s label — scanning it with the camera finds this item" class="w-full rounded border border-slate-300 px-3 py-2 text-sm font-mono">
+  </div>
+  <div>
     <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
     <textarea name="description" rows="2" class="w-full rounded border border-slate-300 px-3 py-2 text-sm"><?= h($i['description'] ?? '') ?></textarea>
   </div>

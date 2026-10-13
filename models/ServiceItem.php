@@ -16,6 +16,9 @@ class ServiceItem extends BaseModel {
             if (!in_array('stock_qty', $cols, true)) {
                 $this->db->exec('ALTER TABLE service_items ADD COLUMN stock_qty DECIMAL(12,3) NULL');
             }
+            if (!in_array('item_code', $cols, true)) {
+                $this->db->exec('ALTER TABLE service_items ADD COLUMN item_code VARCHAR(60) NULL');   // barcode / QR code printed on the item
+            }
         }
     }
     /** $limit stays null (no LIMIT) for every caller needing the full catalog to
@@ -37,24 +40,30 @@ class ServiceItem extends BaseModel {
 
     public function create(int $orgId, array $d): int {
         return $this->insert(
-            'INSERT INTO service_items (org_id, name, category, price, duration_minutes, warranty_days, gst_percent, sector, description, is_popular, item_type, stock_qty)
-             VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+            'INSERT INTO service_items (org_id, name, category, price, duration_minutes, warranty_days, gst_percent, sector, description, is_popular, item_type, stock_qty, item_code)
+             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
             [$orgId, $d['name'], $d['category'] ?? null, $d['price'] ?? 0, $d['duration_minutes'] ?: null,
              $d['warranty_days'] ?: 0, $d['gst_percent'] ?? 0, $d['sector'] ?? 'General', $d['description'] ?? null,
              !empty($d['is_popular']) ? 1 : 0, ($d['item_type'] ?? 'SERVICE') === 'STOCK' ? 'STOCK' : 'SERVICE',
-             ($d['item_type'] ?? 'SERVICE') === 'STOCK' ? (float) ($d['stock_qty'] ?? 0) : null]
+             ($d['item_type'] ?? 'SERVICE') === 'STOCK' ? (float) ($d['stock_qty'] ?? 0) : null,
+             isset($d['code']) && trim((string) $d['code']) !== '' ? mb_substr(trim((string) $d['code']), 0, 60) : null]
         );
     }
 
     public function update(int $orgId, int $id, array $d): bool {
         return $this->execute(
-            'UPDATE service_items SET name=?, category=?, price=?, duration_minutes=?, warranty_days=?, gst_percent=?, sector=?, description=?, is_popular=?, item_type=?, stock_qty=?
+            'UPDATE service_items SET name=?, category=?, price=?, duration_minutes=?, warranty_days=?, gst_percent=?, sector=?, description=?, is_popular=?, item_type=?, stock_qty=?, item_code=?
              WHERE org_id=? AND id=?',
             [$d['name'], $d['category'] ?? null, $d['price'] ?? 0, $d['duration_minutes'] ?: null,
              $d['warranty_days'] ?: 0, $d['gst_percent'] ?? 0, $d['sector'] ?? 'General', $d['description'] ?? null,
              !empty($d['is_popular']) ? 1 : 0, ($d['item_type'] ?? 'SERVICE') === 'STOCK' ? 'STOCK' : 'SERVICE',
-             ($d['item_type'] ?? 'SERVICE') === 'STOCK' ? (float) ($d['stock_qty'] ?? 0) : null, $orgId, $id]
+             ($d['item_type'] ?? 'SERVICE') === 'STOCK' ? (float) ($d['stock_qty'] ?? 0) : null,
+             isset($d['code']) && trim((string) $d['code']) !== '' ? mb_substr(trim((string) $d['code']), 0, 60) : null, $orgId, $id]
         );
+    }
+
+    public function setCode(int $orgId, int $id, string $code): bool {
+        return $this->execute('UPDATE service_items SET item_code = ? WHERE org_id = ? AND id = ?', [$code !== '' ? mb_substr($code, 0, 60) : null, $orgId, $id]);
     }
 
     public function delete(int $orgId, int $id): bool {

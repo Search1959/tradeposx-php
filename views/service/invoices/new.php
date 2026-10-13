@@ -226,7 +226,7 @@ function invoiceScreen() {
   return {
     ...cashMemoMixin(),
     ...upiMixin(<?= json_encode((new Organization())->find((int)$org['id'])['upi_id'] ?? '') ?>, <?= json_encode($org['name']) ?>),
-    services: <?= json_encode(array_map(fn($s) => ['id'=>(int)$s['id'],'name'=>$s['name'],'category'=>$s['category'],'price'=>(float)$s['price'],'gst'=>(float)$s['gst_percent'],'type'=>($s['item_type'] ?? 'SERVICE'),'stock'=>isset($s['stock_qty']) ? (float)$s['stock_qty'] : null], $services)) ?>,
+    services: <?= json_encode(array_map(fn($s) => ['id'=>(int)$s['id'],'name'=>$s['name'],'category'=>$s['category'],'price'=>(float)$s['price'],'gst'=>(float)$s['gst_percent'],'type'=>($s['item_type'] ?? 'SERVICE'),'code'=>(string)($s['item_code'] ?? ''),'stock'=>isset($s['stock_qty']) ? (float)$s['stock_qty'] : null], $services)) ?>,
     specializedStaff: <?= json_encode(array_map(fn($sp) => ['id'=>(int)$sp['id'],'name'=>$sp['name'],'default_commission_percent'=>(float)$sp['default_commission_percent']], $specializedStaff)) ?>,
     search: '', category: '', activeTab: 'services', cart: [], customSeq: 0, labour: 0, discountMode: '0', customDiscount: 0, taxType: 'EXCLUSIVE', customerId: '', walkinMobile: '', paymentStatus: 'FULL', paymentMethod: 'CASH', paidAmount: 0,
     specializedStaffId: '', specializedStaffCommissionMode: 'default', specializedStaffCustomCommission: 0,
@@ -248,7 +248,7 @@ function invoiceScreen() {
     init() { this.memoInit(); },
     // ── hooks used by the shared cash memo (views/shared/cash-memo-script.php) ──
     // Stock items carry their count; plain services are not tracked (null).
-    memoItems() { return this.services.map(s => ({ id: s.id, name: s.name, price: s.price, gst: s.gst, stock: s.type === 'STOCK' ? s.stock : null })); },
+    memoItems() { return this.services.map(s => ({ id: s.id, name: s.name, price: s.price, gst: s.gst, stock: s.type === 'STOCK' ? s.stock : null, codes: s.code ? [s.code] : [] })); },
     memoPushCatalog(p, qty, rate) {
       const existing = this.cart.find(l => l.id === p.id);
       if (existing) { existing.qty += qty; existing.price = rate; }

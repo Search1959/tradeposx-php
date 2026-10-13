@@ -2,7 +2,7 @@
 /** Cash memo — shared by the TradeERP POS and the ServiceERP New Bill screens.
  * Voice first: tap the mic, say "item, quantity, rate" (then "next"), and rows fill in live. Typing is the fallback.
  * The host Alpine component spreads this in (`...cashMemoMixin()`) and supplies four hooks:
- *   memoItems()                          -> [{id, name, price, gst, stock}]  (stock = number, or null when not tracked)
+ *   memoItems()                          -> [{id, name, price, gst, stock, codes?}]  (stock = number, or null when not tracked; codes = barcode/SKU strings the camera scan matches)
  *   memoPushCatalog(item, qty, rate)     -> add/merge a catalogue line into the host's cart
  *   memoPushFree(name, qty, rate, gst)   -> add a free (not-in-list) line to the host's cart
  *   memoDone()                           -> e.g. switch to the cart tab */
@@ -56,6 +56,7 @@ function cashMemoMixin() {
 
   return {
     leftTab: 'stock',
+    scanOpen: false, scanReady: false, scanErr: '', scanLog: [], scanRow: null, scanLast: null, scanner: null,
     memoRows: [], memoSeq: 0, memoText: '', memoMsg: '', voiceError: '', voiceLang: 'en-IN',
     memoErr: '', lastSaid: '', lastSaidAt: 0, lastK: 0, listening: false, wantListening: false, rec: null, interim: '', heard: [], typeOpen: false,
     voiceSupported: !!(window.SpeechRecognition || window.webkitSpeechRecognition),
@@ -217,6 +218,118 @@ function cashMemoMixin() {
       try { rec.start(); this.listening = true; } catch (err) { this.voiceError = 'Could not start the microphone.'; }
     },
     stopVoice() { this.listening = false; if (this.rec) { try { this.rec.stop(); } catch (e) {} } },
+    // ── camera scan: QR codes and shop barcodes → rows (the camera stays open until Done) ──
+    normCode(c) { return String(c || '').trim().toLowerCase().replace(/\s+/g, ''); },
+    findByCode(code) {
+      const n = this.normCode(code); if (!n) return null;
+      const items = this.memoItems();
+      const codesOf = p => (p.codes || []).map(c => this.normCode(c)).filter(Boolean);
+      const noZero = n.replace(/^0+/, '');
+      return items.find(p => codesOf(p).includes(n))
+        || (noZero.length >= 6 ? items.find(p => codesOf(p).some(c => c.replace(/^0+/, '') === noZero)) : null)   // EAN-13 vs UPC-A leading zero
+        || items.find(p => p.name.toLowerCase() === String(code).trim().toLowerCase())
+        || null;
+    },
+    loadScanLib() {
+      if (window.Html5Qrcode) return Promise.resolve();
+      if (window.__tpxScanLib) return window.__tpxScanLib;
+      window.__tpxScanLib = new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js';
+        s.onload = res; s.onerror = () => { window.__tpxScanLib = null; rej(new Error('scanner library did not load')); };
+        document.head.appendChild(s);
+      });
+      return window.__tpxScanLib;
+    },
+    async openScan(rowKey) {
+      this.scanErr = ''; this.scanLog = []; this.scanLast = null; this.scanReady = false;
+      this.scanRow = (rowKey === undefined ? null : rowKey); this.scanOpen = true;
+      try { await this.loadScanLib(); }
+      catch (e) { this.scanErr = 'Could not load the scanner — check your internet. You can still use “Scan from a photo”.'; return; }
+      await this.$nextTick();
+      try {
+        const F = window.Html5QrcodeSupportedFormats;
+        this.scanner = new Html5Qrcode('tpxScanView', {
+          verbose: false, useBarCodeDetectorIfSupported: true, experimentalFeatures: { useBarCodeDetectorIfSupported: true },
+          formatsToSupport: [F.QR_CODE, F.EAN_13, F.EAN_8, F.UPC_A, F.UPC_E, F.CODE_128, F.CODE_39],
+        });
+        await this.scanner.start({ facingMode: 'environment' },
+          { fps: 10, qrbox: (w, h) => ({ width: Math.max(160, Math.min(300, w - 24)), height: Math.max(120, Math.min(220, h - 24)) }) },
+          (text) => this.onScanned(text), () => {});
+        this.scanReady = true;
+      } catch (e) {
+        const n = e && (e.name || '') + ' ' + (e && e.message ? e.message : e);
+        this.scanErr = /NotAllowed|Permission/i.test(n) ? 'The camera is blocked. Allow it in the browser address bar, or use “Scan from a photo”.'
+          : /NotFound|Requested device/i.test(n) ? 'No camera was found on this device. Use “Scan from a photo” instead.'
+          : 'Could not start the camera (' + String(n).trim().slice(0, 80) + '). Use “Scan from a photo” instead.';
+      }
+    },
+    async closeScan() {
+      const sc = this.scanner; this.scanner = null;
+      if (sc) { try { await sc.stop(); } catch (e) { /* not running */ } try { sc.clear(); } catch (e) { /* ignore */ } }
+      if (this.scanOpen && this.scanLog.length) this.memoMsg = this.scanLog.length + ' scan' + (this.scanLog.length === 1 ? '' : 's') + ' added below — check quantity and rate, then Add to cart.';
+      this.scanOpen = false; this.scanReady = false;
+    },
+    onScanned(raw) {
+      const code = String(raw || '').trim(); if (!code) return;
+      const now = Date.now();
+      if (this.scanLast && this.scanLast.code === code && now - this.scanLast.at < 1800) return;   // still the same label in view
+      this.scanLast = { code, at: now };
+      const p = this.findByCode(code);
+      let row = p
+        ? this.memoRows.find(r => r.pid === p.id && r.item.trim() !== '')
+        : this.memoRows.find(r => !r.pid && r.item.trim().toLowerCase() === code.toLowerCase());
+      if (row) { row.qty = (Number(row.qty) || 1) + 1; row.error = ''; }
+      else {
+        let t = null;
+        if (this.scanRow !== null) { t = this.memoRows.find(r => r.k === this.scanRow) || null; this.scanRow = null; }
+        if (!t) t = this.memoRows.find(r => r.item.trim() === '' && r.qty === '' && r.rate === '') || null;
+        if (!t) { t = this.blankRow(); this.memoRows.push(t); }
+        t.qty = 1; t.rate = ''; t.guess = null; t.error = ''; t.pid = null; t.stock = null; t.step = 2;
+        t.item = p ? p.name : code;
+        if (p) this.matchRow(t);          // fills rate, GST, stock and the item link
+        row = t;
+      }
+      this.scanLog.unshift({ code, name: row.item, known: !!p, qty: row.qty });
+      if (this.scanLog.length > 30) this.scanLog.pop();
+      try { navigator.vibrate && navigator.vibrate(60); } catch (e) { /* ignore */ }
+      try {
+        const A = window.AudioContext || window.webkitAudioContext;
+        if (A) { const a = new A(), o = a.createOscillator(), g = a.createGain(); o.frequency.value = 880; g.gain.value = 0.08; o.connect(g); g.connect(a.destination); o.start(); setTimeout(() => { o.stop(); a.close(); }, 110); }
+      } catch (e) { /* ignore */ }
+    },
+    async scanRetry(reader, file) {
+      try {
+        const bmp = await createImageBitmap(file);
+        for (const [scale, margin] of [[1, 0.35], [0.6, 0.25], [1.7, 0.2]]) {
+          const w = Math.round(bmp.width * scale), h = Math.round(bmp.height * scale), m = Math.round(Math.max(w, h) * margin);
+          const c = document.createElement('canvas'); c.width = w + 2 * m; c.height = h + 2 * m;
+          const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(bmp, m, m, w, h);
+          const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+          try { return await reader.scanFile(new File([blob], 'retry.png', { type: 'image/png' }), false); } catch (e) { /* next variant */ }
+        }
+      } catch (e) { /* image could not be re-drawn */ }
+      return null;
+    },
+    async scanFile(ev) {
+      const file = ev.target.files && ev.target.files[0]; ev.target.value = '';
+      if (!file) return;
+      this.scanErr = '';
+      try {
+        await this.loadScanLib();
+        const F = window.Html5QrcodeSupportedFormats;
+        const reader = new Html5Qrcode('tpxScanFile', { verbose: false, formatsToSupport: [F.QR_CODE, F.EAN_13, F.EAN_8, F.UPC_A, F.UPC_E, F.CODE_128, F.CODE_39] });
+        let text;
+        try { text = await reader.scanFile(file, false); }
+        catch (first) {
+          text = await this.scanRetry(reader, file);        // some photos only read once a white border or another size is added
+          if (text === null) throw first;
+        }
+        try { reader.clear(); } catch (e) { /* ignore */ }
+        this.scanLast = null; this.onScanned(text);
+      } catch (e) { this.scanErr = 'No QR code or barcode could be read from that photo — try again, closer and in good light.'; }
+    },
+
     // Submit: every filled row goes to the cart (catalogue items at the memo rate, the rest as free items).
     memoSubmit() {
       if (this.listening) this.stopVoice();

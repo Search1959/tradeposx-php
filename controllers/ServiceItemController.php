@@ -112,9 +112,9 @@ class ServiceItemController {
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="service_item_import_template.csv"');
         $out = fopen('php://output', 'w');
-        fputcsv($out, ['name', 'category', 'sector', 'price', 'duration_minutes', 'gst_percent', 'warranty_days', 'description', 'stock_qty']);
+        fputcsv($out, ['name', 'category', 'sector', 'price', 'duration_minutes', 'gst_percent', 'warranty_days', 'description', 'stock_qty', 'code']);
         fputcsv($out, ['Haircut (Men)', 'Hair', 'SALON', '200', '30', '18', '0', 'Standard men\'s haircut', '']);
-        fputcsv($out, ['Type-C Charger', 'Accessories', 'REPAIR_SHOP', '399', '', '18', '30', 'A stock item: fill stock_qty to track it', '25']);
+        fputcsv($out, ['Type-C Charger', 'Accessories', 'REPAIR_SHOP', '399', '', '18', '30', 'A stock item: fill stock_qty to track it', '25', '8901234567890']);
         fclose($out);
     }
 
@@ -193,6 +193,7 @@ class ServiceItemController {
                         $gstRaw = $row['gst_percent'] ?? '';
                         $warrantyRaw = $row['warranty_days'] ?? '';
                         $stockRaw = $row['stock_qty'] ?? '';
+                        $codeRaw = trim((string) ($row['code'] ?? $row['barcode'] ?? $row['item_code'] ?? ''));
                         $data = [
                             'name' => $name,
                             'category' => $row['category'] ?? '',
@@ -208,6 +209,7 @@ class ServiceItemController {
                         if ($existing) {
                             $this->model->updateFromImportMerge($org['id'], (int) $existing['id'], $existing, $data);
                             if ($stockRaw !== '') $this->model->setStock($org['id'], (int) $existing['id'], (float) $stockRaw);
+                            if ($codeRaw !== '') $this->model->setCode($org['id'], (int) $existing['id'], $codeRaw);
                             $updated++;
                         } else {
                             // A blank gst_percent cell on a brand-new row silently becomes 0%
@@ -228,6 +230,7 @@ class ServiceItemController {
                                 'description' => $data['description'] ?: null,
                                 'item_type' => $stockRaw !== '' ? 'STOCK' : 'SERVICE',
                                 'stock_qty' => $stockRaw !== '' ? (float) $stockRaw : null,
+                                'code' => $codeRaw,
                             ]);
                             $created++;
                         }

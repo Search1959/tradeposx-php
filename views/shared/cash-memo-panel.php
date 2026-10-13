@@ -5,6 +5,9 @@
   <!-- Speak one item → it appears in the box → check/edit → press Add → repeat for the next item. -->
   <div class="rounded-xl border border-indigo-200 bg-gradient-to-b from-indigo-50 to-white p-4 mb-3">
     <div class="flex items-stretch gap-2">
+      <button type="button" @click="openScan()" class="shrink-0 flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-900 text-white font-semibold text-sm rounded-lg px-3.5 py-3 shadow transition" aria-label="Scan product QR code or barcode">
+        <span class="text-xl leading-none">📷</span><span class="hidden sm:inline">Scan</span>
+      </button>
       <button type="button" x-show="voiceSupported" @click="toggleVoice()"
               :class="listening ? 'bg-red-600 animate-pulse' : 'bg-indigo-600 hover:bg-indigo-700'"
               class="shrink-0 flex items-center justify-center gap-2 text-white font-semibold text-sm rounded-lg px-4 py-3 shadow transition"
@@ -27,7 +30,7 @@
     </div>
     <p x-show="!voiceSupported" class="text-xs text-amber-700 mt-2">Voice works in Chrome or Edge — you can type in the box instead.</p>
     <div x-show="voiceError" x-cloak class="text-xs text-red-600 mt-2" x-text="voiceError"></div>
-    <span class="block text-[10px] text-slate-300 mt-1 text-right">memo v10</span>
+    <span class="block text-[10px] text-slate-300 mt-1 text-right">memo v11</span>
   </div>
   <div x-show="memoMsg" x-cloak class="mb-2 text-sm text-emerald-700" x-text="memoMsg"></div>
 
@@ -41,8 +44,11 @@
       <template x-for="(r, i) in memoRows" :key="r.k">
         <div class="px-3 py-2" :class="r.error ? 'bg-red-50' : ''" :data-memo-err="r.error ? '1' : null">
           <div class="grid grid-cols-[4rem_1fr_4.75rem_1.5rem] xl:grid-cols-[1fr_4rem_5rem_5rem_1.5rem] gap-2 items-center">
-            <input type="text" list="memoItems" data-memo-item x-model="r.item" @change="matchRow(r)" @blur="matchRow(r)" placeholder="Item name"
-                   class="col-span-4 xl:col-span-1 min-w-0 rounded border border-slate-300 px-2 py-1.5 text-sm">
+            <div class="relative col-span-4 xl:col-span-1 min-w-0">
+              <input type="text" list="memoItems" data-memo-item x-model="r.item" @change="matchRow(r)" @blur="matchRow(r)" placeholder="Item name"
+                     class="w-full min-w-0 rounded border border-slate-300 pl-2 pr-9 py-1.5 text-sm">
+              <button type="button" @click="openScan(r.k)" class="absolute inset-y-0 right-0 w-9 flex items-center justify-center text-slate-400 hover:text-indigo-600" aria-label="Scan this item" title="Scan this item">📷</button>
+            </div>
             <input type="number" step="any" min="0" x-model.number="r.qty" @input="r.guess = null" placeholder="1" class="w-full rounded border border-slate-300 px-2 py-1.5 text-sm text-right">
             <input type="number" step="0.01" min="0" x-model.number="r.rate" @input="r.guess = null" @keydown.enter.prevent="memoEnter(i)" placeholder="0.00" class="w-full rounded border border-slate-300 px-2 py-1.5 text-sm text-right">
             <div class="text-sm font-semibold text-right" x-text="memoAmount(r) > 0 ? '₹' + memoAmount(r).toFixed(2) : ''"></div>
@@ -86,6 +92,7 @@
       <div class="text-sm text-slate-600">Memo total <span class="font-bold text-slate-900" x-text="'₹' + memoTotal().toFixed(2)"></span></div>
     </div>
   </div>
+  <?php require __DIR__ . '/scan-modal.php'; ?>
   <div x-show="memoErr" x-cloak class="mt-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2" x-text="memoErr"></div>
   <button type="button" @click="memoSubmit()" class="mt-3 w-full bg-indigo-600 text-white font-semibold py-2.5 rounded-lg hover:bg-indigo-700">Add to cart →</button>
 </div>
