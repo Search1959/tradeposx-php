@@ -29,6 +29,9 @@ $gstBreakdown = $isGst ? gstBreakdownByRate($sale['items'], $sale['tax_type'] ==
         <button type="button" data-msg="<?= h($billMsg) ?>" onclick="sendBillOnWhatsApp(this)"
                 class="bg-green-600 text-white text-sm px-3 py-1.5 rounded hover:bg-green-700">💬 WhatsApp</button>
       <?php endif; ?>
+      <button type="button" onclick="tpxShareBill('image')" class="bg-emerald-700 text-white text-sm px-3 py-1.5 rounded hover:bg-emerald-800" title="Send the bill as a picture on WhatsApp">🖼 Image</button>
+      <button type="button" onclick="tpxShareBill('pdf')" class="bg-emerald-700 text-white text-sm px-3 py-1.5 rounded hover:bg-emerald-800" title="Send the bill as a PDF on WhatsApp">📄 PDF</button>
+
       <?php if ($isAdmin): ?>
       <form method="POST" action="<?= $base ?>/sales/delete/<?= (int)$sale['id'] ?>" onsubmit="return confirm('Delete invoice <?= h($sale['sale_number']) ?> permanently?\n\nStock and Udhaar are put back. This cannot be undone.');">
         <?= CsrfHelper::getField() ?>
@@ -161,6 +164,12 @@ $gstBreakdown = $isGst ? gstBreakdownByRate($sale['items'], $sale['tax_type'] ==
   </div>
 </div>
 
+<?php
+require_once __DIR__ . '/../../shared/bill-share-data.php';
+$billShareUpi = (string) ((new Organization())->find((int) $org['id'])['upi_id'] ?? '');
+$billShare = billShareFromSale($org, $sale, $isGst, $docTitle, $taxableDisplay, $gstBreakdown, $cgstDisplay, $sgstDisplay, $owed, $billShareUpi);
+require __DIR__ . '/../../shared/bill-share.php';
+?>
 <script>
 function sendBillOnWhatsApp(btn) {
   const n = prompt("Customer's WhatsApp number (10 digits). Leave empty to choose the contact inside WhatsApp.");
