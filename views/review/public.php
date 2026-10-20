@@ -82,6 +82,17 @@
       <button class="btn ghost" id="again" type="button"></button>
     </div>
 
+    <div id="step4" hidden>
+      <div class="label" id="goTitle" style="margin-top:4px;font-size:18px"></div>
+      <p class="sub" id="goHelp" style="margin-bottom:10px"></p>
+      <textarea id="goText" rows="5" readonly></textarea>
+      <button class="btn ghost" id="goCopy" type="button" style="margin-top:8px"></button>
+      <p class="err" id="goManual" hidden style="color:#92400e"></p>
+      <ol id="goSteps" style="padding-left:20px;margin:14px 0;line-height:1.7;font-size:15px"></ol>
+      <a class="btn google" id="goOpen" href="#" target="_blank" rel="noopener"></a>
+      <button class="btn ghost" id="goBack" type="button"></button>
+    </div>
+
     <a class="btn ghost" id="own" href="#" target="_blank" rel="noopener" style="margin-top:18px" hidden></a>
   </div>
   <p class="foot">ReviewDesk · TradePOSX</p>
@@ -93,13 +104,16 @@ const RD = <?= json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | J
 const T = {
   en: { intro: 'How was your visit?', rate: ['Poor', 'Fair', 'Okay', 'Good', 'Excellent'], pos: 'What did you like?', neg: 'What could be better?', note: 'Anything to add? (optional)', ph: 'A few words in your own style…', suggest: 'Suggest a review', working: 'Writing…', pick: 'Pick a suggestion and edit it so it says what you really felt:', opt: 'Option',
         disclose: 'These suggestions are written by AI from the choices you tapped. Please edit them so they match your real experience. You post the review yourself, from your own Google account.', post: 'Copy & Post on Google', again: 'Start again', own: 'Write it myself on Google',
-        copied: 'Copied! Paste it in the Google review box.', needOne: 'Please pick at least one option or write a short note.', fail: 'Could not get suggestions. You can still write your own review on Google.', noLink: 'The Google link is not set up yet.', lang: 'Language' },
+        copied: 'Copied! Paste it in the Google review box.', needOne: 'Please pick at least one option or write a short note.', fail: 'Could not get suggestions. You can still write your own review on Google.', noLink: 'The Google link is not set up yet.', lang: 'Language',
+        goTitle: 'Your review is copied', goHelp: 'Google cannot fill the text in for you, so you paste it yourself:', goSteps: ['Tap “Open Google” below.', 'Choose your stars and tap the review box.', 'Press and hold in the box, then tap “Paste”.', 'Tap “Post”.'], goOpen: 'Open Google', goCopy: 'Copy text again', goBack: '← Edit my review', goCopiedNow: 'Copied ✓', goManual: 'Press and hold the text above, choose Select all, then Copy.' },
   hi: { intro: 'आपका अनुभव कैसा रहा?', rate: ['ख़राब', 'ठीक-ठाक', 'औसत', 'अच्छा', 'बहुत बढ़िया'], pos: 'आपको क्या अच्छा लगा?', neg: 'क्या बेहतर हो सकता है?', note: 'कुछ और जोड़ना है? (वैकल्पिक)', ph: 'अपने शब्दों में कुछ पंक्तियाँ…', suggest: 'रिव्यू सुझाएँ', working: 'लिख रहे हैं…', pick: 'एक सुझाव चुनें और उसे अपने असली अनुभव के अनुसार बदलें:', opt: 'विकल्प',
         disclose: 'ये सुझाव आपके चुने विकल्पों के आधार पर AI ने लिखे हैं। कृपया इन्हें अपने असली अनुभव के अनुसार बदलें। रिव्यू आप खुद, अपने Google अकाउंट से पोस्ट करेंगे।', post: 'कॉपी करें और Google पर पोस्ट करें', again: 'फिर से शुरू करें', own: 'मैं खुद Google पर लिखूँगा/लिखूँगी',
-        copied: 'कॉपी हो गया! इसे Google रिव्यू बॉक्स में पेस्ट करें।', needOne: 'कृपया कम से कम एक विकल्प चुनें या छोटा नोट लिखें।', fail: 'सुझाव नहीं मिल पाए। आप फिर भी Google पर अपना रिव्यू लिख सकते हैं।', noLink: 'Google लिंक अभी सेट नहीं है।', lang: 'भाषा' },
+        copied: 'कॉपी हो गया! इसे Google रिव्यू बॉक्स में पेस्ट करें।', needOne: 'कृपया कम से कम एक विकल्प चुनें या छोटा नोट लिखें।', fail: 'सुझाव नहीं मिल पाए। आप फिर भी Google पर अपना रिव्यू लिख सकते हैं।', noLink: 'Google लिंक अभी सेट नहीं है।', lang: 'भाषा',
+        goTitle: 'आपका रिव्यू कॉपी हो गया', goHelp: 'Google टेक्स्ट अपने-आप नहीं भर सकता, इसलिए आप इसे खुद पेस्ट करें:', goSteps: ['नीचे “Google खोलें” दबाएँ।', 'स्टार चुनें और रिव्यू बॉक्स में टैप करें।', 'बॉक्स में उँगली दबाए रखें और “Paste / चिपकाएँ” दबाएँ।', '“Post / पोस्ट” दबाएँ।'], goOpen: 'Google खोलें', goCopy: 'टेक्स्ट फिर से कॉपी करें', goBack: '← रिव्यू बदलें', goCopiedNow: 'कॉपी हो गया ✓', goManual: 'ऊपर के टेक्स्ट पर उँगली दबाए रखें, “सभी चुनें” और फिर “कॉपी” दबाएँ।' },
   bn: { intro: 'আপনার অভিজ্ঞতা কেমন ছিল?', rate: ['খারাপ', 'মোটামুটি', 'ঠিকঠাক', 'ভালো', 'দারুণ'], pos: 'আপনার কী ভালো লেগেছে?', neg: 'কী আরও ভালো হতে পারত?', note: 'আর কিছু বলবেন? (ঐচ্ছিক)', ph: 'নিজের ভাষায় কয়েকটি কথা…', suggest: 'রিভিউ প্রস্তাব করুন', working: 'লেখা হচ্ছে…', pick: 'একটি প্রস্তাব বেছে নিন এবং নিজের আসল অভিজ্ঞতা অনুযায়ী বদলে নিন:', opt: 'বিকল্প',
         disclose: 'আপনার বেছে নেওয়া বিকল্পের ভিত্তিতে AI এই প্রস্তাবগুলি লিখেছে। অনুগ্রহ করে নিজের আসল অভিজ্ঞতা অনুযায়ী বদলে নিন। রিভিউ আপনি নিজেই, নিজের Google অ্যাকাউন্ট থেকে পোস্ট করবেন।', post: 'কপি করে Google-এ পোস্ট করুন', again: 'আবার শুরু করুন', own: 'আমি নিজে Google-এ লিখব',
-        copied: 'কপি হয়েছে! Google রিভিউ বক্সে পেস্ট করুন।', needOne: 'অন্তত একটি বিকল্প বেছে নিন বা ছোট একটি নোট লিখুন।', fail: 'প্রস্তাব পাওয়া যায়নি। আপনি তবুও Google-এ নিজের রিভিউ লিখতে পারেন।', noLink: 'Google লিংক এখনও সেট করা হয়নি।', lang: 'ভাষা' }
+        copied: 'কপি হয়েছে! Google রিভিউ বক্সে পেস্ট করুন।', needOne: 'অন্তত একটি বিকল্প বেছে নিন বা ছোট একটি নোট লিখুন।', fail: 'প্রস্তাব পাওয়া যায়নি। আপনি তবুও Google-এ নিজের রিভিউ লিখতে পারেন।', noLink: 'Google লিংক এখনও সেট করা হয়নি।', lang: 'ভাষা',
+        goTitle: 'আপনার রিভিউ কপি হয়েছে', goHelp: 'Google নিজে থেকে লেখা বসাতে পারে না, তাই আপনি নিজে পেস্ট করুন:', goSteps: ['নিচে “Google খুলুন” চাপুন।', 'স্টার বেছে রিভিউ বক্সে ট্যাপ করুন।', 'বক্সে চেপে ধরে রেখে “Paste / পেস্ট” চাপুন।', '“Post / পোস্ট” চাপুন।'], goOpen: 'Google খুলুন', goCopy: 'লেখা আবার কপি করুন', goBack: '← রিভিউ বদলান', goCopiedNow: 'কপি হয়েছে ✓', goManual: 'উপরের লেখায় চেপে ধরে “সব বেছে নিন”, তারপর “কপি” চাপুন।' }
 };
 const LANG_NAME = { en: 'English', hi: 'हिन्दी', bn: 'বাংলা' };
 const $ = id => document.getElementById(id);
@@ -116,6 +130,8 @@ function renderStatic() {
   $('note').placeholder = tx('ph'); $('suggest').textContent = st.busy ? tx('working') : tx('suggest');
   $('pickLabel').textContent = tx('pick'); $('disclose').textContent = tx('disclose'); $('post').textContent = tx('post'); $('again').textContent = tx('again');
   $('own').textContent = tx('own');
+  $('goTitle').textContent = tx('goTitle'); $('goHelp').textContent = tx('goHelp'); $('goOpen').textContent = tx('goOpen'); $('goCopy').textContent = tx('goCopy'); $('goBack').textContent = tx('goBack'); $('goManual').textContent = tx('goManual');
+  $('goSteps').innerHTML = tx('goSteps').map(s => `<li>${esc(s)}</li>`).join('');
   $('langs').innerHTML = RD.langs.length > 1 ? RD.langs.map(l => `<button type="button" class="pill" data-lang="${l}" aria-pressed="${l === st.lang}">${LANG_NAME[l]}</button>`).join('') : '';
   $('stars').innerHTML = [1, 2, 3, 4, 5].map(n => `<button type="button" class="star${n <= st.rating ? ' on' : ''}" data-n="${n}" role="radio" aria-checked="${n === st.rating}" aria-label="${n} — ${tx('rate')[n - 1]}"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z" stroke-linejoin="round"/></svg></button>`).join('');
   renderChips();
@@ -143,11 +159,11 @@ function setOwnLink() {
 
 document.addEventListener('click', async e => {
   const t = e.target.closest('button, a'); if (!t) return;
-  if (t.dataset.lang) { st.lang = t.dataset.lang; st.drafts = []; st.edits = []; $('step3').hidden = true; renderStatic(); return; }
-  if (t.classList.contains('star')) { st.rating = +t.dataset.n; st.chips.clear(); st.drafts = []; $('step3').hidden = true; $('step2').hidden = false; showErr(''); renderStatic(); return; }
+  if (t.dataset.lang) { st.lang = t.dataset.lang; st.drafts = []; st.edits = []; $('step3').hidden = true; $('step4').hidden = true; setOwnLink(); renderStatic(); return; }
+  if (t.classList.contains('star')) { st.rating = +t.dataset.n; st.chips.clear(); st.drafts = []; $('step3').hidden = true; $('step4').hidden = true; setOwnLink(); $('step2').hidden = false; showErr(''); renderStatic(); return; }
   if (t.classList.contains('chip')) { const c = t.dataset.chip; st.chips.has(c) ? st.chips.delete(c) : st.chips.add(c); t.setAttribute('aria-pressed', st.chips.has(c)); return; }
   if (t.dataset.opt !== undefined) { st.edits[st.active] = $('draft').value; st.active = +t.dataset.opt; renderOptions(); return; }
-  if (t.id === 'again') { st.rating = 0; st.chips.clear(); st.drafts = []; st.edits = []; $('note').value = ''; $('noteCount').textContent = '0'; $('step2').hidden = true; $('step3').hidden = true; renderStatic(); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+  if (t.id === 'again') { st.rating = 0; st.chips.clear(); st.drafts = []; st.edits = []; $('note').value = ''; $('noteCount').textContent = '0'; $('step2').hidden = true; $('step3').hidden = true; $('step4').hidden = true; setOwnLink(); renderStatic(); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
   if (t.id === 'own') {   // writing their own review is always possible, for every rating
     if (!RD.writeUrl) { e.preventDefault(); toast(tx('noLink')); return; }
     api('click', { rating: st.rating || null, lang: st.lang, mode: 'own' }); return;
@@ -167,15 +183,31 @@ document.addEventListener('click', async e => {
   if (t.id === 'post') {
     const text = $('draft').value.trim(); if (!text) return;
     st.edits[st.active] = text;
-    const done = () => toast(tx('copied'));
-    // copy first, then open Google — both inside the tap so phones do not block the new tab
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => { fallbackCopy(text); done(); });
-    else { fallbackCopy(text); done(); }
-    api('click', { rating: st.rating, lang: st.lang, mode: 'draft' });
-    if (RD.writeUrl) window.open(RD.writeUrl, '_blank', 'noopener'); else toast(tx('noLink'));
+    if (!RD.writeUrl) { toast(tx('noLink')); return; }
+    // Google cannot be pre-filled from a link, so: copy, then show a clear "paste it there" step with a separate Open Google tap.
+    $('goText').value = text; $('goManual').hidden = true; $('goTitle').hidden = false; $('goCopy').textContent = tx('goCopy');
+    $('goOpen').href = RD.writeUrl;
+    $('step2').hidden = true; $('step3').hidden = true; $('step4').hidden = false; $('own').hidden = true;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    copyText(text).then(showCopyResult);
+    return;
+  }
+  if (t.id === 'goCopy') { showCopyResult(await copyText($('goText').value), true); return; }
+  if (t.id === 'goBack') { $('step4').hidden = true; $('step2').hidden = false; $('step3').hidden = false; setOwnLink(); return; }
+  if (t.id === 'goOpen') {   // copy once more right before leaving, in case the phone cleared it, and count the click
+    copyText($('goText').value); api('click', { rating: st.rating, lang: st.lang, mode: 'draft' }); return;
   }
 });
-function fallbackCopy(text) { const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e) {} ta.remove(); }
+function showCopyResult(ok, again) {
+  $('goTitle').hidden = !ok; $('goManual').hidden = ok;
+  if (again) $('goCopy').textContent = ok ? tx('goCopiedNow') : tx('goCopy');
+  if (!ok) { $('goText').focus(); $('goText').select(); }
+}
+function copyText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text).then(() => true, () => fallbackCopy(text));
+  return Promise.resolve(fallbackCopy(text));
+}
+function fallbackCopy(text) { const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.focus(); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (e) {} ta.remove(); return ok; }
 $('note').addEventListener('input', () => { $('noteCount').textContent = $('note').value.length; });
 $('draft').addEventListener('input', () => { st.edits[st.active] = $('draft').value; });
 renderStatic(); setOwnLink();
