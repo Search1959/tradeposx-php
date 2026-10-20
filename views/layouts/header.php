@@ -92,6 +92,7 @@ $navGroups = $isTrade ? [
     ],
     'Grow' => [['Customer Outreach', '/outreach', 'chat', ['outreach']]],
 ];
+if ($isAdmin) $navGroups['Grow'][] = ['Google Reviews', '/reviewdesk', 'star', ['reviewdesk']];
 $navGroups['Account'] = [['Account & Password', '/settings', 'lock', ['settings']]];
 if ($isAdmin) {
     $navGroups['System'] = [

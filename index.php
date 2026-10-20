@@ -54,6 +54,13 @@ function dispatch(string $controllerName, string $actionRaw, ?string $param = nu
     $controller->$action($param);
 }
 
+// Public customer review page: /review/{shop-slug}[/draft|/click] — the slug is the action-param, the sub-action is optional.
+if ($firstSegment === 'review') {
+    $sub = strtolower($parts[2] ?? 'show');
+    dispatch('ReviewController', in_array($sub, ['draft', 'click'], true) ? $sub : 'show', $parts[1] ?? null);
+    exit;
+}
+
 if (isset($platformRouteMap[$firstSegment])) {
     $defaultAction = $platformDefaultAction[$firstSegment] ?? 'index';
     dispatch($platformRouteMap[$firstSegment], $parts[1] ?? $defaultAction, $parts[2] ?? null);
@@ -104,6 +111,7 @@ $tenantRouteMap = [
     'pos-mobile'         => 'MobilePosController',
     // Shared across both modules — review/promotion WhatsApp campaigns
     'outreach'           => 'OutreachController',
+    'reviewdesk'         => 'ReviewDeskController',
     // Platform-within-tenant
     'settings'           => 'SettingsController',
     // System Admin (owner/admin only — team accounts, audit trail)
@@ -135,6 +143,7 @@ $moduleDefaultAction = [
     'service-quotations' => 'list',
     'pos-mobile'         => 'index',
     'outreach'           => 'list',
+    'reviewdesk'         => 'index',
     'settings'           => 'index',
     'team'               => 'list',
     'activity-log'       => 'list',
