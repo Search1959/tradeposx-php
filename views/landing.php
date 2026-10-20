@@ -69,7 +69,7 @@ $featureCards = [
     ['search', 'teal', 'AI photo scan', 'Photograph a menu, rate card or supplier bill — review the extracted items, then save.'],
     ['phone', 'indigo', 'Installable on your phone', 'Add to home screen and bill from a card-tap mobile POS, built for one-handed use.'],
     ['chart', 'emerald', 'Reports & profit', 'Daily sales, top products, income vs expenses and real margin — computed from your own data.'],
-    ['chat', 'sky', 'Customer outreach', 'Send review requests and promotions to every customer you have captured at the counter.'],
+    ['chat', 'sky', 'Google reviews & outreach', 'A counter QR for genuine Google reviews, plus WhatsApp promotions to customers you have captured at the counter.'],
     ['shield', 'slate', 'Team roles & audit log', 'Owner, admin and staff access, with an activity log of who changed what.'],
     ['cash', 'amber', 'Expenses', 'Track spending by head and see profit after expenses, not just sales.'],
 ];
@@ -103,6 +103,7 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
       <nav class="hidden md:flex items-center gap-7 text-sm text-slate-300">
         <a href="#engines" class="hover:text-white">TradeERP &amp; ServiceERP</a>
         <a href="#features" class="hover:text-white">Features</a>
+        <a href="#reviews" class="hover:text-white">Google Reviews</a>
         <a href="#how" class="hover:text-white">How it works</a>
         <a href="#faq" class="hover:text-white">FAQ</a>
       </nav>
@@ -115,6 +116,7 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
     <div x-show="nav" x-cloak class="md:hidden border-t border-white/5 px-4 py-3 text-sm text-slate-300 grid gap-1">
       <a @click="nav=false" href="#engines" class="py-2">TradeERP &amp; ServiceERP</a>
       <a @click="nav=false" href="#features" class="py-2">Features</a>
+      <a @click="nav=false" href="#reviews" class="py-2">Google Reviews</a>
       <a @click="nav=false" href="#how" class="py-2">How it works</a>
       <a @click="nav=false" href="#faq" class="py-2">FAQ</a>
       <a href="/login/demo" class="py-2 font-semibold text-emerald-300">Try the live demo</a>
@@ -157,6 +159,7 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
           ['Job cards',        'Track every repair from pending to delivered.'],
           ['Reports & profit', 'Sales, expenses and real profit from your own data.'],
           ['Quick Sale',       'One-handed mobile POS that keeps working offline.'],
+          ['Google reviews',   'Customers scan your counter QR, tap stars, edit a suggested review and post it on Google.'],
         ];
         // Illustrative QR-style graphic for the UPI slide (not a scannable code).
         mt_srand(11); $qrN = 25; $qr = [];
@@ -487,6 +490,30 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
               <span class="text-[10px] font-semibold">3 items · ₹411</span><span class="text-[10px] font-bold">View cart →</span>
             </div>
           </div>
+
+          <!-- 11 · Google reviews (counter QR) -->
+          <div :class="i === 10 ? 'opacity-100' : 'opacity-0 pointer-events-none'" :aria-hidden="i !== 10" class="transition-opacity motion-reduce:transition-none duration-300 absolute inset-0 flex flex-col bg-slate-100">
+            <div class="bg-white px-4 pt-4 pb-3 flex items-center justify-between border-b border-slate-200">
+              <div><div class="text-[11px] font-semibold leading-none">Google Reviews</div><div class="text-[9px] text-slate-500 mt-1">Counter QR · Sharma Traders</div></div>
+              <div class="rounded-lg bg-indigo-600 text-white text-[9px] font-semibold px-2.5 py-1.5">Print</div>
+            </div>
+            <div class="flex-1 p-3 flex flex-col items-center overflow-hidden">
+              <div class="w-full rounded-2xl bg-white border border-slate-200 shadow-sm p-3 text-center">
+                <div class="mx-auto w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-emerald-500 text-white text-sm font-bold flex items-center justify-center">S</div>
+                <div class="text-[12px] font-bold mt-1.5">Sharma Traders</div>
+                <div class="text-[8px] text-slate-500 mt-0.5">Share your experience on Google</div>
+                <div class="mx-auto mt-2 w-28 h-28 p-1.5 border-2 border-slate-900 rounded-xl"><?= $qrSvg ?></div>
+                <div class="text-amber-500 text-[13px] tracking-widest mt-1.5">★★★★★</div>
+                <div class="text-[8px] text-slate-500">Scan · tap stars · edit · post</div>
+              </div>
+              <div class="w-full grid grid-cols-3 gap-1.5 mt-2.5 text-center">
+                <div class="rounded-lg bg-white border border-slate-200 py-1.5"><div class="text-[12px] font-bold">128</div><div class="text-[7px] text-slate-500">QR scans</div></div>
+                <div class="rounded-lg bg-white border border-slate-200 py-1.5"><div class="text-[12px] font-bold">74</div><div class="text-[7px] text-slate-500">Suggestions</div></div>
+                <div class="rounded-lg bg-white border border-slate-200 py-1.5"><div class="text-[12px] font-bold text-emerald-600">41</div><div class="text-[7px] text-slate-500">Sent to Google</div></div>
+              </div>
+              <div class="w-full rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-[8px] px-2 py-1.5 mt-2">Every rating can go to Google. Customers post it themselves.</div>
+            </div>
+          </div>
         </div>
 
         <div class="mt-3 text-center text-[10px] text-slate-600">Sample business and sample data</div>
@@ -557,6 +584,39 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
             <p class="mt-1.5 text-sm text-slate-400 leading-relaxed"><?= h($f[3]) ?></p>
           </div>
         <?php endforeach; ?>
+      </div>
+    </div>
+  </section>
+
+  <!-- Google reviews (ReviewDesk) -->
+  <section id="reviews" class="max-w-6xl mx-auto px-4 py-14 md:py-20 scroll-mt-16">
+    <div class="grid md:grid-cols-2 gap-10 items-center">
+      <div>
+        <div class="text-xs font-semibold tracking-widest uppercase text-amber-300">Google Reviews</div>
+        <h2 class="mt-2 text-3xl md:text-4xl font-bold tracking-tight">Get more genuine Google reviews from happy customers</h2>
+        <p class="mt-3 text-slate-400">Put a QR on your counter. Customers scan it, tap the stars and what they liked, and get a short suggested review in English, Hindi or Bengali. They edit it and post it themselves on Google.</p>
+        <ul class="mt-6 space-y-3 text-sm text-slate-300">
+          <li class="flex items-start gap-2.5"><span class="mt-0.5 text-emerald-400"><?= uiIcon('check', 'w-5 h-5') ?></span><span><b class="text-white">Honest by design.</b> Every rating, 1 to 5 stars, can go to Google. No hiding unhappy customers, no rewards for reviews.</span></li>
+          <li class="flex items-start gap-2.5"><span class="mt-0.5 text-emerald-400"><?= uiIcon('check', 'w-5 h-5') ?></span><span><b class="text-white">Their words, their account.</b> The suggestion uses only what the customer tapped or typed, and it is never posted for them.</span></li>
+          <li class="flex items-start gap-2.5"><span class="mt-0.5 text-emerald-400"><?= uiIcon('check', 'w-5 h-5') ?></span><span><b class="text-white">Print and go.</b> A6 counter stand and sticker sheet, one QR per branch or per team member.</span></li>
+          <li class="flex items-start gap-2.5"><span class="mt-0.5 text-emerald-400"><?= uiIcon('check', 'w-5 h-5') ?></span><span><b class="text-white">Built into your POS.</b> Included in every TradeERP and ServiceERP workspace.</span></li>
+        </ul>
+        <div class="mt-7 flex flex-col sm:flex-row gap-3">
+          <a href="/login/demo" class="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 rounded-xl px-6 py-3 text-sm font-semibold">See it in the live demo <?= uiIcon('arrow', 'w-4 h-4') ?></a>
+          <a href="/login" class="inline-flex items-center justify-center border border-white/15 hover:bg-white/5 rounded-xl px-6 py-3 text-sm font-semibold">Login or register</a>
+        </div>
+      </div>
+      <div class="relative mx-auto w-full max-w-sm">
+        <div class="absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-amber-500/15 to-indigo-500/10 blur-2xl pointer-events-none" aria-hidden="true"></div>
+        <div class="relative rounded-3xl bg-white text-slate-900 shadow-2xl p-6 text-center">
+          <div class="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-emerald-500 text-white text-2xl font-bold flex items-center justify-center">S</div>
+          <div class="text-xl font-bold mt-3">Sharma Traders</div>
+          <div class="text-sm text-slate-600 mt-1">Share your experience on Google</div>
+          <div class="mx-auto mt-4 w-48 h-48 p-3 border-[3px] border-slate-900 rounded-2xl"><?= $qrSvg ?></div>
+          <div class="text-amber-500 text-2xl tracking-widest mt-3" aria-hidden="true">★★★★★</div>
+          <div class="text-xs text-slate-500">Scan · tap stars · edit · post</div>
+        </div>
+        <p class="relative mt-3 text-center text-[11px] text-slate-500">Sample counter stand. Your own QR is generated in the app.</p>
       </div>
     </div>
   </section>
