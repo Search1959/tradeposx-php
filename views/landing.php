@@ -126,7 +126,7 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
   <!-- Hero -->
   <section class="relative overflow-hidden">
     <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(60% 50% at 80% 0%, rgba(99,102,241,.22), transparent 70%), radial-gradient(50% 40% at 0% 30%, rgba(16,185,129,.12), transparent 70%)"></div>
-    <div class="relative max-w-6xl mx-auto px-4 pt-10 pb-14 md:pt-14 md:pb-20 grid md:grid-cols-[1.05fr_0.95fr] gap-10 lg:gap-16 items-center">
+    <div class="relative max-w-6xl mx-auto px-4 pt-10 pb-14 md:pt-14 md:pb-20 grid md:grid-cols-[1.05fr_0.95fr] gap-10 lg:gap-16 items-start">
       <div>
         <span class="inline-flex items-center gap-2 text-[11px] font-semibold tracking-widest uppercase text-indigo-300 bg-indigo-500/10 border border-indigo-400/20 rounded-full px-3 py-1">POS &amp; business management for India</span>
         <h1 class="mt-5 text-4xl sm:text-5xl font-extrabold leading-[1.08] tracking-tight text-balance">
@@ -144,6 +144,21 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
           <a href="/login" class="inline-flex items-center justify-center border border-white/15 hover:bg-white/5 rounded-xl px-6 py-3.5 text-base font-semibold">Login or register</a>
         </div>
         <p class="mt-4 text-xs text-slate-500">No signup needed to explore — sample business with products, customers and sales.</p>
+
+        <!-- What makes it different: every tile is a screen that exists in the app -->
+        <div class="mt-8 grid grid-cols-1 min-[480px]:grid-cols-2 gap-3 max-w-xl">
+          <?php foreach ([
+              ['star', 'amber', 'Google Reviews QR', 'Counter QR that helps customers post genuine reviews.', '#reviews'],
+              ['phone', 'emerald', 'Works offline', 'Keep billing with no internet — sales sync later.', '#features'],
+              ['chat', 'sky', 'Bills on WhatsApp', 'Send each bill as a PDF or image in one tap.', '#features'],
+              ['users', 'rose', 'Udhaar reminders', 'See who owes what and remind them on WhatsApp.', '#features'],
+          ] as [$ic, $tint, $ttl, $dsc, $href]): ?>
+            <a href="<?= $href ?>" class="group flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/20 px-3.5 py-3 transition">
+              <span class="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center <?= $tints[$tint] ?>"><?= uiIcon($ic, 'w-5 h-5') ?></span>
+              <span class="min-w-0"><span class="block text-sm font-semibold"><?= h($ttl) ?></span><span class="block text-xs text-slate-400 leading-snug mt-0.5"><?= h($dsc) ?></span></span>
+            </a>
+          <?php endforeach; ?>
+        </div>
       </div>
 
       <!-- Product tour: ten real screens of the app in a phone frame (sample data) -->
