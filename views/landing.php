@@ -126,10 +126,10 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
   <!-- Hero -->
   <section class="relative overflow-hidden">
     <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(60% 50% at 80% 0%, rgba(99,102,241,.22), transparent 70%), radial-gradient(50% 40% at 0% 30%, rgba(16,185,129,.12), transparent 70%)"></div>
-    <div class="relative max-w-6xl mx-auto px-4 pt-10 pb-14 md:pt-16 md:pb-20 grid md:grid-cols-2 gap-10 items-center">
+    <div class="relative max-w-6xl mx-auto px-4 pt-10 pb-14 md:pt-14 md:pb-20 grid md:grid-cols-[1.05fr_0.95fr] gap-10 lg:gap-16 items-center">
       <div>
         <span class="inline-flex items-center gap-2 text-[11px] font-semibold tracking-widest uppercase text-indigo-300 bg-indigo-500/10 border border-indigo-400/20 rounded-full px-3 py-1">POS &amp; business management for India</span>
-        <h1 class="mt-5 text-4xl sm:text-5xl font-extrabold leading-[1.08] tracking-tight">
+        <h1 class="mt-5 text-4xl sm:text-5xl font-extrabold leading-[1.08] tracking-tight text-balance">
           Bill faster. Collect dues.
           <span class="bg-gradient-to-r from-indigo-400 to-emerald-400 bg-clip-text text-transparent">Run it all from your phone.</span>
         </h1>
@@ -182,26 +182,6 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
            @keydown.left.prevent="go(i - 1)" @keydown.right.prevent="go(i + 1)" role="region" aria-roledescription="carousel" aria-label="TradePOSX screens">
         <div class="absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-indigo-500/20 to-emerald-500/10 blur-2xl pointer-events-none" aria-hidden="true"></div>
 
-        <!-- Caption + controls -->
-        <div class="relative z-10 text-center min-h-[3.5rem]" aria-live="polite">
-          <?php foreach ($tour as $k => $t): ?>
-            <div x-show="i === <?= $k ?>" <?= $k ? 'x-cloak' : '' ?>>
-              <div class="text-sm font-semibold"><span class="text-indigo-300"><?= $k + 1 ?>/<?= count($tour) ?></span> · <?= h($t[0]) ?></div>
-              <div class="text-xs text-slate-400 mt-0.5"><?= h($t[1]) ?></div>
-            </div>
-          <?php endforeach; ?>
-        </div>
-        <div class="relative z-10 mt-3 flex items-center justify-center gap-3" @focusin="paused = true" @focusout="paused = false">
-          <button type="button" @click="go(i - 1)" class="w-8 h-8 rounded-full border border-white/15 hover:bg-white/10 text-slate-300 flex items-center justify-center" aria-label="Previous screen">‹</button>
-          <div class="flex items-center gap-1.5">
-            <?php foreach ($tour as $k => $t): ?>
-              <button type="button" @click="go(<?= $k ?>)" :class="i === <?= $k ?> ? 'w-5 bg-indigo-400' : 'w-1.5 bg-white/25 hover:bg-white/50'" class="h-1.5 rounded-full transition-all" aria-label="Show screen <?= $k + 1 ?>: <?= h($t[0]) ?>"></button>
-            <?php endforeach; ?>
-          </div>
-          <button type="button" @click="go(i + 1)" class="w-8 h-8 rounded-full border border-white/15 hover:bg-white/10 text-slate-300 flex items-center justify-center" aria-label="Next screen">›</button>
-          <button type="button" @click="stopped = !stopped" :aria-pressed="stopped" :aria-label="stopped ? 'Play slideshow' : 'Pause slideshow'" class="w-8 h-8 rounded-full border border-white/15 hover:bg-white/10 text-slate-300 flex items-center justify-center text-[9px]" x-text="stopped ? '▶' : '❚❚'"></button>
-        </div>
-        <div class="relative z-10 mt-3 mb-5 mx-auto w-44 h-0.5 rounded-full bg-white/10 overflow-hidden" aria-hidden="true"><div class="h-full bg-indigo-400/80" :style="'width:' + (stopped ? 0 : Math.min(100, elapsed / dwell * 100)) + '%'"></div></div>
         <div class="relative rounded-[2.2rem] border-[7px] border-slate-800 bg-slate-100 text-slate-900 shadow-2xl overflow-hidden h-[34rem]" @mouseenter="paused = true" @mouseleave="paused = false">
 
           <!-- 1 · Dashboard -->
@@ -516,7 +496,29 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
           </div>
         </div>
 
-        <div class="mt-3 text-center text-[10px] text-slate-600">Sample business and sample data</div>
+        <!-- Caption + controls, under the phone -->
+        <div class="relative z-10 mt-5 rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur px-4 py-3.5">
+          <div class="min-h-[2.9rem]" aria-live="polite">
+            <?php foreach ($tour as $k => $t): ?>
+              <div x-show="i === <?= $k ?>" <?= $k ? 'x-cloak' : '' ?>>
+                <div class="text-sm font-semibold"><?= h($t[0]) ?> <span class="ml-1 text-[11px] font-medium text-slate-500"><?= $k + 1 ?> / <?= count($tour) ?></span></div>
+                <div class="text-xs text-slate-400 mt-0.5 leading-snug"><?= h($t[1]) ?></div>
+              </div>
+            <?php endforeach; ?>
+          </div>
+          <div class="mt-3 flex items-center gap-3" @focusin="paused = true" @focusout="paused = false">
+            <button type="button" @click="go(i - 1)" class="shrink-0 w-8 h-8 rounded-full border border-white/15 hover:bg-white/10 text-slate-300 flex items-center justify-center" aria-label="Previous screen">‹</button>
+            <div class="flex-1 flex items-center justify-center gap-1.5">
+              <?php foreach ($tour as $k => $t): ?>
+                <button type="button" @click="go(<?= $k ?>)" :class="i === <?= $k ?> ? 'w-5 bg-indigo-400' : 'w-1.5 bg-white/25 hover:bg-white/50'" class="h-1.5 rounded-full transition-all" aria-label="Show screen <?= $k + 1 ?>: <?= h($t[0]) ?>"></button>
+              <?php endforeach; ?>
+            </div>
+            <button type="button" @click="go(i + 1)" class="shrink-0 w-8 h-8 rounded-full border border-white/15 hover:bg-white/10 text-slate-300 flex items-center justify-center" aria-label="Next screen">›</button>
+            <button type="button" @click="stopped = !stopped" :aria-pressed="stopped" :aria-label="stopped ? 'Play slideshow' : 'Pause slideshow'" class="shrink-0 w-8 h-8 rounded-full border border-white/15 hover:bg-white/10 text-slate-300 flex items-center justify-center text-[9px]" x-text="stopped ? '▶' : '❚❚'"></button>
+          </div>
+          <div class="mt-3 h-0.5 rounded-full bg-white/10 overflow-hidden" aria-hidden="true"><div class="h-full bg-indigo-400/80" :style="'width:' + (stopped ? 0 : Math.min(100, elapsed / dwell * 100)) + '%'"></div></div>
+        </div>
+        <div class="relative mt-2.5 text-center text-[10px] text-slate-600">Sample business and sample data</div>
       </div>
 
     </div>
