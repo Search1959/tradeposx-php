@@ -15,6 +15,9 @@ class ReviewDesk extends BaseModel {
         parent::__construct();
         if (self::$ready) return;
         self::$ready = true;
+        // A scan is a hot public path: once the tables exist, skip the three CREATE TABLE round-trips on every page view.
+        $marker = dirname(__DIR__) . '/uploads/.review_schema_v1';
+        if (is_file($marker)) return;
         $this->db->exec("CREATE TABLE IF NOT EXISTS review_branches (
             id INT AUTO_INCREMENT PRIMARY KEY,
             org_id INT NOT NULL,
@@ -54,6 +57,7 @@ class ReviewDesk extends BaseModel {
             KEY idx_review_ev_ip (ip_hash, event, created_at),
             KEY idx_review_ev_dev (device_hash, event, created_at)
         ) DEFAULT CHARSET=utf8mb4");
+        @file_put_contents($marker, date('c'));
     }
 
     // ───────── branches ─────────

@@ -29,6 +29,9 @@ $shop = (string) $branch['name'];
   .stand .step { font-size: 3.6mm; color: #475569; margin-top: 1mm; }
   .stand .stars { font-size: 6mm; color: #f59e0b; letter-spacing: 1mm; margin-top: 2mm; }
   .stand .foot { margin-top: auto; font-size: 2.8mm; color: #94a3b8; }
+  .stand .url { margin-top: 2mm; font-size: 3.4mm; font-weight: 600; color: #4338ca; word-break: break-all; }
+  .sticker .url { font-size: 2.4mm; color: #4338ca; margin-top: .6mm; word-break: break-all; }
+  .tip { background: #1e293b; color: #cbd5e1; font-size: 12px; padding: 7px 16px; text-align: center; }
 
   /* Sticker sheet: A4, 3 x 4 stickers of 60 x 60 mm */
   .sheet { width: 210mm; min-height: 297mm; background: #fff; padding: 10mm 8mm; display: grid; grid-template-columns: repeat(3, 60mm); grid-auto-rows: 66mm; gap: 3mm 6mm; justify-content: center; align-content: start; box-shadow: 0 10px 30px rgba(15,23,42,.25); }
@@ -45,10 +48,13 @@ $shop = (string) $branch['name'];
 <body>
 <div class="bar">
   <button onclick="window.print()">Print / Save as PDF</button>
+  <button id="share">Share on WhatsApp</button>
+  <button id="copy">Copy link</button>
   <button id="png">Download QR image</button>
   <a class="plain" href="<?= h($base) ?>/reviewdesk">← Back</a>
   <span class="hint"><?= h($url) ?><?= $staffName !== '' ? ' · for ' . h($staffName) : '' ?></span>
 </div>
+<div class="tip">Sending it to someone on their phone? Use <b>Share on WhatsApp</b> — a QR cannot be scanned from the same phone it is shown on, so they get the tappable link too.</div>
 <div class="stage">
 <?php if ($kind === 'stand'): ?>
   <div class="stand">
@@ -58,12 +64,13 @@ $shop = (string) $branch['name'];
     <div class="q" id="qr"></div>
     <div class="stars">★★★★★</div>
     <div class="step">Scan · tap stars · edit · post</div>
+    <div class="url"><?= h(preg_replace('#^https?://#', '', $url)) ?></div>
     <div class="foot">Your honest review helps other customers</div>
   </div>
 <?php else: ?>
   <div class="sheet">
     <?php for ($i = 0; $i < 12; $i++): ?>
-      <div class="sticker"><div class="q qr-copy"></div><b><?= h($shop) ?></b><span>Scan to share your experience</span></div>
+      <div class="sticker"><div class="q qr-copy"></div><b><?= h($shop) ?></b><span>Scan to share your experience</span><span class="url"><?= h(preg_replace('#^https?://#', '', $url)) ?></span></div>
     <?php endfor; ?>
   </div>
 <?php endif; ?>
@@ -77,12 +84,32 @@ $shop = (string) $branch['name'];
   const svg = makeSvg();
   const one = document.getElementById('qr'); if (one) one.innerHTML = svg;
   document.querySelectorAll('.qr-copy').forEach(el => { el.innerHTML = svg; });
-  document.getElementById('png').addEventListener('click', () => {
+  const SHOP = <?= json_encode($shop) ?>, FILE = 'review-qr-<?= h($branch['slug']) ?><?= $staffName !== '' ? '-staff' : '' ?>.png';
+  function qrCanvas() {
     const qr = qrcode(0, 'M'); qr.addData(URL_TO_ENCODE); qr.make();
     const n = qr.getModuleCount(), cell = 16, pad = 32, c = document.createElement('canvas');
     c.width = c.height = n * cell + pad * 2; const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.fillStyle = '#000';
     for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (qr.isDark(r, k)) x.fillRect(pad + k * cell, pad + r * cell, cell, cell);
-    const a = document.createElement('a'); a.href = c.toDataURL('image/png'); a.download = 'review-qr-<?= h($branch['slug']) ?><?= $staffName !== '' ? '-staff' : '' ?>.png'; a.click();
+    return c;
+  }
+  document.getElementById('png').addEventListener('click', () => {
+    const a = document.createElement('a'); a.href = qrCanvas().toDataURL('image/png'); a.download = FILE; a.click();
+  });
+  const shareText = SHOP + ' — please share your experience on Google: ' + URL_TO_ENCODE;
+  document.getElementById('copy').addEventListener('click', async (e) => {
+    const b = e.currentTarget; let ok = false;
+    try { await navigator.clipboard.writeText(URL_TO_ENCODE); ok = true; } catch (err) { window.prompt('Copy this link:', URL_TO_ENCODE); }
+    if (ok) { b.textContent = 'Copied ✓'; setTimeout(() => b.textContent = 'Copy link', 1500); }
+  });
+  document.getElementById('share').addEventListener('click', () => {
+    // Phones: the share sheet with the QR picture AND the tappable link text. Desktop: a WhatsApp message with the link.
+    qrCanvas().toBlob(async blob => {
+      try {
+        const file = new File([blob], FILE, { type: 'image/png' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], text: shareText }); return; }
+      } catch (err) { if (err && err.name === 'AbortError') return; }
+      window.open('https://wa.me/?text=' + encodeURIComponent(shareText), '_blank', 'noopener');
+    }, 'image/png');
   });
 </script>
 </body>

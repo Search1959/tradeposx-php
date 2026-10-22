@@ -11,6 +11,8 @@
  */
 class ReviewAi {
     public const LANGS = ['en' => 'English', 'hi' => 'Hindi', 'bn' => 'Bengali'];
+    /** Longest a customer waits for the AI before the instant template drafts are used instead. */
+    private const TOTAL_SECONDS = 8;
     private const FORBIDDEN = ['discount', 'offer', 'free', 'gift', 'coupon', 'reward', 'cashback', 'voucher', 'paid', 'sponsored', 'incentive'];
 
     /** @return array{drafts: string[], source: string} */
@@ -20,15 +22,36 @@ class ReviewAi {
         $chips = array_values(array_slice(array_unique(array_map('trim', $chips)), 0, 6));
         $note = self::cleanNote($note);
 
+        // Ask every configured provider AT THE SAME TIME and use whichever answers first with usable drafts.
+        // A customer is standing at a counter: waiting on a slow or failing provider before trying the next is what made the page feel stuck.
+        $handles = [];
+        foreach (['groq', 'claude'] as $provider) {
+            $h = self::request($provider, $business, $rating, $chips, $note, $lang);
+            if ($h) $handles[$provider] = $h;
+        }
         $good = [];
-        foreach (['claude', 'groq'] as $provider) {
-            if (count($good) >= 3) break;
-            $raw = $provider === 'claude' ? self::askClaude($business, $rating, $chips, $note, $lang) : self::askGroq($business, $rating, $chips, $note, $lang);
-            foreach ($raw as $d) {
-                $d = self::sanitize($d, $chips, $note);
-                if ($d !== null && !in_array($d, $good, true)) $good[] = $d;
-            }
-            if (count($good) >= 2) { return ['drafts' => array_slice($good, 0, 3), 'source' => 'ai']; }
+        if ($handles) {
+            $mh = curl_multi_init();
+            foreach ($handles as $h) curl_multi_add_handle($mh, $h);
+            $deadline = microtime(true) + self::TOTAL_SECONDS;
+            do {
+                curl_multi_exec($mh, $running);
+                while ($info = curl_multi_info_read($mh)) {
+                    $h = $info['handle'];
+                    $provider = array_search($h, $handles, true);
+                    $code = curl_getinfo($h, CURLINFO_HTTP_CODE);
+                    $raw = ($code === 200 && $provider !== false) ? self::parse($provider, (string) curl_multi_getcontent($h)) : [];
+                    foreach ($raw as $d) {
+                        $d = self::sanitize($d, $chips, $note);
+                        if ($d !== null && !in_array($d, $good, true)) $good[] = $d;
+                    }
+                    if (count($good) >= 2) break 2;
+                }
+                if ($running) curl_multi_select($mh, 0.1);
+            } while ($running && microtime(true) < $deadline);
+            foreach ($handles as $h) { curl_multi_remove_handle($mh, $h); curl_close($h); }
+            curl_multi_close($mh);
+            if (count($good) >= 2) return ['drafts' => array_slice($good, 0, 3), 'source' => 'ai'];
         }
         $templates = self::templateDrafts($business, $rating, $chips, $note, $lang);
         $merged = array_slice(array_values(array_unique(array_merge($good, $templates))), 0, 3);
@@ -84,29 +107,35 @@ class ReviewAi {
         return is_array($d) ? array_values($d) : [];
     }
 
-    private static function askClaude(string $business, int $rating, array $chips, string $note, string $lang): array {
-        if (!defined('CLAUDE_API_KEY') || CLAUDE_API_KEY === '') return [];
-        $body = ['model' => CLAUDE_MODEL, 'max_tokens' => 900, 'temperature' => 0.8, 'system' => self::system(self::LANGS[$lang]),
-                 'messages' => [['role' => 'user', 'content' => self::userPayload($business, $rating, $chips, $note, $lang)]]];
-        $ch = curl_init('https://api.anthropic.com/v1/messages');
-        curl_setopt_array($ch, [CURLOPT_POST => true, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 25, CURLOPT_CONNECTTIMEOUT => 6,
-            CURLOPT_HTTPHEADER => ['x-api-key: ' . CLAUDE_API_KEY, 'anthropic-version: 2023-06-01', 'content-type: application/json'], CURLOPT_POSTFIELDS => json_encode($body)]);
-        $raw = curl_exec($ch); $code = curl_getinfo($ch, CURLINFO_HTTP_CODE); curl_close($ch);
-        if ($raw === false || $code !== 200) return [];
-        $j = json_decode($raw, true);
-        foreach (($j['content'] ?? []) as $b) if (($b['type'] ?? '') === 'text') return self::extractDrafts($b['text'] ?? '');
-        return [];
+    /** Builds (does not run) the HTTP request for one provider; null when that provider has no key configured. */
+    private static function request(string $provider, string $business, int $rating, array $chips, string $note, string $lang) {
+        $system = self::system(self::LANGS[$lang]);
+        $user = self::userPayload($business, $rating, $chips, $note, $lang);
+        if ($provider === 'claude') {
+            if (!defined('CLAUDE_API_KEY') || CLAUDE_API_KEY === '') return null;
+            $url = 'https://api.anthropic.com/v1/messages';
+            $headers = ['x-api-key: ' . CLAUDE_API_KEY, 'anthropic-version: 2023-06-01', 'content-type: application/json'];
+            $body = ['model' => CLAUDE_MODEL, 'max_tokens' => 700, 'temperature' => 0.8, 'system' => $system, 'messages' => [['role' => 'user', 'content' => $user]]];
+        } else {
+            if (!defined('GROQ_API_KEY') || GROQ_API_KEY === '') return null;
+            $url = 'https://api.groq.com/openai/v1/chat/completions';
+            $headers = ['Authorization: Bearer ' . GROQ_API_KEY, 'Content-Type: application/json'];
+            $body = ['model' => GROQ_TEXT_MODEL, 'temperature' => 0.8, 'response_format' => ['type' => 'json_object'],
+                     'messages' => [['role' => 'system', 'content' => $system], ['role' => 'user', 'content' => $user]]];
+        }
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [CURLOPT_POST => true, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => self::TOTAL_SECONDS, CURLOPT_CONNECTTIMEOUT => 4,
+            CURLOPT_HTTPHEADER => $headers, CURLOPT_POSTFIELDS => json_encode($body)]);
+        return $ch;
     }
-    private static function askGroq(string $business, int $rating, array $chips, string $note, string $lang): array {
-        if (!defined('GROQ_API_KEY') || GROQ_API_KEY === '') return [];
-        $body = ['model' => GROQ_TEXT_MODEL, 'temperature' => 0.8, 'response_format' => ['type' => 'json_object'],
-                 'messages' => [['role' => 'system', 'content' => self::system(self::LANGS[$lang])], ['role' => 'user', 'content' => self::userPayload($business, $rating, $chips, $note, $lang)]]];
-        $ch = curl_init('https://api.groq.com/openai/v1/chat/completions');
-        curl_setopt_array($ch, [CURLOPT_POST => true, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 25, CURLOPT_CONNECTTIMEOUT => 6,
-            CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . GROQ_API_KEY, 'Content-Type: application/json'], CURLOPT_POSTFIELDS => json_encode($body)]);
-        $raw = curl_exec($ch); $code = curl_getinfo($ch, CURLINFO_HTTP_CODE); curl_close($ch);
-        if ($raw === false || $code !== 200) return [];
+    /** @return string[] raw draft strings from a provider's HTTP response body */
+    private static function parse(string $provider, string $raw): array {
         $j = json_decode($raw, true);
+        if (!is_array($j)) return [];
+        if ($provider === 'claude') {
+            foreach (($j['content'] ?? []) as $b) if (($b['type'] ?? '') === 'text') return self::extractDrafts($b['text'] ?? '');
+            return [];
+        }
         return self::extractDrafts($j['choices'][0]['message']['content'] ?? '');
     }
 

@@ -102,7 +102,10 @@ class ReviewController {
             'shop' => (string) $b['name'], 'orgName' => (string) $org['name'], 'slug' => (string) $b['slug'], 'staff' => $staff,
             'intro' => $s['intro'], 'logo' => $s['logo'] !== '' ? '/uploads/reviewdesk/' . $s['logo'] : '',
             'chipsPos' => $s['chips_pos'], 'chipsNeg' => $s['chips_neg'], 'langs' => $s['langs'], 'lang' => $s['default_lang'], 'ai' => $s['ai_enabled'],
-            'writeUrl' => $placeId !== '' ? 'https://search.google.com/local/writereview?placeid=' . rawurlencode($placeId) : '',
+            // The owner may have saved either a Place ID or Google's own "Get more reviews" link (g.page/r/…); both work.
+            'writeUrl' => $placeId === '' ? '' : (preg_match('#^https://(g\.page|search\.google\.com)/#', $placeId) ? $placeId : 'https://search.google.com/local/writereview?placeid=' . rawurlencode($placeId)),
+            // Fallback if Google's review page is slow or blank in the customer's browser: the same business on Google Maps.
+            'mapsUrl' => ($placeId !== '' && !preg_match('#^https?://#', $placeId)) ? 'https://www.google.com/maps/search/?api=1&query=Google&query_place_id=' . rawurlencode($placeId) : '',
             'preview' => $isPreview, 'token' => $token,
         ];
         require __DIR__ . '/../views/review/public.php';

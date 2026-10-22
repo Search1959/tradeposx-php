@@ -28,16 +28,17 @@ $inp = 'w-full rounded border border-slate-300 px-3 py-2 text-sm';
   <!-- Branches -->
   <section class="bg-white rounded-lg border border-slate-200 p-5">
     <h2 class="font-semibold text-slate-900">Your Google link</h2>
-    <p class="text-sm text-slate-500 mt-1 mb-4">Add the <b>Place ID</b> of your Google Business Profile. Find it with Google’s
-      <a class="text-indigo-700 underline" href="https://developers.google.com/maps/documentation/places/web-service/place-id" target="_blank" rel="noopener">Place ID Finder</a>
-      (it starts with “ChIJ…”). Pasting a full “write a review” link also works. One Place ID per branch.</p>
+    <p class="text-sm text-slate-500 mt-1 mb-4"><b>Best:</b> paste the “Get more reviews” link from your Google Business Profile (it looks like <span class="font-mono">https://g.page/r/…/review</span>) — it opens fastest on phones.
+      Otherwise add the <b>Place ID</b> (starts with “ChIJ…”) from Google’s
+      <a class="text-indigo-700 underline" href="https://developers.google.com/maps/documentation/places/web-service/place-id" target="_blank" rel="noopener">Place ID Finder</a>.
+      One link per branch.</p>
     <div class="space-y-4">
       <?php foreach ($branches as $b): $link = $host . '/review/' . $b['slug']; ?>
       <div class="border border-slate-200 rounded-lg p-4">
         <form method="POST" class="grid sm:grid-cols-6 gap-3 items-end">
           <?= CsrfHelper::getField() ?><input type="hidden" name="form" value="branch"><input type="hidden" name="id" value="<?= (int) $b['id'] ?>">
           <label class="sm:col-span-2 text-xs font-medium text-slate-600">Branch name<input name="name" required maxlength="100" value="<?= h($b['name']) ?>" class="mt-1 <?= $inp ?>"></label>
-          <label class="sm:col-span-2 text-xs font-medium text-slate-600">Google Place ID<input name="place_id" value="<?= h($b['place_id'] ?? '') ?>" placeholder="ChIJ…" class="mt-1 <?= $inp ?> font-mono"></label>
+          <label class="sm:col-span-2 text-xs font-medium text-slate-600">Google review link or Place ID<input name="place_id" value="<?= h($b['place_id'] ?? '') ?>" placeholder="https://g.page/r/…  or  ChIJ…" class="mt-1 <?= $inp ?> font-mono"></label>
           <label class="sm:col-span-2 text-xs font-medium text-slate-600">WhatsApp for alerts <span class="text-slate-400">(coming soon)</span><input name="alert_whatsapp" value="<?= h($b['alert_whatsapp'] ?? '') ?>" inputmode="numeric" placeholder="98300 11223" class="mt-1 <?= $inp ?>"></label>
           <div class="sm:col-span-6 flex flex-wrap items-center gap-3">
             <label class="text-sm text-slate-700 flex items-center gap-2"><input type="checkbox" name="active" value="1" <?= $b['active'] ? 'checked' : '' ?>> Page is live</label>
@@ -49,6 +50,7 @@ $inp = 'w-full rounded border border-slate-300 px-3 py-2 text-sm';
           <span class="font-mono text-xs bg-slate-50 border border-slate-200 rounded px-2 py-1 break-all"><?= h($link) ?></span>
           <button type="button" class="text-indigo-700 font-medium" onclick="navigator.clipboard.writeText('<?= h($link) ?>').then(()=>{this.textContent='Copied ✓';setTimeout(()=>this.textContent='Copy link',1500)})">Copy link</button>
           <a class="text-slate-700 underline" href="<?= h($link) ?>?preview=1" target="_blank" rel="noopener">Preview page</a>
+          <a class="text-emerald-700 font-medium underline" href="https://wa.me/?text=<?= rawurlencode($b['name'] . ' — please share your experience on Google: ' . $link) ?>" target="_blank" rel="noopener">Send link on WhatsApp</a>
           <a class="text-slate-700 underline" href="<?= $base ?>/reviewdesk/qr?branch=<?= (int) $b['id'] ?>&kind=stand" target="_blank" rel="noopener">QR counter stand</a>
           <a class="text-slate-700 underline" href="<?= $base ?>/reviewdesk/qr?branch=<?= (int) $b['id'] ?>&kind=sticker" target="_blank" rel="noopener">QR stickers</a>
           <?php if (count($branches) > 1): ?>

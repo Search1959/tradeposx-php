@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#4f46e5">
+<?php if ($cfg['writeUrl'] !== ''): ?><link rel="preconnect" href="https://search.google.com"><link rel="dns-prefetch" href="https://www.google.com"><?php endif; ?>
 <title><?= h($cfg['shop']) ?> · Share your experience</title>
 <style>
   :root { --brand: #4f46e5; --brand-dark: #4338ca; --ink: #0f172a; --muted: #64748b; --line: #e2e8f0; --bg: #f1f5f9; --star: #f59e0b; --ok: #16a34a; }
@@ -90,6 +91,8 @@
       <p class="err" id="goManual" hidden style="color:#92400e"></p>
       <ol id="goSteps" style="padding-left:20px;margin:14px 0;line-height:1.7;font-size:15px"></ol>
       <a class="btn google" id="goOpen" href="#" target="_blank" rel="noopener"></a>
+      <p class="note" id="goSlow" style="margin-top:12px"></p>
+      <a class="btn ghost" id="goMaps" href="#" target="_blank" rel="noopener" hidden></a>
       <button class="btn ghost" id="goBack" type="button"></button>
     </div>
 
@@ -102,18 +105,18 @@
 <script>
 const RD = <?= json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) ?>;
 const T = {
-  en: { intro: 'How was your visit?', rate: ['Poor', 'Fair', 'Okay', 'Good', 'Excellent'], pos: 'What did you like?', neg: 'What could be better?', note: 'Anything to add? (optional)', ph: 'A few words in your own style…', suggest: 'Suggest a review', working: 'Writing…', pick: 'Pick a suggestion and edit it so it says what you really felt:', opt: 'Option',
+  en: { intro: 'How was your visit?', rate: ['Poor', 'Fair', 'Okay', 'Good', 'Excellent'], pos: 'What did you like?', neg: 'What could be better?', note: 'Anything to add? (optional)', ph: 'A few words in your own style…', suggest: 'Suggest a review', working: 'Writing your suggestions…', pick: 'Pick a suggestion and edit it so it says what you really felt:', opt: 'Option',
         disclose: 'These suggestions are written by AI from the choices you tapped. Please edit them so they match your real experience. You post the review yourself, from your own Google account.', post: 'Copy & Post on Google', again: 'Start again', own: 'Write it myself on Google',
         copied: 'Copied! Paste it in the Google review box.', needOne: 'Please pick at least one option or write a short note.', fail: 'Could not get suggestions. You can still write your own review on Google.', noLink: 'The Google link is not set up yet.', lang: 'Language',
-        goTitle: 'Your review is copied', goHelp: 'Google cannot fill the text in for you, so you paste it yourself:', goSteps: ['Tap “Open Google” below.', 'Choose your stars and tap the review box.', 'Press and hold in the box, then tap “Paste”.', 'Tap “Post”.'], goOpen: 'Open Google', goCopy: 'Copy text again', goBack: '← Edit my review', goCopiedNow: 'Copied ✓', goManual: 'Press and hold the text above, choose Select all, then Copy.' },
-  hi: { intro: 'आपका अनुभव कैसा रहा?', rate: ['ख़राब', 'ठीक-ठाक', 'औसत', 'अच्छा', 'बहुत बढ़िया'], pos: 'आपको क्या अच्छा लगा?', neg: 'क्या बेहतर हो सकता है?', note: 'कुछ और जोड़ना है? (वैकल्पिक)', ph: 'अपने शब्दों में कुछ पंक्तियाँ…', suggest: 'रिव्यू सुझाएँ', working: 'लिख रहे हैं…', pick: 'एक सुझाव चुनें और उसे अपने असली अनुभव के अनुसार बदलें:', opt: 'विकल्प',
+        goTitle: 'Your review is copied', goHelp: 'Google cannot fill the text in for you, so you paste it yourself:', goSteps: ['Tap “Open Google” below.', 'Choose your stars and tap the review box.', 'Press and hold in the box, then tap “Paste”.', 'Tap “Post”.'], goOpen: 'Open Google', goSlow: 'Google page blank or slow? Wait a few seconds, or open it in Chrome / the Google Maps app.', goMaps: 'Open in Google Maps instead', goCopy: 'Copy text again', goBack: '← Edit my review', goCopiedNow: 'Copied ✓', goManual: 'Press and hold the text above, choose Select all, then Copy.' },
+  hi: { intro: 'आपका अनुभव कैसा रहा?', rate: ['ख़राब', 'ठीक-ठाक', 'औसत', 'अच्छा', 'बहुत बढ़िया'], pos: 'आपको क्या अच्छा लगा?', neg: 'क्या बेहतर हो सकता है?', note: 'कुछ और जोड़ना है? (वैकल्पिक)', ph: 'अपने शब्दों में कुछ पंक्तियाँ…', suggest: 'रिव्यू सुझाएँ', working: 'आपके लिए सुझाव लिख रहे हैं…', pick: 'एक सुझाव चुनें और उसे अपने असली अनुभव के अनुसार बदलें:', opt: 'विकल्प',
         disclose: 'ये सुझाव आपके चुने विकल्पों के आधार पर AI ने लिखे हैं। कृपया इन्हें अपने असली अनुभव के अनुसार बदलें। रिव्यू आप खुद, अपने Google अकाउंट से पोस्ट करेंगे।', post: 'कॉपी करें और Google पर पोस्ट करें', again: 'फिर से शुरू करें', own: 'मैं खुद Google पर लिखूँगा/लिखूँगी',
         copied: 'कॉपी हो गया! इसे Google रिव्यू बॉक्स में पेस्ट करें।', needOne: 'कृपया कम से कम एक विकल्प चुनें या छोटा नोट लिखें।', fail: 'सुझाव नहीं मिल पाए। आप फिर भी Google पर अपना रिव्यू लिख सकते हैं।', noLink: 'Google लिंक अभी सेट नहीं है।', lang: 'भाषा',
-        goTitle: 'आपका रिव्यू कॉपी हो गया', goHelp: 'Google टेक्स्ट अपने-आप नहीं भर सकता, इसलिए आप इसे खुद पेस्ट करें:', goSteps: ['नीचे “Google खोलें” दबाएँ।', 'स्टार चुनें और रिव्यू बॉक्स में टैप करें।', 'बॉक्स में उँगली दबाए रखें और “Paste / चिपकाएँ” दबाएँ।', '“Post / पोस्ट” दबाएँ।'], goOpen: 'Google खोलें', goCopy: 'टेक्स्ट फिर से कॉपी करें', goBack: '← रिव्यू बदलें', goCopiedNow: 'कॉपी हो गया ✓', goManual: 'ऊपर के टेक्स्ट पर उँगली दबाए रखें, “सभी चुनें” और फिर “कॉपी” दबाएँ।' },
-  bn: { intro: 'আপনার অভিজ্ঞতা কেমন ছিল?', rate: ['খারাপ', 'মোটামুটি', 'ঠিকঠাক', 'ভালো', 'দারুণ'], pos: 'আপনার কী ভালো লেগেছে?', neg: 'কী আরও ভালো হতে পারত?', note: 'আর কিছু বলবেন? (ঐচ্ছিক)', ph: 'নিজের ভাষায় কয়েকটি কথা…', suggest: 'রিভিউ প্রস্তাব করুন', working: 'লেখা হচ্ছে…', pick: 'একটি প্রস্তাব বেছে নিন এবং নিজের আসল অভিজ্ঞতা অনুযায়ী বদলে নিন:', opt: 'বিকল্প',
+        goTitle: 'आपका रिव्यू कॉपी हो गया', goHelp: 'Google टेक्स्ट अपने-आप नहीं भर सकता, इसलिए आप इसे खुद पेस्ट करें:', goSteps: ['नीचे “Google खोलें” दबाएँ।', 'स्टार चुनें और रिव्यू बॉक्स में टैप करें।', 'बॉक्स में उँगली दबाए रखें और “Paste / चिपकाएँ” दबाएँ।', '“Post / पोस्ट” दबाएँ।'], goOpen: 'Google खोलें', goSlow: 'Google का पेज खाली या धीमा है? कुछ सेकंड रुकें, या उसे Chrome / Google Maps ऐप में खोलें।', goMaps: 'इसके बजाय Google Maps में खोलें', goCopy: 'टेक्स्ट फिर से कॉपी करें', goBack: '← रिव्यू बदलें', goCopiedNow: 'कॉपी हो गया ✓', goManual: 'ऊपर के टेक्स्ट पर उँगली दबाए रखें, “सभी चुनें” और फिर “कॉपी” दबाएँ।' },
+  bn: { intro: 'আপনার অভিজ্ঞতা কেমন ছিল?', rate: ['খারাপ', 'মোটামুটি', 'ঠিকঠাক', 'ভালো', 'দারুণ'], pos: 'আপনার কী ভালো লেগেছে?', neg: 'কী আরও ভালো হতে পারত?', note: 'আর কিছু বলবেন? (ঐচ্ছিক)', ph: 'নিজের ভাষায় কয়েকটি কথা…', suggest: 'রিভিউ প্রস্তাব করুন', working: 'আপনার জন্য প্রস্তাব লেখা হচ্ছে…', pick: 'একটি প্রস্তাব বেছে নিন এবং নিজের আসল অভিজ্ঞতা অনুযায়ী বদলে নিন:', opt: 'বিকল্প',
         disclose: 'আপনার বেছে নেওয়া বিকল্পের ভিত্তিতে AI এই প্রস্তাবগুলি লিখেছে। অনুগ্রহ করে নিজের আসল অভিজ্ঞতা অনুযায়ী বদলে নিন। রিভিউ আপনি নিজেই, নিজের Google অ্যাকাউন্ট থেকে পোস্ট করবেন।', post: 'কপি করে Google-এ পোস্ট করুন', again: 'আবার শুরু করুন', own: 'আমি নিজে Google-এ লিখব',
         copied: 'কপি হয়েছে! Google রিভিউ বক্সে পেস্ট করুন।', needOne: 'অন্তত একটি বিকল্প বেছে নিন বা ছোট একটি নোট লিখুন।', fail: 'প্রস্তাব পাওয়া যায়নি। আপনি তবুও Google-এ নিজের রিভিউ লিখতে পারেন।', noLink: 'Google লিংক এখনও সেট করা হয়নি।', lang: 'ভাষা',
-        goTitle: 'আপনার রিভিউ কপি হয়েছে', goHelp: 'Google নিজে থেকে লেখা বসাতে পারে না, তাই আপনি নিজে পেস্ট করুন:', goSteps: ['নিচে “Google খুলুন” চাপুন।', 'স্টার বেছে রিভিউ বক্সে ট্যাপ করুন।', 'বক্সে চেপে ধরে রেখে “Paste / পেস্ট” চাপুন।', '“Post / পোস্ট” চাপুন।'], goOpen: 'Google খুলুন', goCopy: 'লেখা আবার কপি করুন', goBack: '← রিভিউ বদলান', goCopiedNow: 'কপি হয়েছে ✓', goManual: 'উপরের লেখায় চেপে ধরে “সব বেছে নিন”, তারপর “কপি” চাপুন।' }
+        goTitle: 'আপনার রিভিউ কপি হয়েছে', goHelp: 'Google নিজে থেকে লেখা বসাতে পারে না, তাই আপনি নিজে পেস্ট করুন:', goSteps: ['নিচে “Google খুলুন” চাপুন।', 'স্টার বেছে রিভিউ বক্সে ট্যাপ করুন।', 'বক্সে চেপে ধরে রেখে “Paste / পেস্ট” চাপুন।', '“Post / পোস্ট” চাপুন।'], goOpen: 'Google খুলুন', goSlow: 'Google-এর পেজ ফাঁকা বা ধীর? কয়েক সেকেন্ড অপেক্ষা করুন, অথবা Chrome / Google Maps অ্যাপে খুলুন।', goMaps: 'বদলে Google Maps-এ খুলুন', goCopy: 'লেখা আবার কপি করুন', goBack: '← রিভিউ বদলান', goCopiedNow: 'কপি হয়েছে ✓', goManual: 'উপরের লেখায় চেপে ধরে “সব বেছে নিন”, তারপর “কপি” চাপুন।' }
 };
 const LANG_NAME = { en: 'English', hi: 'हिन्दी', bn: 'বাংলা' };
 const $ = id => document.getElementById(id);
@@ -131,6 +134,7 @@ function renderStatic() {
   $('pickLabel').textContent = tx('pick'); $('disclose').textContent = tx('disclose'); $('post').textContent = tx('post'); $('again').textContent = tx('again');
   $('own').textContent = tx('own');
   $('goTitle').textContent = tx('goTitle'); $('goHelp').textContent = tx('goHelp'); $('goOpen').textContent = tx('goOpen'); $('goCopy').textContent = tx('goCopy'); $('goBack').textContent = tx('goBack'); $('goManual').textContent = tx('goManual');
+  $('goSlow').textContent = tx('goSlow'); $('goMaps').textContent = tx('goMaps'); $('goMaps').hidden = !RD.mapsUrl; if (RD.mapsUrl) $('goMaps').href = RD.mapsUrl;
   $('goSteps').innerHTML = tx('goSteps').map(s => `<li>${esc(s)}</li>`).join('');
   $('langs').innerHTML = RD.langs.length > 1 ? RD.langs.map(l => `<button type="button" class="pill" data-lang="${l}" aria-pressed="${l === st.lang}">${LANG_NAME[l]}</button>`).join('') : '';
   $('stars').innerHTML = [1, 2, 3, 4, 5].map(n => `<button type="button" class="star${n <= st.rating ? ' on' : ''}" data-n="${n}" role="radio" aria-checked="${n === st.rating}" aria-label="${n} — ${tx('rate')[n - 1]}"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z" stroke-linejoin="round"/></svg></button>`).join('');

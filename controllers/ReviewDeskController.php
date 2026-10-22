@@ -20,13 +20,17 @@ class ReviewDeskController {
         foreach (self::INCENTIVE as $w) if (mb_strpos($low, $w) !== false) return $w;
         return null;
     }
-    private function placeId(string $raw): ?string {
+    /** Returns the cleaned value, null when blank, or false when invalid. No ": ?string" return type on purpose —
+     * PHP would silently turn false into "" and an invalid entry would then be saved as a blank, wiping the old link. */
+    private function placeId(string $raw) {
         $raw = trim($raw);
         if ($raw === '') return null;
+        // Google's own "Get more reviews" short link (g.page/r/…/review) is the most reliable on phones — keep it as is.
+        if (preg_match('#^https://g\.page/[A-Za-z0-9_\-/]+(\?[A-Za-z0-9_=&\-]*)?$#', $raw) && mb_strlen($raw) <= 190) return $raw;
         if (preg_match('/placeid=([A-Za-z0-9_\-]+)/', $raw, $m)) $raw = $m[1];        // a pasted write-review link works too
         return preg_match('/^[A-Za-z0-9_\-]{10,200}$/', $raw) ? $raw : false;
     }
-    private function whatsapp(string $raw): ?string {
+    private function whatsapp(string $raw) {   // null = blank, false = invalid (see placeId)
         $d = preg_replace('/\D/', '', $raw);
         if ($d === '') return null;
         if (strlen($d) === 10) $d = '91' . $d;
