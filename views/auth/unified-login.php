@@ -2,6 +2,12 @@
 $activeTab = $activeTab ?? ($_GET['tab'] ?? 'new');
 $error = $error ?? null;
 $form = $form ?? [];
+// Arriving from the landing page's "Find your trade" picker: preselect the engine and sector (validated against the real lists).
+if (!$form && in_array($_GET['type'] ?? '', ['trade', 'service'], true)) {
+    $form['business_type'] = $_GET['type'];
+    $pool = $_GET['type'] === 'trade' ? SectorHelper::tradeSectors() : SectorHelper::serviceSectors();
+    if (isset($pool[$_GET['sector'] ?? ''])) $form['trading_sector'] = $_GET['sector'];
+}
 $initialBizType = in_array($form['business_type'] ?? '', ['trade', 'service'], true) ? $form['business_type'] : '';
 ?>
 <!DOCTYPE html>

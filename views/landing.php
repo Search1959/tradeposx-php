@@ -1,20 +1,6 @@
 <?php
-$tradeSectors = [
-    'Kirana & FMCG','Metals & Steel','Ball Bearings & Industrial Parts','Agriculture & Farm Produce',
-    'Textiles & Fabrics','Chemicals & Industrial Supplies','Energy & Fuel','Jewellery & Ornaments',
-    'Stationery & Office Supplies','Building Materials & Hardware','General Trading','Pharmacy & Medical Supplies',
-    'Electrical & Electronics','Auto Parts & Accessories','Dairy & Beverages','Fruits & Vegetables',
-    'Bakery & Confectionery','Furniture & Wood','Plastics & Packaging','Mobile & Computers',
-    'Footwear & Garments','Cosmetics & Personal Care','Seeds & Fertilizers','Water & RO Systems',
-    'Toys & Games','Sports Goods & Fitness Equipment','Optical & Eyewear','Watches & Accessories',
-    'Musical Instruments','Home Decor & Furnishings','Pet Supplies & Pet Food','Books & Publications',
-    'Leather Goods','Bags & Luggage','Tobacco & Pan Shop','Ice Cream & Frozen Foods',
-    'Meat & Poultry','Spices & Condiments','Rice & Grain Mill','Cold Storage & Warehousing',
-    'Timber & Plywood','Cement & Building Supplies','Sanitaryware & Bath Fittings','Solar & Renewable Equipment',
-    'CCTV & Security Equipment','Gym & Fitness Equipment','Ayurvedic & Herbal Products','Party & Event Supplies',
-    'Paints & Hardware','Tyres & Batteries',
-];
-$serviceSectors = array_values(SectorHelper::serviceSectors());
+$tradeSectors = SectorHelper::tradeSectors();   // same list the sign-up form uses, so every name here can really be chosen
+$serviceSectors = SectorHelper::serviceSectors();
 
 // Only real, shipped capabilities below — every line here maps to an actual
 // screen/feature in the app, never a placeholder or aspirational claim.
@@ -567,8 +553,10 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
           <?php foreach ($tradeFeatures as $f): ?><li class="flex items-start gap-2.5 text-sm text-slate-300"><span class="mt-0.5 text-indigo-400"><?= uiIcon('check', 'w-4 h-4') ?></span><span><?= $f ?></span></li><?php endforeach; ?>
         </ul>
         <label class="block text-xs font-medium text-slate-500 mb-1.5">Find your trade</label>
-        <select class="w-full bg-white/5 border border-white/10 text-slate-300 text-base md:text-sm rounded-lg px-3 py-2.5 mb-4"><?php foreach ($tradeSectors as $s): ?><option class="bg-slate-900"><?= h($s) ?></option><?php endforeach; ?></select>
-        <a href="/login" class="text-center bg-indigo-600 hover:bg-indigo-500 rounded-xl px-4 py-3 text-sm font-semibold">Start with TradeERP</a>
+        <div x-data="{ s: '' }">
+          <select x-model="s" class="w-full bg-white/5 border border-white/10 text-slate-300 text-base md:text-sm rounded-lg px-3 py-2.5 mb-4"><option value="" class="bg-slate-900">Select your trade…</option><?php foreach ($tradeSectors as $code => $s): ?><option value="<?= h($code) ?>" class="bg-slate-900"><?= h($s) ?></option><?php endforeach; ?></select>
+          <a :href="'/login?type=trade' + (s ? '&sector=' + s : '')" class="block text-center bg-indigo-600 hover:bg-indigo-500 rounded-xl px-4 py-3 text-sm font-semibold">Start with TradeERP</a>
+        </div>
       </div>
       <div class="card-service bg-white/[0.03] border border-white/10 rounded-2xl p-6 md:p-8 flex flex-col transition">
         <div class="flex items-center gap-3 mb-3">
@@ -580,8 +568,10 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
           <?php foreach ($serviceFeatures as $f): ?><li class="flex items-start gap-2.5 text-sm text-slate-300"><span class="mt-0.5 text-emerald-400"><?= uiIcon('check', 'w-4 h-4') ?></span><span><?= $f ?></span></li><?php endforeach; ?>
         </ul>
         <label class="block text-xs font-medium text-slate-500 mb-1.5">Find your service</label>
-        <select class="w-full bg-white/5 border border-white/10 text-slate-300 text-base md:text-sm rounded-lg px-3 py-2.5 mb-4"><?php foreach ($serviceSectors as $s): ?><option class="bg-slate-900"><?= h($s) ?></option><?php endforeach; ?></select>
-        <a href="/login" class="text-center bg-emerald-600 hover:bg-emerald-500 rounded-xl px-4 py-3 text-sm font-semibold">Start with ServiceERP</a>
+        <div x-data="{ s: '' }">
+          <select x-model="s" class="w-full bg-white/5 border border-white/10 text-slate-300 text-base md:text-sm rounded-lg px-3 py-2.5 mb-4"><option value="" class="bg-slate-900">Select your service…</option><?php foreach ($serviceSectors as $code => $s): ?><option value="<?= h($code) ?>" class="bg-slate-900"><?= h($s) ?></option><?php endforeach; ?></select>
+          <a :href="'/login?type=service' + (s ? '&sector=' + s : '')" class="block text-center bg-emerald-600 hover:bg-emerald-500 rounded-xl px-4 py-3 text-sm font-semibold">Start with ServiceERP</a>
+        </div>
       </div>
     </div>
   </section>
