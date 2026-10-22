@@ -45,4 +45,18 @@
   </form>
 </div>
 
+<?php $demoDir = ROOT_PATH . '/demodata/tradeerp/'; ?>
+<div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 max-w-xl mt-4" x-data="{ sector: '<?= h(is_file($demoDir . ($org['trading_sector'] ?? '') . '.csv') ? $org['trading_sector'] : '') ?>' }">
+  <h2 class="text-sm font-semibold text-slate-900 mb-1">Start with a ready-made list</h2>
+  <p class="text-sm text-slate-600 mb-3">Download a sample product list for your type of trade, change the prices and stock in Excel, then upload it above. Prices, stock and GST in the samples are placeholders — set your own.</p>
+  <div class="flex gap-2">
+    <select x-model="sector" class="flex-1 rounded border border-slate-300 px-3 py-2 text-sm">
+      <option value="">— Choose your trade —</option>
+      <?php foreach (SectorHelper::tradeSectors() as $code => $label): if (!is_file($demoDir . $code . '.csv')) continue; ?><option value="<?= h($code) ?>"><?= h($label) ?></option><?php endforeach; ?>
+    </select>
+    <a :href="sector ? '<?= $base ?>/products/demo/' + sector : '#'" :class="sector ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-slate-200 text-slate-400 pointer-events-none'"
+       class="text-sm font-medium px-4 py-2 rounded whitespace-nowrap">⬇ Download</a>
+  </div>
+</div>
+
 <?php require __DIR__ . '/../../layouts/footer.php'; ?>

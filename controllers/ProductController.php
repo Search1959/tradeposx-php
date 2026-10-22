@@ -147,6 +147,24 @@ class ProductController {
         fclose($out);
     }
 
+    /** Sample starter product list per trade sector, downloadable from the Bulk Import
+     * screen (mirrors ServiceItemController::demoAction). The sector is whitelisted
+     * against SectorHelper and the file must exist under demodata/tradeerp/, so a made-up
+     * path segment cannot read any other file. */
+    public function demoAction(?string $sector = null): void {
+        Auth::requireOrgAccess(Tenant::current()['id']);
+        $sector = strtoupper($sector ?? '');
+        $file = ROOT_PATH . '/demodata/tradeerp/' . $sector . '.csv';
+        if (!isset(SectorHelper::tradeSectors()[$sector]) || !is_file($file)) {
+            http_response_code(404);
+            include __DIR__ . '/../views/404.php';
+            return;
+        }
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . strtolower($sector) . '_products.csv"');
+        readfile($file);
+    }
+
     /** Matches each row to an existing product by barcode then SKU (updates it,
      * merging only the columns the row actually filled in) or creates a new one
      * (the row's current_stock becomes that new product's opening stock, same
