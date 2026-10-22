@@ -82,6 +82,15 @@ if ($org['status'] === 'suspended' && !Auth::isSuperAdmin()) {
     exit;
 }
 
+// The public demo business: a link straight to any of its pages (e.g. a printed QR to /smarttech-demo/choose) signs
+// the visitor in as the demo user, instead of showing a login form they have no credentials for.
+// /login and /logout of the demo stay reachable, so someone can still sign in or out on purpose.
+if ($org['slug'] === 'smarttech-demo' && !Auth::check() && ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'GET'
+    && !in_array(strtolower($parts[1] ?? ''), ['login', 'logout'], true)) {
+    dispatch('AuthController', 'demo');
+    exit;
+}
+
 $tenantRouteMap = [
     'dashboard'          => 'DashboardController',
     'service-dashboard'  => 'DashboardController',
