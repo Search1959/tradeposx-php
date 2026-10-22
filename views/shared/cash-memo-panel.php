@@ -36,13 +36,15 @@
 
   <!-- The memo: heading + as many rows as needed -->
   <div class="rounded-lg border border-slate-200 overflow-hidden">
-    <div class="hidden xl:grid grid-cols-[1fr_4rem_5rem_5rem_1.5rem] gap-2 px-3 py-2 bg-slate-50 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+    <div class="hidden xl:grid grid-cols-[1fr_4rem_5rem_5rem_1.5rem] gap-2 px-3 py-2 bg-indigo-50 text-[11px] font-semibold uppercase tracking-wide text-indigo-700">
       <div>Item</div><div class="text-right">Qty</div><div class="text-right">Rate</div><div class="text-right">Amount</div><div></div>
     </div>
-    <div class="xl:hidden px-3 py-2 bg-slate-50 text-[11px] font-semibold uppercase tracking-wide text-slate-500">Item · Qty · Rate · Amount</div>
+    <div class="xl:hidden px-3 py-2 bg-indigo-50 text-[11px] font-semibold uppercase tracking-wide text-indigo-700">Item · Qty · Rate · Amount</div>
     <div class="max-h-[42vh] overflow-y-auto divide-y divide-slate-100">
       <template x-for="(r, i) in memoRows" :key="r.k">
-        <div class="px-3 py-2" :class="r.error ? 'bg-red-50' : ''" :data-memo-err="r.error ? '1' : null">
+        <div class="px-3 py-2 border-l-4 transition-colors"
+             :class="r.error ? 'bg-red-50 border-red-400' : (memoAmount(r) > 0 ? 'bg-emerald-50/60 border-emerald-400' : (i % 2 ? 'bg-sky-50/50 border-sky-200' : 'bg-white border-slate-200'))"
+             :data-memo-err="r.error ? '1' : null">
           <div class="grid grid-cols-[4rem_1fr_4.75rem_1.5rem] xl:grid-cols-[1fr_4rem_5rem_5rem_1.5rem] gap-2 items-center">
             <div class="relative col-span-4 xl:col-span-1 min-w-0">
               <input type="text" list="memoItems" data-memo-item x-model="r.item" @change="matchRow(r)" @blur="matchRow(r)" placeholder="Item name"
@@ -51,7 +53,7 @@
             </div>
             <input type="number" step="any" min="0" x-model.number="r.qty" @input="r.guess = null" placeholder="1" class="w-full rounded border border-slate-300 px-2 py-1.5 text-sm text-right">
             <input type="number" step="0.01" min="0" x-model.number="r.rate" @input="r.guess = null" @keydown.enter.prevent="memoEnter(i)" placeholder="0.00" class="w-full rounded border border-slate-300 px-2 py-1.5 text-sm text-right">
-            <div class="text-sm font-semibold text-right" x-text="memoAmount(r) > 0 ? '₹' + memoAmount(r).toFixed(2) : ''"></div>
+            <div class="text-sm font-bold text-right text-emerald-700" x-text="memoAmount(r) > 0 ? '₹' + memoAmount(r).toFixed(2) : ''"></div>
             <button type="button" @click="memoRemove(i)" class="text-red-400 hover:text-red-600 text-sm" aria-label="Remove row">✕</button>
           </div>
           <div class="mt-1 text-[11px] text-amber-700 bg-amber-50 rounded px-2 py-1" x-show="r.guess" x-cloak>
@@ -84,12 +86,12 @@
         </div>
       </template>
     </div>
-    <div class="flex items-center justify-between gap-2 px-3 py-2.5 bg-slate-50 border-t border-slate-200">
+    <div class="flex items-center justify-between gap-2 px-3 py-2.5 bg-gradient-to-r from-indigo-50 to-emerald-50 border-t border-indigo-100">
       <div class="flex items-center gap-3 text-sm">
-        <button type="button" @click="memoAddRows(1)" class="text-indigo-600 font-medium hover:underline">+ Add row</button>
+        <button type="button" @click="memoAddRows(1)" class="text-indigo-700 font-semibold bg-white border border-indigo-200 hover:bg-indigo-100 rounded-full px-3 py-1">+ Add row</button>
         <button type="button" @click="memoClear()" class="text-slate-500 hover:underline">Clear</button>
       </div>
-      <div class="text-sm text-slate-600">Memo total <span class="font-bold text-slate-900" x-text="'₹' + memoTotal().toFixed(2)"></span></div>
+      <div class="text-sm text-slate-600">Memo total <span class="font-bold text-emerald-700 text-base" x-text="'₹' + memoTotal().toFixed(2)"></span></div>
     </div>
   </div>
   <?php require __DIR__ . '/scan-modal.php'; ?>

@@ -41,19 +41,19 @@
               class="text-xs font-medium px-2.5 py-1 rounded-full transition">All</button>
       <template x-for="c in categories()" :key="c">
         <button type="button" @click="category = c"
-                :class="category === c ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                class="text-xs font-medium px-2.5 py-1 rounded-full transition" x-text="c"></button>
+                :class="category === c ? 'bg-indigo-600 text-white' : tint(c).chip"
+                class="text-xs font-medium px-2.5 py-1 rounded-full transition flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full" :class="category === c ? 'bg-white' : tint(c).dot"></span><span x-text="c"></span></button>
       </template>
     </div>
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[65vh] overflow-y-auto">
       <template x-for="p in filteredProducts()" :key="p.id">
         <button type="button" @click="addToCart(p)"
-                class="text-left border border-slate-200 rounded-lg p-3 hover:border-indigo-400 hover:bg-indigo-50 transition">
-          <div class="font-medium text-sm text-slate-900 truncate" x-text="p.name"></div>
-          <div class="text-xs text-slate-500 mt-1" x-text="p.category"></div>
+                class="text-left border rounded-xl p-3 shadow-sm hover:shadow transition active:scale-[.98]" :class="tint(p.category).card">
+          <div class="font-semibold text-sm text-slate-900 truncate" x-text="p.name"></div>
+          <div class="text-xs text-slate-500 mt-1 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full shrink-0" :class="tint(p.category).dot"></span><span class="truncate" x-text="p.category || 'Uncategorised'"></span></div>
           <div class="flex items-center justify-between mt-2">
-            <span class="text-sm font-semibold text-indigo-700" x-text="'₹' + Number(p.selling_price).toFixed(2)"></span>
-            <span class="text-xs" :class="Number(p.current_stock) <= 0 ? 'text-red-500' : 'text-slate-400'"
+            <span class="text-sm font-bold" :class="tint(p.category).price" x-text="'₹' + Number(p.selling_price).toFixed(2)"></span>
+            <span class="text-[11px] font-medium rounded-full px-2 py-0.5 whitespace-nowrap shrink-0" :class="stockTone(p)"
                   x-text="Number(p.current_stock) + ' ' + p.unit"></span>
           </div>
         </button>
@@ -266,6 +266,27 @@ function posScreen() {
     memoDone() { this.activeTab = 'cart'; },
     categories() {
       return [...new Set(this.products.map(p => p.category).filter(c => c))].sort();
+    },
+    // One soft tint per category, so the grid is easy to scan. Full class strings so Tailwind's runtime picks them up.
+    tints: [
+      { card: 'bg-indigo-50/70 border-indigo-200 hover:border-indigo-400 hover:bg-indigo-100/70', price: 'text-indigo-700', chip: 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200', dot: 'bg-indigo-400' },
+      { card: 'bg-emerald-50/70 border-emerald-200 hover:border-emerald-400 hover:bg-emerald-100/70', price: 'text-emerald-700', chip: 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200', dot: 'bg-emerald-400' },
+      { card: 'bg-amber-50/70 border-amber-200 hover:border-amber-400 hover:bg-amber-100/70', price: 'text-amber-700', chip: 'bg-amber-100 text-amber-800 hover:bg-amber-200', dot: 'bg-amber-400' },
+      { card: 'bg-sky-50/70 border-sky-200 hover:border-sky-400 hover:bg-sky-100/70', price: 'text-sky-700', chip: 'bg-sky-100 text-sky-700 hover:bg-sky-200', dot: 'bg-sky-400' },
+      { card: 'bg-rose-50/70 border-rose-200 hover:border-rose-400 hover:bg-rose-100/70', price: 'text-rose-700', chip: 'bg-rose-100 text-rose-700 hover:bg-rose-200', dot: 'bg-rose-400' },
+      { card: 'bg-violet-50/70 border-violet-200 hover:border-violet-400 hover:bg-violet-100/70', price: 'text-violet-700', chip: 'bg-violet-100 text-violet-700 hover:bg-violet-200', dot: 'bg-violet-400' },
+      { card: 'bg-teal-50/70 border-teal-200 hover:border-teal-400 hover:bg-teal-100/70', price: 'text-teal-700', chip: 'bg-teal-100 text-teal-700 hover:bg-teal-200', dot: 'bg-teal-400' },
+      { card: 'bg-orange-50/70 border-orange-200 hover:border-orange-400 hover:bg-orange-100/70', price: 'text-orange-700', chip: 'bg-orange-100 text-orange-800 hover:bg-orange-200', dot: 'bg-orange-400' },
+    ],
+    tint(cat) {
+      const i = this.categories().indexOf(cat || '');
+      return this.tints[(i < 0 ? 0 : i) % this.tints.length];
+    },
+    stockTone(p) {
+      const n = Number(p.current_stock), low = Number(p.min_stock || 0);
+      if (n <= 0) return 'bg-red-100 text-red-700';
+      if (low > 0 && n <= low) return 'bg-amber-100 text-amber-800';
+      return 'bg-white/70 text-slate-500';
     },
     filteredProducts() {
       const q = this.search.trim().toLowerCase();
