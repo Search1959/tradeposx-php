@@ -31,6 +31,20 @@ $shop = (string) $branch['name'];
   .stand .foot { margin-top: auto; font-size: 2.8mm; color: #94a3b8; }
   .stand .url { margin-top: 2mm; font-size: 3.4mm; font-weight: 600; color: #4338ca; word-break: break-all; }
   .sticker .url { font-size: 2.4mm; color: #4338ca; margin-top: .6mm; word-break: break-all; }
+  .stage.pages { flex-direction: column; align-items: center; gap: 22px; }
+  @media screen and (max-width: 440px) { .stand { zoom: .86; } .sheet { zoom: .45; } }   /* fit a phone screen; print sizes are untouched */
+
+  /* Back of the stand: the steps, in three languages */
+  .back { justify-content: flex-start; padding: 8mm 8mm 7mm; }
+  .back h2 { font-size: 5.2mm; margin: 0; line-height: 1.2; }
+  .back .sub { font-size: 3mm; color: #64748b; margin: 1mm 0 3.2mm; }
+  .back ol { list-style: none; margin: 0; padding: 0; width: 100%; text-align: left; display: flex; flex-direction: column; gap: 2.4mm; }
+  .back li { display: flex; gap: 2.6mm; align-items: flex-start; }
+  .back .n { flex: none; width: 6.4mm; height: 6.4mm; border-radius: 50%; background: #4f46e5; color: #fff; font-weight: 700; font-size: 3.6mm; display: flex; align-items: center; justify-content: center; margin-top: .4mm; }
+  .back .t { font-size: 2.95mm; line-height: 1.32; color: #475569; }
+  .back .t b { display: block; font-size: 3.4mm; color: #0f172a; margin-bottom: .2mm; }
+  .back .note { margin-top: auto; width: 100%; border-top: .3mm dashed #cbd5e1; padding-top: 2.2mm; font-size: 2.7mm; color: #64748b; text-align: center; line-height: 1.35; }
+  .back .url { margin-top: 1.2mm; }
   .tip { background: #1e293b; color: #cbd5e1; font-size: 12px; padding: 7px 16px; text-align: center; }
 
   /* Sticker sheet: A4, 3 x 4 stickers of 60 x 60 mm */
@@ -41,8 +55,8 @@ $shop = (string) $branch['name'];
   .sticker b { font-size: 3.6mm; margin-top: 1.5mm; line-height: 1.15; }
   .sticker span { font-size: 3mm; color: #475569; margin-top: .8mm; }
 
-  @page { size: <?= $kind === 'stand' ? 'A6' : 'A4' ?>; margin: 0; }
-  @media print { body { background: #fff; } .bar { display: none; } .stage { padding: 0; } .stand, .sheet { box-shadow: none; } .sticker { border-color: #cbd5e1; } }
+  @page { size: <?= $kind === 'sticker' ? 'A4' : 'A6' ?>; margin: 0; }
+  @media print { body { background: #fff; } .bar, .tip { display: none; } .stage { padding: 0; } .stage.pages { display: block; } .stand, .sheet { box-shadow: none; } .stand { break-after: page; page-break-after: always; } .stand:last-child { break-after: auto; page-break-after: auto; } .sticker { border-color: #cbd5e1; } }
 </style>
 </head>
 <body>
@@ -55,7 +69,18 @@ $shop = (string) $branch['name'];
   <span class="hint"><?= h($url) ?><?= $staffName !== '' ? ' · for ' . h($staffName) : '' ?></span>
 </div>
 <div class="tip">Sending it to someone on their phone? Use <b>Share on WhatsApp</b> — a QR cannot be scanned from the same phone it is shown on, so they get the tappable link too.</div>
-<div class="stage">
+<?php
+  // The steps shown on the back of the counter stand. Kept short; the three languages match the customer page.
+  $backSteps = [
+      ['Scan the QR', 'अपने फ़ोन के कैमरे से QR स्कैन करें।', 'ফোনের ক্যামেরা দিয়ে QR স্ক্যান করুন।'],
+      ['Tap the stars', 'अपने अनुभव के लिए स्टार चुनें।', 'আপনার অভিজ্ঞতার জন্য স্টার বেছে নিন।'],
+      ['Tap what you liked', 'जो पसंद आया (या जो बेहतर हो सकता है) उस पर टैप करें; चाहें तो दो शब्द लिखें।', 'যা ভালো লেগেছে (বা যা আরও ভালো হতে পারত) তাতে ট্যাপ করুন; চাইলে কয়েকটি কথা লিখুন।'],
+      ['Check the suggested review and edit it', 'सुझाए गए रिव्यू को पढ़ें और अपने असली अनुभव के अनुसार बदलें।', 'প্রস্তাবিত রিভিউ পড়ে নিজের আসল অভিজ্ঞতা অনুযায়ী বদলে নিন।'],
+      ['Copy, open Google, paste and Post', '“कॉपी करें और Google पर पोस्ट करें” दबाएँ, Google में पेस्ट करें, फिर Post करें।', '“কপি করে Google-এ পোস্ট করুন” চাপুন, Google-এ পেস্ট করে Post করুন।'],
+  ];
+?>
+<div class="stage<?= $kind === 'sticker' ? '' : ' pages' ?>">
+<?php if ($kind === 'stand' || $kind === 'back'): ?>
 <?php if ($kind === 'stand'): ?>
   <div class="stand">
     <?php if ($logo !== ''): ?><img class="logo" src="<?= h($logo) ?>" alt=""><?php else: ?><div class="logo ph"><?= h(mb_strtoupper(mb_substr($shop, 0, 1))) ?></div><?php endif; ?>
@@ -66,6 +91,18 @@ $shop = (string) $branch['name'];
     <div class="step">Scan · tap stars · edit · post</div>
     <div class="url"><?= h(preg_replace('#^https?://#', '', $url)) ?></div>
     <div class="foot">Your honest review helps other customers</div>
+  </div>
+<?php endif; ?>
+  <div class="stand back">
+    <h2>Share your review in 5 easy steps</h2>
+    <div class="sub">5 आसान स्टेप में रिव्यू दें · ৫টি সহজ ধাপে রিভিউ দিন</div>
+    <ol>
+      <?php foreach ($backSteps as $i => $s): ?>
+        <li><span class="n"><?= $i + 1 ?></span><span class="t"><b><?= h($s[0]) ?></b><?= h($s[1]) ?><br><?= h($s[2]) ?></span></li>
+      <?php endforeach; ?>
+    </ol>
+    <div class="note">Write what you really felt — it is your own review, posted from your own Google account. We never give anything in return for a review.<br>आपका रिव्यू आपके अपने अनुभव पर आधारित हो · আপনার রিভিউ আপনার নিজের অভিজ্ঞতার কথা হোক
+      <div class="url"><?= h(preg_replace('#^https?://#', '', $url)) ?></div></div>
   </div>
 <?php else: ?>
   <div class="sheet">

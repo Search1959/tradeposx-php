@@ -151,7 +151,7 @@ class ReviewDeskController {
             $u = (new User())->find((int) $_GET['staff']);
             if ($u && (int) $u['org_id'] === (int) $org['id']) { $staffId = (int) $u['id']; $staffName = (string) $u['name']; }
         }
-        $kind = ($_GET['kind'] ?? 'stand') === 'sticker' ? 'sticker' : 'stand';
+        $kind = in_array($_GET['kind'] ?? '', ['stand', 'back', 'sticker'], true) ? $_GET['kind'] : 'stand';   // stand = front + back (2 pages)
         $settings = $this->rd->settings($org);
         $host = ($this->isHttps() ? 'https://' : 'http://') . ($_SERVER['HTTP_HOST'] ?? 'tradeposx.com');
         $url = $host . '/review/' . $branch['slug'] . ($staffId ? '?staff=' . $staffId : '');

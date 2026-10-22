@@ -51,7 +51,7 @@ $inp = 'w-full rounded border border-slate-300 px-3 py-2 text-sm';
           <button type="button" class="text-indigo-700 font-medium" onclick="navigator.clipboard.writeText('<?= h($link) ?>').then(()=>{this.textContent='Copied ✓';setTimeout(()=>this.textContent='Copy link',1500)})">Copy link</button>
           <a class="text-slate-700 underline" href="<?= h($link) ?>?preview=1" target="_blank" rel="noopener">Preview page</a>
           <a class="text-emerald-700 font-medium underline" href="https://wa.me/?text=<?= rawurlencode($b['name'] . ' — please share your experience on Google: ' . $link) ?>" target="_blank" rel="noopener">Send link on WhatsApp</a>
-          <a class="text-slate-700 underline" href="<?= $base ?>/reviewdesk/qr?branch=<?= (int) $b['id'] ?>&kind=stand" target="_blank" rel="noopener">QR counter stand</a>
+          <a class="text-slate-700 underline" href="<?= $base ?>/reviewdesk/qr?branch=<?= (int) $b['id'] ?>&kind=stand" target="_blank" rel="noopener">QR counter stand (front + back)</a>
           <a class="text-slate-700 underline" href="<?= $base ?>/reviewdesk/qr?branch=<?= (int) $b['id'] ?>&kind=sticker" target="_blank" rel="noopener">QR stickers</a>
           <?php if (count($branches) > 1): ?>
           <form method="POST" class="ml-auto" onsubmit="return confirm('Remove this branch? Its QR code will stop working.')"><?= CsrfHelper::getField() ?><input type="hidden" name="form" value="branch_delete"><input type="hidden" name="id" value="<?= (int) $b['id'] ?>"><button class="text-red-600 text-sm">Remove</button></form>
@@ -111,7 +111,7 @@ $inp = 'w-full rounded border border-slate-300 px-3 py-2 text-sm';
     <form method="GET" action="<?= $base ?>/reviewdesk/qr" target="_blank" class="flex flex-wrap items-end gap-3">
       <label class="text-xs font-medium text-slate-600">Branch<select name="branch" class="mt-1 <?= $inp ?> bg-white"><?php foreach ($branches as $b): ?><option value="<?= (int) $b['id'] ?>"><?= h($b['name']) ?></option><?php endforeach; ?></select></label>
       <label class="text-xs font-medium text-slate-600">For<select name="staff" class="mt-1 <?= $inp ?> bg-white"><option value="">Whole shop</option><?php foreach ($staff as $u): ?><option value="<?= (int) $u['id'] ?>"><?= h($u['name']) ?></option><?php endforeach; ?></select></label>
-      <label class="text-xs font-medium text-slate-600">Layout<select name="kind" class="mt-1 <?= $inp ?> bg-white"><option value="stand">A6 counter stand</option><option value="sticker">Sticker sheet</option></select></label>
+      <label class="text-xs font-medium text-slate-600">Layout<select name="kind" class="mt-1 <?= $inp ?> bg-white"><option value="stand">A6 counter stand — front + back (steps)</option><option value="back">A6 back side only (steps)</option><option value="sticker">Sticker sheet</option></select></label>
       <button class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-indigo-700">Open printable QR</button>
     </form>
   </section>
