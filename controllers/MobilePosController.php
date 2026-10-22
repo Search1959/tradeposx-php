@@ -65,7 +65,7 @@ class MobilePosController {
             $items = array_map(fn($p) => [
                 'id' => (int)$p['id'], 'name' => $p['name'], 'category' => $p['category'],
                 'selling_price' => (float)$p['selling_price'], 'gst_percent' => (float)$p['gst_percent'],
-                'current_stock' => (float)$p['current_stock'], 'unit' => $p['unit'],
+                'current_stock' => (float)$p['current_stock'], 'min_stock' => (float)($p['min_stock'] ?? 0), 'unit' => $p['unit'],
                 'sku' => $p['sku'], 'barcode' => $p['barcode'],
             ], $this->productModel->allForOrg($org['id']));
             $customers = array_map(fn($c) => [

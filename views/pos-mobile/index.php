@@ -26,12 +26,23 @@ $base = '/' . $org['slug'];
   .search-wrap { padding: 10px 12px; background: #fff; border-bottom: 1px solid #e2e8f0; position: sticky; top: 44px; z-index: 19; }
   .search-wrap input { width: 100%; padding: 12px 14px; font-size: 16px; border: 1px solid #cbd5e1; border-radius: 10px; }
   .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 12px; padding-bottom: 100px; }
-  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; text-align: left; }
+  /* One soft tint per category (--bg, --bd, --fg, --dot). Plain CSS on purpose: this screen has no CDN so it works offline. */
+  .card { --bg: #eef2ff; --bd: #c7d2fe; --fg: #4338ca; --dot: #818cf8; background: var(--bg); border: 1px solid var(--bd); border-radius: 14px; padding: 14px; text-align: left; box-shadow: 0 1px 2px rgba(15,23,42,.06); }
+  .card:active { transform: scale(.98); }
+  .card.t1 { --bg: #ecfdf5; --bd: #a7f3d0; --fg: #047857; --dot: #34d399; }
+  .card.t2 { --bg: #fffbeb; --bd: #fde68a; --fg: #b45309; --dot: #fbbf24; }
+  .card.t3 { --bg: #f0f9ff; --bd: #bae6fd; --fg: #0369a1; --dot: #38bdf8; }
+  .card.t4 { --bg: #fff1f2; --bd: #fecdd3; --fg: #be123c; --dot: #fb7185; }
+  .card.t5 { --bg: #f5f3ff; --bd: #ddd6fe; --fg: #6d28d9; --dot: #a78bfa; }
+  .card.t6 { --bg: #f0fdfa; --bd: #99f6e4; --fg: #0f766e; --dot: #2dd4bf; }
+  .card.t7 { --bg: #fff7ed; --bd: #fed7aa; --fg: #c2410c; --dot: #fb923c; }
   .card .name { font-weight: 600; font-size: 15px; line-height: 1.25; margin-bottom: 4px; }
-  .card .cat { font-size: 12px; color: #94a3b8; margin-bottom: 8px; }
-  .card .price { font-size: 17px; font-weight: 700; color: #4f46e5; }
-  .card .stock { float: right; font-size: 12px; color: #94a3b8; }
-  .card .stock.low { color: #ef4444; }
+  .card .cat { font-size: 12px; color: #64748b; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .card .cat::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--dot); flex: none; }
+  .card .price { font-size: 17px; font-weight: 700; color: var(--fg); }
+  .card .stock { float: right; font-size: 11px; font-weight: 600; color: #64748b; background: rgba(255,255,255,.75); border-radius: 999px; padding: 2px 8px; }
+  .card .stock.warn { color: #92400e; background: #fef3c7; }
+  .card .stock.low { color: #b91c1c; background: #fee2e2; }
   .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #0f172a; color: #fff; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; z-index: 30; }
   .cart-bar .count { background: #4f46e5; border-radius: 999px; padding: 2px 10px; font-size: 13px; margin-right: 8px; }
   .empty { text-align: center; color: #94a3b8; padding: 60px 20px; grid-column: 1 / -1; }
@@ -208,9 +219,13 @@ function renderProducts(filter) {
   // current_stock is null for a service item (no stock concept) — the /data
   // endpoint's dataAction() sets it that way specifically so this line knows
   // to skip rendering a fake "0 pcs" instead of a real quantity.
+  // Tint = position of the category in the sorted category list, so a category keeps its colour while searching.
+  const cats = [...new Set(products.map(p => p.category || '').filter(Boolean))].sort();
+  const tint = p => { const i = cats.indexOf(p.category || ''); return i < 0 ? 0 : i % 8; };
+  const stockTone = p => { const n = Number(p.current_stock), m = Number(p.min_stock || 0); return n <= 0 ? 'low' : (m > 0 && n <= m ? 'warn' : ''); };
   grid.innerHTML = list.map(p => `
-    <button class="card" onclick="addToCart(${p.id})" style="border:none;cursor:pointer;">
-      ${p.current_stock !== null ? `<div class="stock ${Number(p.current_stock) <= 0 ? 'low' : ''}">${Number(p.current_stock)} ${h(p.unit)}</div>` : ''}
+    <button class="card t${tint(p)}" onclick="addToCart(${p.id})" style="cursor:pointer;">
+      ${p.current_stock !== null ? `<div class="stock ${stockTone(p)}">${Number(p.current_stock)} ${h(p.unit)}</div>` : ''}
       <div class="name">${h(p.name)}</div>
       <div class="cat">${h(p.category||'')}</div>
       <div class="price">₹${Number(p.selling_price).toFixed(2)}</div>
