@@ -1,7 +1,7 @@
 <?php
 /** Public policy / help pages. Expects $pageTitle and $content ('privacy' | 'terms' | 'support' | 'deletion'). */
 require_once __DIR__ . '/../layouts/icons.php';
-$company  = 'M/s Deinrim Solutionss (P) Ltd.';
+$company  = 'M/s Apex7tech';
 $phone    = '+91 98361-30393';
 $waNumber = '919836130393';
 $updated  = '10 October 2026';

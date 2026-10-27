@@ -681,7 +681,7 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
 
         <div>
           <div class="text-xs font-bold tracking-widest uppercase text-indigo-300">Operated &amp; developed by</div>
-          <div class="mt-3 text-xl font-bold">M/s Deinrim Solutionss (P) Ltd.</div>
+          <div class="mt-3 text-xl font-bold">M/s Apex7tech</div>
           <div class="mt-3 text-sm text-slate-400">Kolkata, West Bengal (WB), India</div>
           <div class="mt-4 text-sm"><span class="font-semibold text-white">Corporate Contact:</span> <a href="tel:+919836130393" class="font-semibold text-emerald-300 hover:text-emerald-200">+91 98361-30393</a></div>
           <div class="mt-1 text-sm"><a href="https://denrinsolutionss.com/" target="_blank" rel="noopener" class="text-slate-400 hover:text-white underline underline-offset-4 decoration-white/20">denrinsolutionss.com</a></div>
