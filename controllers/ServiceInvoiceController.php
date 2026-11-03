@@ -38,7 +38,7 @@ class ServiceInvoiceController {
             $items = [];
             $taxableTotal = 0.0;
             $taxTotal = 0.0;
-            $allowedGst = [0.0, 5.0, 12.0, 18.0, 28.0];
+            $allowedGst = [0.0, 5.0, 6.0, 12.0, 18.0, 28.0];
             foreach ($cart as $line) {
                 $isCustom = !empty($line['custom']);
                 $service = null;

@@ -87,7 +87,7 @@ $units = ['pcs','kg','g','liter','ml','pkt','box','bottle','pouch','bag','tin','
         <?php if (!isset($p['gst_percent'])): ?>
           <option value="" disabled selected>— Select GST % —</option>
         <?php endif; ?>
-        <?php foreach ([0,5,12,18,28] as $g): ?>
+        <?php foreach ([0,5,6,12,18,28] as $g): ?>
           <option value="<?= $g ?>" <?= isset($p['gst_percent']) && (float)$p['gst_percent'] == $g ? 'selected' : '' ?>><?= $g ?>%</option>
         <?php endforeach; ?>
       </select>

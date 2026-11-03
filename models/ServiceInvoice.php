@@ -50,7 +50,10 @@ class ServiceInvoice extends BaseModel {
         $taxableAmount = $data['taxable_amount'] ?? null;
         $cgstAmount = $data['cgst_amount'] ?? null;
         $sgstAmount = $data['sgst_amount'] ?? null;
-        $grandTotal = round($itemsTaxable + $labourCharges + $materialCharges + $gstAmount - $discount, 2);
+        // With "GST included in prices", each line total is already the final price and gstAmount is only the tax portion inside it,
+        // so it must not be added again (that double-counted GST and left a phantom balance on every inclusive invoice).
+        $gstOnTop = $taxType === 'INCLUSIVE' ? 0.0 : $gstAmount;
+        $grandTotal = round($itemsTaxable + $labourCharges + $materialCharges + $gstOnTop - $discount, 2);
         $paidAmount = (float) ($data['paid_amount'] ?? $grandTotal);
         $balance = round(max(0, $grandTotal - $paidAmount), 2);
         $status = $balance <= 0 ? 'PAID' : ($paidAmount > 0 ? 'PARTIAL' : 'UNPAID');

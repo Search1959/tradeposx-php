@@ -123,7 +123,7 @@ class SaleController {
         $lineTotal = 0.0;
         $taxableAmount = 0.0;
         $taxTotal = 0.0;
-        $allowedGst = [0.0, 5.0, 12.0, 18.0, 28.0];
+        $allowedGst = [0.0, 5.0, 6.0, 12.0, 18.0, 28.0];
         foreach ($cart as $line) {
             if (!empty($line['custom'])) {
                 // A free item written on the cash memo (not in stock): no product record, no stock movement.

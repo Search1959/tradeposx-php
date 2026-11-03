@@ -28,7 +28,7 @@
     <span id="selectedCount" class="text-slate-500">0 selected</span>
     <div class="ml-auto flex items-center gap-1.5">
       <select name="gst_percent" class="text-xs border border-slate-300 rounded px-1.5 py-1.5">
-        <option value="0">0%</option><option value="5">5%</option><option value="12">12%</option><option value="18">18%</option><option value="28">28%</option>
+        <option value="0">0%</option><option value="5">5%</option><option value="6">6%</option><option value="12">12%</option><option value="18">18%</option><option value="28">28%</option>
       </select>
       <button type="submit" formaction="<?= $base ?>/service-items/bulkSetGst" formnovalidate id="setGstBtn" disabled
               class="bg-indigo-600 disabled:bg-slate-300 text-white text-xs font-medium px-3 py-1.5 rounded hover:bg-indigo-700">Set GST% for Selected</button>

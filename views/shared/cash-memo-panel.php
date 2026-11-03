@@ -68,7 +68,7 @@
             <template x-if="!r.pid">
               <span class="flex items-center gap-1 text-slate-500">Free item (not in your list) · GST
                 <select x-model.number="r.gst" class="rounded border border-slate-300 px-1 py-0.5 text-[11px] bg-white">
-                  <option value="0">0%</option><option value="5">5%</option><option value="12">12%</option><option value="18">18%</option><option value="28">28%</option>
+                  <option value="0">0%</option><option value="5">5%</option><option value="6">6%</option><option value="12">12%</option><option value="18">18%</option><option value="28">28%</option>
                 </select></span>
             </template>
             <span class="flex items-center gap-1 text-slate-500 ml-auto">Unit
