@@ -61,6 +61,15 @@ if ($firstSegment === 'review') {
     exit;
 }
 
+// Public sector pages, sitemap and robots (no workspace, no login): /pos[/slug], /software[/slug], /sitemap, /sitemap.xml, /robots.txt
+if (in_array($firstSegment, ['pos', 'software', 'sitemap', 'sitemap.xml', 'robots.txt'], true)) {
+    $sectorRoutes = ['pos' => ['trade', $parts[1] ?? null], 'software' => ['service', $parts[1] ?? null],
+                     'sitemap' => ['sitemap', null], 'sitemap.xml' => ['sitemapxml', null], 'robots.txt' => ['robots', null]];
+    [$sectorAction, $sectorArg] = $sectorRoutes[$firstSegment];
+    dispatch('SectorPageController', $sectorAction, $sectorArg);
+    exit;
+}
+
 if (isset($platformRouteMap[$firstSegment])) {
     $defaultAction = $platformDefaultAction[$firstSegment] ?? 'index';
     dispatch($platformRouteMap[$firstSegment], $parts[1] ?? $defaultAction, $parts[2] ?? null);

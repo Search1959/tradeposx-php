@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../controllers/SectorPageController.php';
+$sectorPages = SectorPageController::liveMap();   // code => /pos/… or /software/… for every sector page that is live
 $tradeSectors = SectorHelper::tradeSectors();   // same list the sign-up form uses, so every name here can really be chosen
 $serviceSectors = SectorHelper::serviceSectors();
 
@@ -32,6 +34,7 @@ $serviceFeatures = [
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>window.SECTOR_PAGES = <?= json_encode($sectorPages, JSON_HEX_TAG | JSON_HEX_AMP) ?>;</script>
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
@@ -554,7 +557,8 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
         </ul>
         <label class="block text-xs font-medium text-slate-500 mb-1.5">Find your trade</label>
         <div x-data="{ s: '' }">
-          <select x-model="s" class="w-full bg-white/5 border border-white/10 text-slate-300 text-base md:text-sm rounded-lg px-3 py-2.5 mb-4"><option value="" class="bg-slate-900">Select your trade…</option><?php foreach ($tradeSectors as $code => $s): ?><option value="<?= h($code) ?>" class="bg-slate-900"><?= h($s) ?></option><?php endforeach; ?></select>
+          <select x-model="s" class="w-full bg-white/5 border border-white/10 text-slate-300 text-base md:text-sm rounded-lg px-3 py-2.5" :class="window.SECTOR_PAGES[s] ? 'mb-2' : 'mb-4'"><option value="" class="bg-slate-900">Select your trade…</option><?php foreach ($tradeSectors as $code => $s): ?><option value="<?= h($code) ?>" class="bg-slate-900"><?= h($s) ?></option><?php endforeach; ?></select>
+          <a :href="window.SECTOR_PAGES[s]" :class="window.SECTOR_PAGES[s] ? 'block' : 'hidden'" class="mb-4 text-xs text-indigo-300 hover:text-indigo-200 underline underline-offset-4">See how TradePOSX works for this trade →</a>
           <a :href="'/login?type=trade' + (s ? '&sector=' + s : '')" class="block text-center bg-indigo-600 hover:bg-indigo-500 rounded-xl px-4 py-3 text-sm font-semibold">Start with TradeERP</a>
         </div>
       </div>
@@ -569,7 +573,8 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
         </ul>
         <label class="block text-xs font-medium text-slate-500 mb-1.5">Find your service</label>
         <div x-data="{ s: '' }">
-          <select x-model="s" class="w-full bg-white/5 border border-white/10 text-slate-300 text-base md:text-sm rounded-lg px-3 py-2.5 mb-4"><option value="" class="bg-slate-900">Select your service…</option><?php foreach ($serviceSectors as $code => $s): ?><option value="<?= h($code) ?>" class="bg-slate-900"><?= h($s) ?></option><?php endforeach; ?></select>
+          <select x-model="s" class="w-full bg-white/5 border border-white/10 text-slate-300 text-base md:text-sm rounded-lg px-3 py-2.5" :class="window.SECTOR_PAGES[s] ? 'mb-2' : 'mb-4'"><option value="" class="bg-slate-900">Select your service…</option><?php foreach ($serviceSectors as $code => $s): ?><option value="<?= h($code) ?>" class="bg-slate-900"><?= h($s) ?></option><?php endforeach; ?></select>
+          <a :href="window.SECTOR_PAGES[s]" :class="window.SECTOR_PAGES[s] ? 'block' : 'hidden'" class="mb-4 text-xs text-emerald-300 hover:text-emerald-200 underline underline-offset-4">See how TradePOSX works for this service →</a>
           <a :href="'/login?type=service' + (s ? '&sector=' + s : '')" class="block text-center bg-emerald-600 hover:bg-emerald-500 rounded-xl px-4 py-3 text-sm font-semibold">Start with ServiceERP</a>
         </div>
       </div>
@@ -696,6 +701,11 @@ $tints = ['indigo' => 'bg-indigo-500/15 text-indigo-300', 'emerald' => 'bg-emera
             <a href="/terms" class="text-emerald-300 hover:text-emerald-200 underline underline-offset-4 decoration-emerald-300/30">Terms of Service</a><span class="text-slate-600">|</span>
             <a href="/support" class="text-emerald-300 hover:text-emerald-200 underline underline-offset-4 decoration-emerald-300/30">App Support Page</a><span class="text-slate-600">|</span>
             <a href="/deletion" class="text-rose-300 hover:text-rose-200 underline underline-offset-4 decoration-rose-300/30">Data Deletion request</a>
+          </div>
+          <div class="mt-3 flex flex-wrap items-center gap-x-1 gap-y-2 text-sm font-semibold">
+            <a href="/pos" class="text-indigo-300 hover:text-indigo-200 underline underline-offset-4 decoration-indigo-300/30">TradeERP pages</a><span class="text-slate-600">|</span>
+            <a href="/software" class="text-indigo-300 hover:text-indigo-200 underline underline-offset-4 decoration-indigo-300/30">ServiceERP pages</a><span class="text-slate-600">|</span>
+            <a href="/sitemap" class="text-indigo-300 hover:text-indigo-200 underline underline-offset-4 decoration-indigo-300/30">Sitemap</a>
           </div>
         </div>
 
